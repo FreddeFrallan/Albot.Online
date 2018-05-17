@@ -70,12 +70,14 @@ namespace AdminUI{
 
 
 		private void displayLastUpdate(){
+			/*
 			for (int i = 0; i < playerHistory.Length; i++) {
 				foreach (Vector2 p in  playerHistory [i].getBody ())
 					boardRenderer.visualizeBody (i, p);
 				if(playerHistory [i].hasHead())
 					boardRenderer.visualizeHead (i, playerHistory [i].getHead ());
 			}
+			*/
 		}
 
 	

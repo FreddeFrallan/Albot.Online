@@ -11,6 +11,7 @@ namespace Snake{
 		public GameObject headPrefab;
 		public Material[] playerColors;
 
+		private List<int>[] addedPlayerPos = new List<int>[2];
 		private List<SnakeHead> players = new List<SnakeHead>();
 
 		private float interpolationCounter;
@@ -19,17 +20,20 @@ namespace Snake{
 		private bool isInterpolating = false;
 
 
-
-
+		//The protocol should later be re-written so we can loop through all the players
 		public void handleGameUpdate(BoardUpdate update){
-			//Init the smooth renderer
 			if (updateCounter == 0)
 				initSmoothRenderer (update);
 			else if (updateCounter == 1)//We can't interpolate until we have atleast two updates
 				startInterpolation ();
 
-			update.blueCoords.ToList().ForEach ((p) => {distributeNewPosition (players [0], p);});
-			update.redCoords.ToList().ForEach ((p) => {distributeNewPosition (players [1], p);});
+			foreach (int i in update.blueCoords.Distinct().Where((c) => !addedPlayerPos[0].Contains(c)))
+				distributeNewPosition (0, i);
+			foreach (int i in update.redCoords.Distinct().Where((c) => !addedPlayerPos[1].Contains(c)))
+				distributeNewPosition (1, i);
+
+			addedPlayerPos [0].AddRange (update.blueCoords);
+			addedPlayerPos [1].AddRange (update.redCoords);
 
 			players.ForEach ((p) => {p.startNewTargetPos ();});
 			interpolationCounter = 0;
@@ -38,12 +42,15 @@ namespace Snake{
 
 
 		private void initSmoothRenderer(BoardUpdate initUpdate){
+			addedPlayerPos [0] = new List<int> ();
+			addedPlayerPos [1] = new List<int> ();
+
 			Vector3 firstPosBlue = theRenderer.getBlockFromNumber(initUpdate.blueCoords [0]).getPos(); 
 			Vector3 firstPosRed = theRenderer.getBlockFromNumber(initUpdate.redCoords [0]).getPos(); 
 
 			players.Add(Instantiate (headPrefab, firstPosBlue, Quaternion.identity).GetComponent<SnakeHead> ());
 			players.Add(Instantiate (headPrefab, firstPosRed, Quaternion.identity).GetComponent<SnakeHead> ());
-			for (int i = 0; i < players.Count; i++)
+			for (int i = 0; i < players.Count; i++) 
 				players [i].init (playerColors [i]);
 		}
 
@@ -52,9 +59,10 @@ namespace Snake{
 			StartCoroutine (interpolateToNext ());
 		}
 			
-		private void distributeNewPosition(SnakeHead player, int coord){
+		private void distributeNewPosition(int playerIndex, int coord){
 			Vector3 targetPos = theRenderer.getBlockFromNumber (coord).getPos();
-			player.addTargetPos (targetPos);
+			players[playerIndex].addTargetPos (targetPos);
+			addedPlayerPos [playerIndex].Add (coord);
 		}
 
 

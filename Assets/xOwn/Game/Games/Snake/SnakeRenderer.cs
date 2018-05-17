@@ -34,47 +34,9 @@ namespace Snake{
 
 		//The protocol should later be re-written so we can loop through all the players
 		public void handleBoardUpdate(BoardUpdate updateMsg){
-			for (int i = 0; i < updateMsg.blueCoords.Length - 1; i++)
-				getBlockFromNumber (updateMsg.blueCoords [i]).setColor (blueBody);
-			for (int i = 0; i < updateMsg.redCoords.Length - 1; i++)
-				getBlockFromNumber (updateMsg.redCoords [i]).setColor (redBody);
-
-			getBlockFromNumber (updateMsg.blueCoords [updateMsg.blueCoords.Length-1]).setColor (blueHead);
-			getBlockFromNumber (updateMsg.redCoords [updateMsg.redCoords.Length-1]).setColor (redHead);
-
 			smoothRenderer.handleGameUpdate (updateMsg);
 		}
 
-
-
-
-		#region Old instant vizualisation
-		public void visualizeMove(int playerIndex, Vector2 newPos, Vector2 oldPos){
-			if (isInit == false)
-				return;
-
-			Material body = playerIndex == 0 ? redBody : blueBody;
-			Material head = playerIndex == 0 ? redHead : blueHead;
-
-			blocks [(int)oldPos.x, (int)oldPos.y].setColor (body);
-			blocks [(int)newPos.x, (int)newPos.y].setColor (head);
-		}
-
-		public void visualizeBody(int playerIndex, Vector2 pos){
-			if (isInit == false)
-				return;
-
-			Material body = playerIndex == 0 ? redBody : blueBody;
-			blocks [(int)pos.x, (int)pos.y].setColor (body);
-		}
-
-		public void visualizeHead(int playerIndex, Vector2 pos){
-			if (isInit == false)
-				return;
-
-			Material head = playerIndex == 0 ? redHead : blueHead;
-			blocks [(int)pos.x, (int)pos.y].setColor (head);
-		}
 
 
 		public void displayCrash(Vector2 crashPos){
@@ -87,7 +49,6 @@ namespace Snake{
 			Vector3 spawnPos = block.transform.position + new Vector3 (extraX, 2, extraY);
 			Instantiate (collisionBlock, spawnPos, Quaternion.identity);
 		}
-
 
 		private int setBlockCoord(int coord, ref int extraCoord){
 			if (coord < 0) {
@@ -106,7 +67,6 @@ namespace Snake{
 			int y = coord / gridSize;
 			return blocks [x, y];
 		}
-		#endregion
 	}
 
 }
