@@ -8,13 +8,14 @@ public class TCPMessageQueue{
 	public static bool hasUnread = false;
 	public static Action<ReceivedLocalMessage> readMsgInstant;
 
+
+	//Could possibly be more optimized later, trying to not check for null every msg, might be benefitical
 	public static void addMessage(string message, int playerID){
 		message = message.Trim ();
 		ReceivedLocalMessage newMsg = new ReceivedLocalMessage (message, playerID);
 		messages.Add (newMsg);
 		hasUnread = true;
 
-		//Testing if it's possible to pump up the benchmark
 		if (readMsgInstant != null)
 			readMsgInstant (newMsg);
 	}

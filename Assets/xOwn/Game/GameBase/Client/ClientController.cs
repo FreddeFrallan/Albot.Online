@@ -48,10 +48,8 @@ namespace Game{
 			while (true) {
 				yield return new WaitForEndOfFrame ();
 				//If we have receveid some Local TCP msg. Listen to them all
-				/*
 				while (isListeningForTCP && TCPMessageQueue.hasUnread)
 					readTCPMsg(TCPMessageQueue.popMessage ());
-					*/
 			}
 		}
 			
