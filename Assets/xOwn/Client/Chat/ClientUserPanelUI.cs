@@ -11,7 +11,7 @@ namespace ClientUI{
 		[SerializeField]
 		private Image icon;
         [SerializeField]
-        private TextMeshProUGUI username = null;
+        private TextMeshProUGUI username;
         private Text timerText = null, scoreText = null;
 		[SerializeField]
 		private Color timerActive = Color.black, timerPaused = Color.black;
@@ -23,7 +23,10 @@ namespace ClientUI{
 		public void setUserPanel(int iconNumber, string username){
 			this.icon.sprite = ClientIconManager.loadIcon(iconNumber);
 			this.icon.enabled = true;
+            print(this.username);
+            print(gameObject.name);
             this.username.SetText(username);
+            
 		}
 		public void clearPanel(){
             this.username.SetText("");

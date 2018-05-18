@@ -119,7 +119,7 @@ namespace ClientUI{
 		}
 		//Pre game lobby has been moved to PreGameBaseLobby
 		private static void setLobbyPanels(bool gameList, bool preGame){
-			singleton.gameListWindow.SetActive (gameList);
+		//	singleton.gameListWindow.SetActive (gameList);
 		//	singleton.preGameWindow.SetActive (preGame);
 		}
 
