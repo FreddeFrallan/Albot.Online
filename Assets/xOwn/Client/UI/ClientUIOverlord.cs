@@ -22,7 +22,7 @@ namespace ClientUI{
 		public GameLobbyUI lobbyUI;
 		public MenuBar menuBar;
 		public ClientUserPanelUI userPanel;
-		public ClientChat clientChat;
+		public ClientChatTMProEnabled clientChat;
 		public GameObject clientLobbySuperParent;
 		public AlbotDialogBox dialogBox;
 		public MainMenu mainMenu;
