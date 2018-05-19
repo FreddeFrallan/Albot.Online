@@ -11,7 +11,7 @@ namespace Snake{
 		public Material redHead, redBody, blueHead, blueBody;
 
 		private int gridSize = 20;
-		private float blockSize = 1.2f;
+		private float blockSize = 1.15f;
 		private SnakeBlock[,] blocks;
 		private bool isInit = false;
 

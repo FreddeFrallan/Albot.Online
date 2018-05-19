@@ -9,7 +9,8 @@ using System.Runtime.Serialization.Formatters.Binary;
 using Barebones.MasterServer;
 using AlbotServer;
 using Game;
-using Connect4_TCP_API;
+using TCP_API;
+using TCP_API.Connect4;
 
 namespace Connect4{
 
@@ -18,9 +19,10 @@ namespace Connect4{
 
 		//Ingame Unity Components that we are going to talk to.
 		private Renderer localGameController;
+        private Connect4APIRouter APIRouter = new Connect4APIRouter();
 
-		#region override from base clientController
-		public override void initProtocol (Game.CommProtocol protocol){this.protocol = (Connect4.CommProtocol)protocol;}
+        #region override from base clientController
+        public override void initProtocol (Game.CommProtocol protocol){this.protocol = (Connect4.CommProtocol)protocol;}
 		public override Game.GameType getGameType (){return Game.GameType.Connect4;}
 		protected CommProtocol protocol;
 		protected override void initHandlers (){
@@ -48,7 +50,7 @@ namespace Connect4{
 			if(ClientPlayersHandler.hasRequestedPlayerMoves() == false)
 				return;
 
-			MessageConclusion outMsg = MessageRouter.handleIncomingMsg (inMsg.message);
+			APIMsgConclusion outMsg = APIRouter.handleIncomingMsg (inMsg.message);
 			if (outMsg.toServer)
 				onOutgoingLocalMsg (outMsg.msg, ClientPlayersHandler.sendFromCurrentPlayer ());
 			else 

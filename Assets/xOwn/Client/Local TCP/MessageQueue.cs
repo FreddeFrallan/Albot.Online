@@ -40,3 +40,6 @@ public struct ReceivedLocalMessage{
 		this.message = message;
 	}
 }
+
+
+
