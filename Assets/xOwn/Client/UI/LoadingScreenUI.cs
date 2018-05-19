@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Barebones.Networking;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 namespace Barebones.MasterServer
 {
@@ -15,19 +16,12 @@ namespace Barebones.MasterServer
         public Button AbortButton;
 
         protected SpawnRequestController Request;
-        public Image RotatingImage;
 
-		public Text title;
-        public Text StatusText;
+		public TextMeshProUGUI title;
+        public TextMeshProUGUI StatusText;
 		private Action abortCall;
 		private Action errorCall;
 		private bool runningLoadingScreen = false;
-
-        
-        private void Update()
-        {
-            RotatingImage.transform.Rotate(Vector3.forward, Time.deltaTime*360*2);
-        }
 
         public void OnAbortClick()
         {
