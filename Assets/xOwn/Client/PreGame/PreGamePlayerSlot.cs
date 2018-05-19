@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using ClientUI;
+using TMPro;
 
 public class PreGamePlayerSlot : MonoBehaviour {
 
 	[SerializeField]
 	private Image icon = null, checkbox = null;
 	[SerializeField]
-	private Text usernameTextField;
+	private TextMeshProUGUI usernameTextField;
 
 	private int iconNumber;
 	private bool changedValues = false, isReady, clearPanels = false;
@@ -31,7 +32,7 @@ public class PreGamePlayerSlot : MonoBehaviour {
 
 		icon.sprite = ClientIconManager.loadIcon(iconNumber);
 		icon.enabled = true;
-		usernameTextField.text = username;
+		usernameTextField.SetText(username);
 		checkbox.enabled = isReady;
 		changedValues = false;
 	}
@@ -48,7 +49,7 @@ public class PreGamePlayerSlot : MonoBehaviour {
 	}
 
 	private void clearPanel(){
-		usernameTextField.text = "";
+		usernameTextField.SetText("");
 		icon.enabled = false;
 		checkbox.enabled = false;
 	}

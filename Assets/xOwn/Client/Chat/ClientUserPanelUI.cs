@@ -3,14 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Barebones.MasterServer;
+using TMPro;
 
 namespace ClientUI{
 	public class ClientUserPanelUI : MonoBehaviour {
 
 		[SerializeField]
 		private Image icon;
-		[SerializeField]
-		private Text username = null, timerText = null, scoreText = null;
+        [SerializeField]
+        private TextMeshProUGUI username;
+        private Text timerText = null, scoreText = null;
 		[SerializeField]
 		private Color timerActive = Color.black, timerPaused = Color.black;
 		private TurnTimer turnTimer;
@@ -21,10 +23,13 @@ namespace ClientUI{
 		public void setUserPanel(int iconNumber, string username){
 			this.icon.sprite = ClientIconManager.loadIcon(iconNumber);
 			this.icon.enabled = true;
-			this.username.text = username;
+            print(this.username);
+            print(gameObject.name);
+            this.username.SetText(username);
+            
 		}
 		public void clearPanel(){
-			this.username.text = "";
+            this.username.SetText("");
 			this.icon.enabled = false;
 			if (turnTimer != null) {
 				turnTimer.stopTimer ();

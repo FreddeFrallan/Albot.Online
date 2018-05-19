@@ -38,30 +38,30 @@ public class LocalBotConnectionStatusUi : MonoBehaviour {
 				if (instance.image != null)
 					instance.image.color = ClientConnColors.OnlineColor;
 			
-				instance.text.color = ClientConnColors.OnlineColor;
-				instance.text.text = "Connected";
+				//instance.text.color = ClientConnColors.OnlineColor;
+				//instance.text.text = "Connected";
                 break;
             case ConnectionStatus.Disconnected:
 			case ConnectionStatus.None:
 				if (instance.image != null) 
 					instance.image.color = ClientConnColors.OfflineColor;
 			
-				instance.text.color = ClientConnColors.OfflineColor;
-				instance. text.text = "Offline";
+				//instance.text.color = ClientConnColors.OfflineColor;
+				//instance. text.text = "Offline";
                 break;
             case ConnectionStatus.Connecting:
 				if (instance.image != null) 
 					instance.image.color = ClientConnColors.ConnectingColor;
 			
-				instance.text.color = ClientConnColors.ConnectingColor;
-				instance.text.text = "Connecting";
+				//instance.text.color = ClientConnColors.ConnectingColor;
+				//instance.text.text = "Connecting";
                 break;
             default:
 				if (instance.image != null) 
 					instance.image.color = ClientConnColors.UnknownColor;
 			
-				instance.text.color = ClientConnColors.UnknownColor;
-				instance.text.text = "Unknown";
+				//instance.text.color = ClientConnColors.UnknownColor;
+				//instance.text.text = "Unknown";
                 break;
         }
 

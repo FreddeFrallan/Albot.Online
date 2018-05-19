@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using Barebones.MasterServer;
 using Game;
 using Barebones.Networking;
+using TMPro;
 
 namespace ClientUI{
 
@@ -14,9 +15,10 @@ namespace ClientUI{
 		public GameConnectorUI gameCreator;
 		public GameSelectionUI gameSelection;
 		public Image gameImage;
+        public TextMeshProUGUI gameTitle;
 		public PreGamePlayerSlot[] playerSlots;
 		public Button startButton;
-		public Dropdown p2Settings;
+		public TMP_Dropdown p2Settings;
 		public LoginTCPUI loginTCPUI;
 		
 		protected bool isAdmin, isReady = false;
@@ -28,7 +30,7 @@ namespace ClientUI{
 
 
 		#region Visuals
-		public virtual void initPreGameLobby(string gameTittle, Sprite gameSprite, PreGamePlayer[] players, bool isAdmin, int roomId, GameType type){
+		public virtual void initPreGameLobby(string gameTitle, Sprite gameSprite, PreGamePlayer[] players, bool isAdmin, int roomId, GameType type){
 			gameObject.SetActive (true);
 			gameCreator.setCurrentPreLobby (this);
 
@@ -36,6 +38,7 @@ namespace ClientUI{
 			this.roomId = roomId;
 			this.currentPlayers = players;
 			this.gameImage.sprite = gameSprite;
+            this.gameTitle.SetText(gameTitle);
 			setPlayerSlots (players);
 			setAdminValues (isAdmin);	
 			extractLocalPlayerSlotId (players);
