@@ -12,7 +12,8 @@ namespace ClientUI{
 		private Image icon;
         [SerializeField]
         private TextMeshProUGUI username;
-        private Text timerText = null, scoreText = null;
+        [SerializeField]
+        private TextMeshProUGUI timerText = null, scoreText = null;
 		[SerializeField]
 		private Color timerActive = Color.black, timerPaused = Color.black;
 		private TurnTimer turnTimer;
@@ -23,8 +24,6 @@ namespace ClientUI{
 		public void setUserPanel(int iconNumber, string username){
 			this.icon.sprite = ClientIconManager.loadIcon(iconNumber);
 			this.icon.enabled = true;
-            print(this.username);
-            print(gameObject.name);
             this.username.SetText(username);
 		}
 		public void clearPanel(){
@@ -57,9 +56,9 @@ namespace ClientUI{
 		private class TurnTimer{
 			private float currentTime;
 			private bool active = false;
-			private Text timerText;
+			private TextMeshProUGUI timerText;
 			private Color timerActive, timerPaused;
-			public TurnTimer(float maxTime, Color timerActive, Color timerPaused, Text timerText){
+			public TurnTimer(float maxTime, Color timerActive, Color timerPaused, TextMeshProUGUI timerText){
 				this.timerActive = timerActive; this.timerPaused = timerPaused;
 				this.timerText = timerText;
 				timerText.text = Mathf.Round(maxTime).ToString ();

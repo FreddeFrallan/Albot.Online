@@ -33,6 +33,19 @@ namespace TCP_API.Connect4{
 			string boardMsg = command.board.encodeBoard (false, true, command.evaluate);
 			return new APIMsgConclusion(){msg = boardMsg, status = ResponseStatus.Success, toServer = false};
 		}
+
+        /// <summary>
+        /// Returns a list of possible available moves, depening on the specified current board.
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns>APIMsgConclusion</returns>
+        public static APIMsgConclusion evaluateBoard(Connect4Command command) {
+            command.board.winner = Connect4APIEvaluateBoard.evaluateBoard(command.board);
+            string boardMsg = command.board.encodeBoard(false, false, true);
+            return new APIMsgConclusion() { msg = boardMsg, status = ResponseStatus.Success, toServer = false };
+        }
+
+        public static APIMsgConclusion makeClientMove(Connect4Command command) {return new APIMsgConclusion() { msg = command.move.ToString(), toServer = true, status = ResponseStatus.Success };}
 		#endregion
 
 

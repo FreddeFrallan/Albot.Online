@@ -41,13 +41,15 @@ namespace Game{
 			initHandlers ();
 			ClientReadyMsg msg = new ClientReadyMsg (){players = ClientPlayersHandler.generatePlayersInfoArray()};
 			connectionToServer.Send ((short)ServerCommProtocl.ClientReadyChannel, msg);
-			StartCoroutine (listenForTCP ());
+			//StartCoroutine (listenForTCP ());
 		}
-
+        
+        //LEGACY, will soon be obselete
 		protected IEnumerator listenForTCP(){
 			while (true) {
 				yield return new WaitForEndOfFrame ();
 				//If we have receveid some Local TCP msg. Listen to them all
+                
 				while (isListeningForTCP && TCPMessageQueue.hasUnread)
 					readTCPMsg(TCPMessageQueue.popMessage ());
 			}

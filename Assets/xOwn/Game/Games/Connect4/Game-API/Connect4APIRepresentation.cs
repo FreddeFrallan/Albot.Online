@@ -17,12 +17,15 @@ namespace TCP_API.Connect4{
 			public const string board = "Board";
 			public const string evaluate = "Evaluate";
 			public const string possibleMoves = "PossMoves";
-			public const string move = "Move";
+            public const string winner = "Winner";
+            public const string move = "Move";
 			public const string player = "Player";
+            public const string action = "Action";
 		}
 
 		public static class Actions{
-			public const string simMove = "SimulateMove";
+            public const string makeMove = "MakeMove";
+            public const string simMove = "SimulateMove";
 			public const string evalBoard = "EvaluateBoard";
 			public const string getPossMoves = "GetPossibleMoves";
 		}
@@ -45,11 +48,22 @@ namespace TCP_API.Connect4{
     /// TODO Optimize
     /// </summary>
     public class Board{
+        public List<string> winChecks = new List<string>();
+
 		public string[,] grid = new string[Consts.BOARD_WIDTH, Consts.BOARD_HEIGHT];
 		public int winner = 0;
 		public List<int> possibleMoves;
 
-		public string encodeBoard(bool board = true, bool sendPMoves = false, bool evaluated = false){
+        public Board(string rawBoard, bool evaluate) {
+            string[] cells = rawBoard.Trim().Split(' ');
+            if (evaluate)
+                generateGridAndWinData(cells);
+            else
+                Utils.iterateBoard((x, y) => { grid[x, y] = cells[y * Consts.BOARD_WIDTH + x]; });
+        }
+
+
+        public string encodeBoard(bool board = true, bool sendPMoves = false, bool evaluated = false){
 			JSONObject jBoard = new JSONObject ();
 
 			if (board)
@@ -65,12 +79,31 @@ namespace TCP_API.Connect4{
 			return jBoard.Print();
 		}
 
-		public override string ToString (){
-			string s = "";
-			Utils.iterateBoard((x, y) =>  {s += grid[x, y] + " ";} );
-			return s;
-		}
 
+        private void generateGridAndWinData(string[] cells) {
+            string[] rows = new string[Consts.BOARD_WIDTH];
+            string[] cols = new string[Consts.BOARD_HEIGHT];
+            string[] lDiags = new string[6];
+            string[] rDiags = new string[6];
+            Utils.iterateBoard((x, y) => {
+                string cell = cells[y * Consts.BOARD_WIDTH + x];
+                grid[x, y] = cell;
+                rows[y] += cell;
+                cols[x] += cols;
+
+                int diff = x - y;
+                int sum = x + y;
+                if (diff >= -3 && diff <= 2)
+                    lDiags[diff + 3] += cell;
+                if (sum >= 3 && sum <= 8)
+                    rDiags[diff - 3] += cell;
+            });
+
+            winChecks.AddRange(rows);
+            winChecks.AddRange(cols);
+            winChecks.AddRange(lDiags);
+            winChecks.AddRange(rDiags);
+        }
 	}
 
 	public class Utils{
@@ -83,18 +116,5 @@ namespace TCP_API.Connect4{
 				for (int x = 0; x < Consts.BOARD_WIDTH; x++)
 					a (x, y);
 		}
-
-        /// <summary>
-        /// Takes raw text representation of the board and returns a Board Obj.
-        /// </summary>
-        /// <param name="board"></param>
-        /// <returns>Board</returns>
-        public static Board parseBoard(string board) {
-            string[] boardWords = board.Trim().Split(' ');
-            Board parsedBoard = new Board();
-            Utils.iterateBoard((x, y) => { parsedBoard.grid[x, y] = boardWords[y * Consts.BOARD_WIDTH + x]; });
-
-            return parsedBoard;
-        }
     }		
 }
