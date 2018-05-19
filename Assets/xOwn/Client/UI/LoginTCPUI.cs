@@ -3,19 +3,21 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Barebones.Networking;
+using TMPro;
 
 namespace ClientUI{
 	
 	public class LoginTCPUI : MonoBehaviour {
-		public InputField portNumber;
-		public Text errorText;
+		public TMP_InputField portNumber;
+		public TextMeshProUGUI errorText;
 
 		private bool canOpenPort = true;
 
 		public GameObject startButton, stopButton;
-		public Text abortText;
+		public TextMeshProUGUI abortText;
 		public LocalBotConnectionStatusUi connectionUI;
-		public GameObject connectedMark, connectingMark, offlineMark;
+		public Color connected, connecting, offline;
+        public Image statusDot;
 		private ConnectionStatus newStatus;
 
 		void Start(){
@@ -59,10 +61,15 @@ namespace ClientUI{
 		}
 
 		private void setStatusIcon(ConnectionStatus state){
-			connectedMark.SetActive (state == ConnectionStatus.Connected);
-			connectingMark.SetActive (state == ConnectionStatus.Connecting);
-			offlineMark.SetActive (state == ConnectionStatus.Disconnected || state == ConnectionStatus.None);
-		}
+            if (state == ConnectionStatus.Connected)
+                statusDot.color = connected;
+
+            if(state == ConnectionStatus.Connecting)
+                statusDot.color = connecting;
+
+            if (state == ConnectionStatus.Disconnected || state == ConnectionStatus.None)
+                statusDot.color = offline;
+        }
 	}
 
 }
