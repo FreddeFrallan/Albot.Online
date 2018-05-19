@@ -18,7 +18,7 @@ namespace ClientUI{
         public TextMeshProUGUI gameTitle;
 		public PreGamePlayerSlot[] playerSlots;
 		public Button startButton;
-		public Dropdown p2Settings;
+		public TMP_Dropdown p2Settings;
 		public LoginTCPUI loginTCPUI;
 		
 		protected bool isAdmin, isReady = false;
