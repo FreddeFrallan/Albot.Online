@@ -26,7 +26,6 @@ namespace ClientUI{
             print(this.username);
             print(gameObject.name);
             this.username.SetText(username);
-            
 		}
 		public void clearPanel(){
             this.username.SetText("");

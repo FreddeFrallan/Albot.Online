@@ -316,7 +316,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 137424722}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 421c7f514d0c796498cdfa6a705d0f6c, type: 3}
   m_Name: 
@@ -1323,9 +1323,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   icon: {fileID: 160727937}
-  username: {fileID: 1679979195}
-  timerText: {fileID: 565912734}
-  scoreText: {fileID: 1337680530}
+  username: {fileID: 0}
   timerActive: {r: 0.21176472, g: 0.6862745, b: 0.2784314, a: 1}
   timerPaused: {r: 0.3137255, g: 0.37254903, b: 0.43921572, a: 1}
 --- !u!114 &1519534656
@@ -1656,9 +1654,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   icon: {fileID: 112901607}
-  username: {fileID: 233576182}
-  timerText: {fileID: 1337347916}
-  scoreText: {fileID: 222470864}
+  username: {fileID: 0}
   timerActive: {r: 0.21176472, g: 0.6862745, b: 0.2784314, a: 1}
   timerPaused: {r: 0.3137255, g: 0.37254903, b: 0.43921572, a: 1}
 --- !u!114 &1713156340
