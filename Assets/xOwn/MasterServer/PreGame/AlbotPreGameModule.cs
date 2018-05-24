@@ -29,15 +29,19 @@ namespace AlbotServer{
 			server.SetHandler ((short)ServerCommProtocl.SlotTypeChanged, handleSlotTypeChanged);
 		}
 
+        
 		private void handleCreatePreGame(IIncommingMessage message){
 			PreGameCreateMSg msg = message.Deserialize<PreGameCreateMSg> ();
-			PreGame newGame = new PreGame (this, 2, msg.type, msg.mainPlayer.username, idCounter++, msg.isTraining, message.Peer);
+            Debug.LogError("Creating pre game: " + msg.type);
+
+            PreGame newGame = new PreGame (this, 2, msg.type, msg.mainPlayer.username, idCounter++, msg.isTraining, message.Peer);
 			newGame.changePlayer (0, PreGameSlotType.Player, msg.mainPlayer, message.Peer, false);
 			currentPreGames.Add (newGame);
 
 			message.Peer.Disconnected += handlePlayerDissconnect;
 			message.Peer.SendMessage((short)AlbotServer.ServerCommProtocl.RequestJoinPreGame, new PreGameRoomMsg(){players = newGame.players.ToArray(), type = newGame.type, roomID = newGame.roomID, isTraining = msg.isTraining,});
 		}
+        
 
 		private void handleRequestJoinPreGame(IIncommingMessage message){
 			PreGameJoinRequest msg = message.Deserialize<PreGameJoinRequest> ();

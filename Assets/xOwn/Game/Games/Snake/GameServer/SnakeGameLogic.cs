@@ -7,15 +7,14 @@ using System;
 namespace Snake{
 
 	public class SnakeGameLogic : MonoBehaviour {
+		public static readonly float refreshRate = 0.5f;
 
-		private System.Random rand = new System.Random();
-
+        private System.Random rand = new System.Random();
 		private static SnakeGameLogic singleton;
 		public SnakeRenderer renderer;
 		public SnakeGameStateUpdater updater;
 		public SnakeGameMaster master;
 
-		private float refreshRate = 1f;
 		private int gridSize = 20;
 		private int[,] gameGrid;
 		private bool gameRunning = true;

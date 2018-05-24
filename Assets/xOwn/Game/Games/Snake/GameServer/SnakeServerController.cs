@@ -47,7 +47,7 @@ namespace Snake{
 			GameInfo gi = new GameInfo(newPlayer.username, newPlayer.color, new int[0][]);
 			protocol.sendPlayerInit (newPlayer.client.peerID, gi);
 
-			protocol.subscribeHandler(newPlayer.client, SnakeGameLogic.moveHandler, (short)SnakeProtocol.MsgType.playerCommands, wrapper, typeof(GameCommand));
+            protocol.subscribeHandler(newPlayer.client, SnakeGameLogic.moveHandler, (short)SnakeProtocol.MsgType.playerCommands, wrapper, typeof(GameCommand));
 			if (nbrPlayers() == maxNbrPlayers())
 				startGame();
 			return newPlayer;

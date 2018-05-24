@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace TCP_API{
 
@@ -32,11 +33,15 @@ namespace TCP_API{
                 Func<JSONObject, APIMsgConclusion> linkedFunc = APIFuncs[jObj.GetField(TCPFields.action).str];
                 return linkedFunc(jObj);
             }
-            catch {return errorParsingJson();}
+            catch(Exception e) {
+                Debug.LogError(e.Message);
+                Debug.LogError(e.StackTrace);
+                return errorParsingJson(e.Message);
+            }
         }
 
 
-        private APIMsgConclusion errorParsingJson() { return new APIMsgConclusion() { status = ResponseStatus.Error, msg = "Error Parsing Msg", toServer = false }; }
+        private APIMsgConclusion errorParsingJson(string errorMsg) { return new APIMsgConclusion() { status = ResponseStatus.Error, msg = errorMsg, toServer = false }; }
         protected abstract bool isJsonMsg(string input);
     }
 

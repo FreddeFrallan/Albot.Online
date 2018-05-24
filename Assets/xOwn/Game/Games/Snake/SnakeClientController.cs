@@ -25,15 +25,14 @@ namespace Snake{
 			int dir = -1;
 			if(parseCommandMsg(msg, out dir))
 				sendServerMsg(new GameCommand(color, dir), (short)SnakeProtocol.MsgType.playerCommands);
-			
+
 			RealtimeTCPController.requestBoard (convertColorToTeam(color));
 		}
 		public override GameType getGameType (){return GameType.Snake;}
 
 
 		protected override void initHandlers (){
-			connectionToServer.RegisterHandler ((short)ServerCommProtocl.PlayerJoinedGameRoom, handlePlayerJoinedRoom);
-			connectionToServer.RegisterHandler ((short)ServerCommProtocl.PlayerLeftGameRoom, handlePlayerLeftRoom);
+            base.initHandlers();
 			connectionToServer.RegisterHandler ((short)SnakeProtocol.MsgType.playerInit, handleInitSettings);
 			connectionToServer.RegisterHandler ((short)SnakeProtocol.MsgType.boardUpdate, handleBoardUpdate);
 			connectionToServer.RegisterHandler ((short)SnakeProtocol.MsgType.gameInfo, handleGameInfo);
@@ -41,6 +40,8 @@ namespace Snake{
 			StartCoroutine (findAndInitRenderer<SnakeRenderer>((x) => localRenderer = x));
 			StartCoroutine (handleNetworkMsgQueue ());
 			RealtimeTCPController.resetController ();
+
+            TCPMessageQueue.readMsgInstant = readTCPMsg;
 		}
 
 
@@ -98,7 +99,7 @@ namespace Snake{
 
 
 		protected override void readTCPMsg (ReceivedLocalMessage msg){
-			if (isGameOver)
+            if (isGameOver)
 				return;
 			if (msg.message.Length == 0) {
 				RealtimeTCPController.requestBoard (convertColorToTeam(localPlayerColor), true);
@@ -161,20 +162,6 @@ namespace Snake{
 			if(hasLocalRedPlayer)
 				TCPFormater [1].addNewUpdate (blocked, updateMsg.redDir, updateMsg.blueDir, redPos, bluePos);
 		}
-
-
-		public void handlePlayerLeftRoom(NetworkMessage msg){
-			PlayerInfoMsg readyMsg = msg.ReadMessage<PlayerInfoMsg> ();
-			PlayerInfo p = readyMsg.player;
-			localGameUI.removeConnectedPlayer (p.color, p.username, p.iconNumber);
-		}
-		public void handlePlayerJoinedRoom(NetworkMessage msg){
-			PlayerInfoMsg readyMsg = msg.ReadMessage<PlayerInfoMsg> ();
-			PlayerInfo p = readyMsg.player;
-
-			localGameUI.initPlayerSlot (p.color, p.username, p.iconNumber);
-		}
-
 
 		#region Utils
 		private bool parseCommandMsg(string msg, out int dir){

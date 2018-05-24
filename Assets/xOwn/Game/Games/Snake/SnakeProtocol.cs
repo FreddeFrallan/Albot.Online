@@ -28,11 +28,6 @@ namespace Snake{
 		public void sendPlayerInit(int targetID, GameInfo gi) {sendMsg(gi, targetID, (short)MsgType.playerInit);}
 		public void sendBoard(int targetID, BoardUpdate board){sendMsg(board, targetID, (short)MsgType.boardUpdate);}
 
-
-		private void sendString(int targetID, MsgType type, string str, Game.PlayerColor color) {
-			sendMsg(new StringMessage(str, color), targetID, (short)type);
-		}
-
 	}
 
 	[Serializable]

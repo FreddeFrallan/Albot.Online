@@ -11,6 +11,7 @@ TagManager:
   - Water
   - ServerController
   - VersionController
+  - Ground
   layers:
   - Default
   - TransparentFX

@@ -32,7 +32,8 @@ namespace Connect4Bot{
 
 			
 		public int requestMove(string boardUpdate){
-			int[,] board = parseBoard (boardUpdate);
+            JSONObject jObj = new JSONObject(boardUpdate);
+			int[,] board = parseBoard (jObj.GetField("Board").str);
 			return Connect4BotMinMax.MinMaxSearch.findBestMove (board, depthLevel);
 		}
 			

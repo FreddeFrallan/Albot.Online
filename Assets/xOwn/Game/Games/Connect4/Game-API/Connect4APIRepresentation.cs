@@ -68,6 +68,8 @@ namespace TCP_API.Connect4{
 
 			if (board)
 				jBoard.AddField (Consts.Fields.board, ToString ());
+            if(evaluated)
+                jBoard.AddField(Consts.Fields.winner, winner);
 			if (sendPMoves) {
 				JSONObject list = new JSONObject ();
 				foreach (int i in possibleMoves)
@@ -76,15 +78,15 @@ namespace TCP_API.Connect4{
 				jBoard.AddField (Consts.Fields.possibleMoves, list);
 			}
 
-			return jBoard.Print();
+            return jBoard.Print();
 		}
 
 
         private void generateGridAndWinData(string[] cells) {
-            string[] rows = new string[Consts.BOARD_WIDTH];
-            string[] cols = new string[Consts.BOARD_HEIGHT];
-            string[] lDiags = new string[6];
-            string[] rDiags = new string[6];
+            string[] rows = new string[] { "", "", "", "", "", "" };
+            string[] cols = new string[] { "", "", "", "", "", "", "" };
+            string[] lDiags = new string[6] { "", "", "", "", "", "" };
+            string[] rDiags = new string[6] { "", "", "", "", "", "" };
             Utils.iterateBoard((x, y) => {
                 string cell = cells[y * Consts.BOARD_WIDTH + x];
                 grid[x, y] = cell;
@@ -96,7 +98,7 @@ namespace TCP_API.Connect4{
                 if (diff >= -3 && diff <= 2)
                     lDiags[diff + 3] += cell;
                 if (sum >= 3 && sum <= 8)
-                    rDiags[diff - 3] += cell;
+                    rDiags[sum - 3] += cell;
             });
 
             winChecks.AddRange(rows);
@@ -104,7 +106,13 @@ namespace TCP_API.Connect4{
             winChecks.AddRange(lDiags);
             winChecks.AddRange(rDiags);
         }
-	}
+
+        public override string ToString() {
+            string s = "";
+            Utils.iterateBoard((x, y) => { s += grid[x, y] + " "; });
+            return s;
+        }
+    }
 
 	public class Utils{
         /// <summary>

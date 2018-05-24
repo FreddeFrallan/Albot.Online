@@ -49,6 +49,8 @@ namespace Soldiers{
 			StartCoroutine (findAndInitRenderer<SoldiersRenderer>((x) => localRenderer = x));
 			StartCoroutine (handleNetworkMsgQueue ());
 			RealtimeTCPController.resetController ();
+
+            TCPMessageQueue.readMsgInstant = readTCPMsg;
 		}
 
 

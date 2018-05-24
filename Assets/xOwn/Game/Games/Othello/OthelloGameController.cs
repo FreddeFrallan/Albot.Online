@@ -27,14 +27,19 @@ namespace Othello{
 			connectionToServer.RegisterHandler ((short)ServerCommProtocl.PlayerTimerCommand, handlePlayerTimerCommand);
 			StartCoroutine (findAndInitRenderer<OthelloBoardRenderer>((x) => localRenderer = x));
 			StartCoroutine (handleNetworkMsgQueue ());
-		}
-		public override Game.GameType getGameType (){return Game.GameType.Othello;}
+
+            //Hotfix for Hello World Presentation
+            TCPMessageQueue.readMsgInstant = readTCPMsg;
+        }
+        public override Game.GameType getGameType (){return Game.GameType.Othello;}
 		#endregion
 
 
+        
+
 		//InProgress
 		public override void onOutgoingLocalMsg (string msg, Game.PlayerColor color){
-			sendServerMsg(msg, color, (short)CommProtocol.MsgType.move);
+            sendServerMsg(msg, color, (short)CommProtocol.MsgType.move);
 		}
 
 

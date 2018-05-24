@@ -21,7 +21,8 @@ namespace Game{
 		protected virtual void initHandlers(){
 			connectionToServer.RegisterHandler ((short)ServerCommProtocl.PlayerJoinedGameRoom, handlePlayerJoinedRoom);
 			connectionToServer.RegisterHandler ((short)ServerCommProtocl.PlayerLeftGameRoom, handlePlayerLeftRoom);
-		}
+            connectionToServer.RegisterHandler((short)ServerCommProtocl.Ping, handlePing);
+        }
 		public abstract GameType getGameType();
 		protected NetworkConnection serverConnection;
 		protected bool isListeningForTCP = false, canSendServerMsg = true;
@@ -30,7 +31,7 @@ namespace Game{
 
 
 		public void initController(Game.GameType currentType){
-			if (currentType != getGameType()) {
+            if (currentType != getGameType()) {
 				Destroy (this);
 				return;
 			}
@@ -49,9 +50,10 @@ namespace Game{
 			while (true) {
 				yield return new WaitForEndOfFrame ();
 				//If we have receveid some Local TCP msg. Listen to them all
-                
+                /*
 				while (isListeningForTCP && TCPMessageQueue.hasUnread)
 					readTCPMsg(TCPMessageQueue.popMessage ());
+                    */
 			}
 		}
 			
@@ -183,8 +185,10 @@ namespace Game{
 
 			localGameUI.initPlayerSlot (p.color, p.username, p.iconNumber);
 		}
-		#endregion
-	}
+
+        public virtual void handlePing(NetworkMessage msg) {TCPLocalConnection.sendMessage("PING Response");}
+        #endregion
+    }
 		
 
 }
