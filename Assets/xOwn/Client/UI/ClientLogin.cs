@@ -4,13 +4,14 @@ using Barebones.Networking;
 using System;
 using System.Collections;
 using Barebones.MasterServer;
+using TMPro;
 
 namespace ClientUI{
 
     public class ClientLogin : MonoBehaviour{
         public Button LoginButton;
         public Toggle Remember;
-        public InputField Username;
+        public TMP_InputField Username;
 		public InputField Password;
 		public LoadingScreenUI loadingScreen;
 		private bool waitingForLoginResponse = false;

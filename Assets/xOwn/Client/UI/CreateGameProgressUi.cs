@@ -5,6 +5,7 @@ using Barebones.Networking;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 namespace Barebones.MasterServer
 {
@@ -20,17 +21,14 @@ namespace Barebones.MasterServer
         public string PleaseWaitText = "Please wait...";
 
         protected SpawnRequestController Request;
-        public Image RotatingImage;
 
-        public Text StatusText;
+        public TextMeshProUGUI StatusText;
 
         public bool SetAsLastSiblingOnEnable = true;
 
 
 
         private void Update(){
-			if(RotatingImage != null)
-          	  RotatingImage.transform.Rotate(Vector3.forward, Time.deltaTime*360*2);
 
             if (Request == null)
                 return;

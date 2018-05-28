@@ -2,13 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 namespace ClientUI{
 
 	public class LoginOnEnter : MonoBehaviour {
 
 		public Button thisButton;
-		public InputField username, password;
+		public InputField password;
+        public TMP_InputField username;
 
 		private List<bool> focusBuffer = new List<bool>();
 		private int bufferSize = 2;
