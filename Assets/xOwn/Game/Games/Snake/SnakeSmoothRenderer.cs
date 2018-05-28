@@ -16,7 +16,6 @@ namespace Snake{
 
 		private float interpolationCounter;
 		private int updateCounter = 0;
-		private float refreshRate = 1;
 		private bool isInterpolating = false;
 
 
@@ -68,7 +67,7 @@ namespace Snake{
 
 		private IEnumerator interpolateToNext(){
 			while (isInterpolating) {
-				interpolationCounter += Time.deltaTime / refreshRate;
+				interpolationCounter += Time.deltaTime / SnakeGameLogic.refreshRate;
 				interpolationCounter = Mathf.Clamp (interpolationCounter, 0, 1);
 
 				players.ForEach ((p) => {p.interpolateBetweenPos(interpolationCounter);});

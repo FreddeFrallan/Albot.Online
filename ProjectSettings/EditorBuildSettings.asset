@@ -21,9 +21,6 @@ EditorBuildSettings:
     path: Assets/xOwn/Game/Games/Connect4/Connect4Game.unity
     guid: 597ec1fce0a578f45bdff75cc5cf89e3
   - enabled: 1
-    path: Assets/xOwn/Game/Games/BumpTag/BumpTagGame.unity
-    guid: 7ff042e9e597c5644bd87c6b485e8a39
-  - enabled: 1
     path: Assets/xOwn/Game/Games/Othello/OthelloGame.unity
     guid: 1ce29d481971d684c972742f7188f58e
   - enabled: 1
@@ -86,4 +83,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/xOwn/DemoGame/BlockBattleGame.unity
     guid: 9085ab718f0c34748a95b73750df98d9
+  - enabled: 1
+    path: Assets/xOwn/Game/Games/SpeedRunner/SpeedRunnerGame.unity
+    guid: 50797186f25c6774081e424a35c1875a
+  - enabled: 1
+    path: Assets/xOwn/Game/Games/SpeedRunner/GameServer/SpeedRunnerServer.unity
+    guid: 5e473cd4bd9146b48bdc23e3bad30a0e
   m_configObjects: {}

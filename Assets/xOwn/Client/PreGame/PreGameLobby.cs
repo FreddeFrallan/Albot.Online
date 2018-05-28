@@ -21,7 +21,8 @@ namespace ClientUI{
 			{GameType.Soldiers, new List<Player2Setting>(){Player2Setting.Opponent, Player2Setting.Computer}},
 			{GameType.Snake, new List<Player2Setting>(){Player2Setting.Opponent, Player2Setting.Computer, Player2Setting.Human}},
 			{GameType.BlockBattle, new List<Player2Setting>(){Player2Setting.Opponent, Player2Setting.Human}},
-		};
+            {GameType.SpeedRunner, new List<Player2Setting>(){Player2Setting.Opponent, Player2Setting.Human}},
+        };
 
 		private List<Player2Setting> currentSettings;
 

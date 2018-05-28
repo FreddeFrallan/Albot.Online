@@ -21,17 +21,18 @@ namespace AlbotServer{
 		GameRoomInitMsgChannel = 608,
 		PlayerTimerInit = 609,
 		PlayerTimerCommand = 610,
+        Ping = 611,
 
 		//Pre games
-		CreatePreGame = 611,
-		RequestJoinPreGame = 612,
-		UpdatePreGame = 613,
-		ReadyUpdate = 614,
-		StartPreGame = 615,
-		RestartTrainingGame = 616,
-		PlayerLeftPreGame = 617,
-		SlotTypeChanged = 618,
-		PreGameKick = 619,
+		CreatePreGame = 612,
+		RequestJoinPreGame = 613,
+		UpdatePreGame = 614,
+		ReadyUpdate = 615,
+		StartPreGame = 616,
+		RestartTrainingGame = 617,
+		PlayerLeftPreGame = 618,
+		SlotTypeChanged = 619,
+		PreGameKick = 620,
 	}
 
 

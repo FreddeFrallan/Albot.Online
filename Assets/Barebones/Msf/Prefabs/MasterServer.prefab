@@ -546,7 +546,7 @@ MonoBehaviour:
   LookInChildrenOnly: 0
   Permissions: []
   serverVersion: 0.22
-  Port: 5002
+  Port: 5003
   LogLevel: 3
   AutoStartInEditor: 0
 --- !u!114 &114585327793854776

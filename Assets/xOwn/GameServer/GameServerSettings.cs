@@ -12,7 +12,7 @@ public class GameServerSettings : MonoBehaviour {
 	}
 
 	public void setGameServerSettings(int fps){
-		Application.targetFrameRate = fps;
-		print ("Setting framerate to: " + fps);
+		Application.targetFrameRate = 5;
+		Debug.LogError ("Setting framerate to: " + fps);
 	}
 }

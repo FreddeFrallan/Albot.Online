@@ -14,7 +14,8 @@ namespace AlbotServer{
 			{Game.GameType.Breakthrough, new GameSettings(2, "Brakethrough", "BrakethroughGame")},
 			{Game.GameType.Snake, new GameSettings(2, "Snake", "SnakeGame", true)},
 			{Game.GameType.BlockBattle, new GameSettings(2, "BlockBattle", "BlockBattleGame", true)},
-		};
+            {Game.GameType.SpeedRunner, new GameSettings(2, "SpeedRunner", "SpeedRunnerGame", true)},
+        };
 	}
 
 

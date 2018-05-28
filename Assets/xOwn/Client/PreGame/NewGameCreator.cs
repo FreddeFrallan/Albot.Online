@@ -15,6 +15,9 @@ namespace ClientUI{
 		//Enter preGameLobby
 		public void createNewGame(MapSelection selectedMap, bool isTraining){
 			currentMap = selectedMap;
+            print(selectedMap.picture);
+            print(currentMap);
+
 			AccountInfoPacket currentUser = ClientUI.ClientUIOverlord.getCurrentAcountInfo();
 			AlbotServer.PreGameCreateMSg msg = new AlbotServer.PreGameCreateMSg(){type = selectedMap.type, 
 				isTraining = isTraining,
@@ -51,7 +54,10 @@ namespace ClientUI{
 			bool isAdmin = playerInfo.Username == msg.players [0].info.username;
 
 			ClientUIStateManager.requesGotoPreGame ();
-			if(msg.isTraining)
+
+            print(msg.type.ToString());
+
+            if (msg.isTraining)
 				preTrainingLobby.initPreGameLobby (msg.type.ToString(), currentMap.picture, msg.players, true, msg.roomID, msg.type);
 			else
 				preGameLobby.initPreGameLobby (msg.type.ToString(), currentMap.picture, msg.players, isAdmin, msg.roomID, msg.type);

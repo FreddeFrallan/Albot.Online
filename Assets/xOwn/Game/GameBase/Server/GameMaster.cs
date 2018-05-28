@@ -44,6 +44,12 @@ namespace Game {
 		}
 
 
+        public void pingHandler(object msg, ConnectedClient c) {
+            foreach (ConnectedPlayer p in getClientPlayers(c))
+                getProtocol().sendPingMsg(c.peerID, p.color);
+        }
+
+
 
 
 		//Currently we have no way of knowing if the same player is registred twice...
@@ -95,49 +101,6 @@ namespace Game {
 	public enum PlayerColor{
 		Red, Green, Blue, Yellow, Black, White, None 
 	}
-		
-	public enum GameType{
-		None,
-		Connect4,
-		BumtTag,
-		Othello,
-		Chess,
-		FallingDebris,
-		Battleship,
-		Soldiers,
-		BrickPuzzle,
-		Game2048,
-		TowerOfHanoi,
-		Bomberman,
-		Breakthrough,
-		Snake,
-		HeapManager,
-		FileManager,
-		BlockBattle
-	}
 
-	public class GameUtil{
-		public static GameType stringToGameType(string t){
-			switch (t.ToUpper()) {
-
-			case "CONNECT4":return GameType.Connect4;
-			case "BUMPTAG":return GameType.BumtTag;
-			case "OTHELLO":return GameType.Othello;
-			case "CHESS":return GameType.Chess;
-			case "FALLINGDEBRIS":return GameType.FallingDebris;
-			case "BATTLESHIP":return GameType.Battleship;
-			case "SOLDIERS":return GameType.Soldiers;
-			case "BRICKPUZZLE":return GameType.BrickPuzzle;
-			case "GAME2048":return GameType.Game2048;
-			case "TOWEROFHANOI":return GameType.TowerOfHanoi;
-			case "BOMBERMAN":return GameType.Bomberman;
-			case "BREAKTHROUGH":return GameType.Breakthrough;
-			case "SNAKE":return GameType.Snake;	
-			case "BLOCKBATTLE":return GameType.BlockBattle;	
-				
-			default: return GameType.None;
-			}
-		}
-	}
 
 } // namespace Game

@@ -59,7 +59,8 @@ public class MsfQuickBuild{
 			QuickSetupRoot+"/Game/Games/Snake/SnakeGame.unity",
 			QuickSetupRoot+"/Game/SinglePlayer/HeapManager/HeapManager.unity",
 			QuickSetupRoot+"/DemoGame/BlockBattleGame.unity",
-		};
+            QuickSetupRoot+"/Game/Games/SpeedRunner/SpeedRunnerGame.unity"
+        };
 		BuildPipeline.BuildPlayer(clientScenes, path + "/Albot.Online.exe",  target, options);
 	}
 
@@ -74,6 +75,7 @@ public class MsfQuickBuild{
 			QuickSetupRoot+"/Game/Games/Soldiers/Server/SoldiersGameServer.unity",
 			QuickSetupRoot+"/Game/Games/Bomberman/Server/BombermanGameServer.unity",
 			QuickSetupRoot+"/Game/Games/Snake/GameServer/SnakeGameServer.unity",
+            QuickSetupRoot+"/Game/Games/SpeedRunner/GameServer/SpeedRunnerGameServer.unity",
 			//QuickSetupRoot+"/DemoGame/BlockBattleGameServer.unity",
 		};
 		BuildPipeline.BuildPlayer(gameServerScenes, path + "/GameServer" + fileExtension, target, options);
