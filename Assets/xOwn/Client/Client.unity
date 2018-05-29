@@ -5590,8 +5590,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 243.03323, y: -274.9}
-  m_SizeDelta: {x: 486.06647, y: 70.6}
+  m_AnchoredPosition: {x: 261.0577, y: -291.8011}
+  m_SizeDelta: {x: 522.1154, y: 70.6}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &176950328
 MonoBehaviour:
@@ -11015,10 +11015,10 @@ MonoBehaviour:
     maxPlayers: 2
     Name: Battleships
     Scene:
-      m_SceneAsset: {fileID: 0}
-      m_SceneName: 
+      m_SceneAsset: {fileID: 102900000, guid: ad79a305fb837a246845f08e82a6332f, type: 3}
+      m_SceneName: BattleshipsGame
     picture: {fileID: 21300000, guid: c57cc97e4219cc342baeb3709ebdf4ed, type: 3}
-    type: 6
+    type: 5
     isRealTime: 0
   gameCreator: {fileID: 1304772618}
 --- !u!1 &293798611
@@ -11737,7 +11737,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 243.03323, y: -21.7}
+  m_AnchoredPosition: {x: 261.0577, y: -21.7}
   m_SizeDelta: {x: 54, y: 43.4}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &316746409
@@ -13729,7 +13729,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 243.03323, y: -38.14999}
+  m_AnchoredPosition: {x: 261.0577, y: -38.14999}
   m_SizeDelta: {x: 176.92, y: 76.3}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &361519247
@@ -30121,7 +30121,7 @@ MonoBehaviour:
       m_SceneAsset: {fileID: 102900000, guid: 13e185d7f5bf6244a89c2f155e4366eb, type: 3}
       m_SceneName: SoldiersGame
     picture: {fileID: 21300000, guid: d5ab789a0260f5c41a6df4edde72736c, type: 3}
-    type: 7
+    type: 6
     isRealTime: 0
   gameCreator: {fileID: 1304772618}
 --- !u!114 &961139363
@@ -31603,8 +31603,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 243.03323, y: -440.25}
-  m_SizeDelta: {x: 486.06647, y: 386.5}
+  m_AnchoredPosition: {x: 261.0577, y: -207.33424}
+  m_SizeDelta: {x: 522.1154, y: 414.6685}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1013461172
 MonoBehaviour:
@@ -32280,8 +32280,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 243.03323, y: -189.6}
-  m_SizeDelta: {x: 486.06647, y: 100}
+  m_AnchoredPosition: {x: 261.0577, y: -200.8674}
+  m_SizeDelta: {x: 522.1154, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1030827123
 MonoBehaviour:
@@ -32339,8 +32339,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 353.36237, y: -50}
-  m_SizeDelta: {x: 265.40823, y: 100}
+  m_AnchoredPosition: {x: 380.39905, y: -50}
+  m_SizeDelta: {x: 283.4327, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1038531840
 MonoBehaviour:
@@ -32478,7 +32478,7 @@ MonoBehaviour:
       m_SceneAsset: {fileID: 102900000, guid: e4e090c27bc36c1458fd98a342d49d04, type: 3}
       m_SceneName: SnakeGame
     picture: {fileID: 21300000, guid: 300cbb802ae070f4dbd51b31122492ac, type: 3}
-    type: 13
+    type: 12
     isRealTime: 0
   gameCreator: {fileID: 1304772618}
 --- !u!114 &1039225956
@@ -36153,7 +36153,7 @@ MonoBehaviour:
       m_SceneAsset: {fileID: 102900000, guid: d1d6037a7bb69b64fa5ac0f3d33d7b9e, type: 3}
       m_SceneName: BombermanGame
     picture: {fileID: 21300000, guid: 0b5f673171016d542b220e2068b1ea78, type: 3}
-    type: 11
+    type: 10
     isRealTime: 0
   gameCreator: {fileID: 1304772618}
 --- !u!114 &1170947921
@@ -36972,7 +36972,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 71.62608, y: -38.15}
+  m_AnchoredPosition: {x: 77.63424, y: -38.15}
   m_SizeDelta: {x: 120.61, y: 76.3}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1203489744
@@ -39257,7 +39257,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.000017405222, y: -0.000008199101}
+  m_AnchoredPosition: {x: 0.000017405222, y: -0.000016755464}
   m_SizeDelta: {x: 0, y: 150}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1285905429
@@ -39774,7 +39774,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 414.4404, y: -38.15}
+  m_AnchoredPosition: {x: 444.4812, y: -38.15}
   m_SizeDelta: {x: 120.609985, y: 76}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1301412405
@@ -40213,7 +40213,7 @@ MonoBehaviour:
       m_SceneAsset: {fileID: 102900000, guid: ad79a305fb837a246845f08e82a6332f, type: 3}
       m_SceneName: BattleshipGame
     picture: {fileID: 21300000, guid: c57cc97e4219cc342baeb3709ebdf4ed, type: 3}
-    type: 6
+    type: 5
     isRealTime: 0
   - maxPlayers: 2
     Name: Connect4
@@ -40229,23 +40229,23 @@ MonoBehaviour:
       m_SceneAsset: {fileID: 102900000, guid: 1ce29d481971d684c972742f7188f58e, type: 3}
       m_SceneName: OthelloGame
     picture: {fileID: 21300000, guid: b85531ea2492bdb47aec9abc411165b6, type: 3}
-    type: 3
+    type: 2
     isRealTime: 0
   - maxPlayers: 2
     Name: Soldiers
     Scene:
-      m_SceneAsset: {fileID: 102900000, guid: 9db8215f2bd734d4eae5dd4879fc3b04, type: 3}
-      m_SceneName: testScene
+      m_SceneAsset: {fileID: 102900000, guid: 13e185d7f5bf6244a89c2f155e4366eb, type: 3}
+      m_SceneName: SoldiersGame
     picture: {fileID: 21300000, guid: d5ab789a0260f5c41a6df4edde72736c, type: 3}
-    type: 7
+    type: 6
     isRealTime: 1
   - maxPlayers: 2
     Name: Bomberman
     Scene:
-      m_SceneAsset: {fileID: 102900000, guid: 9db8215f2bd734d4eae5dd4879fc3b04, type: 3}
-      m_SceneName: testScene
+      m_SceneAsset: {fileID: 102900000, guid: d1d6037a7bb69b64fa5ac0f3d33d7b9e, type: 3}
+      m_SceneName: BombermanGame
     picture: {fileID: 21300000, guid: 0b5f673171016d542b220e2068b1ea78, type: 3}
-    type: 11
+    type: 10
     isRealTime: 1
   - maxPlayers: 2
     Name: Breakethrough
@@ -40253,15 +40253,15 @@ MonoBehaviour:
       m_SceneAsset: {fileID: 102900000, guid: de51d443ae125764b9658c3cd6e5df6d, type: 3}
       m_SceneName: BrakethroughGame
     picture: {fileID: 21300000, guid: eaa7cf01ca6fd7b48aab4deec43264a6, type: 3}
-    type: 12
+    type: 11
     isRealTime: 0
   - maxPlayers: 2
     Name: Snake
     Scene:
-      m_SceneAsset: {fileID: 102900000, guid: de51d443ae125764b9658c3cd6e5df6d, type: 3}
-      m_SceneName: BrakethroughGame
+      m_SceneAsset: {fileID: 102900000, guid: e4e090c27bc36c1458fd98a342d49d04, type: 3}
+      m_SceneName: SnakeGame
     picture: {fileID: 21300000, guid: 300cbb802ae070f4dbd51b31122492ac, type: 3}
-    type: 13
+    type: 12
     isRealTime: 0
   - maxPlayers: 2
     Name: SpeedRunner
@@ -42161,7 +42161,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 97.82912, y: -23.395}
+  m_AnchoredPosition: {x: 106.841354, y: -23.395}
   m_SizeDelta: {x: 121.9, y: 24.19}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1344500525
@@ -44398,8 +44398,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 122.82912, y: -50}
-  m_SizeDelta: {x: 195.65823, y: 100}
+  m_AnchoredPosition: {x: 131.84135, y: -50}
+  m_SizeDelta: {x: 213.68271, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1437918227
 MonoBehaviour:
@@ -48433,8 +48433,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 243.03323, y: -348.35}
-  m_SizeDelta: {x: 486.06647, y: 76.3}
+  m_AnchoredPosition: {x: 261.0577, y: -370.8848}
+  m_SizeDelta: {x: 522.1154, y: 76.3}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!225 &1561937460
 CanvasGroup:
@@ -52269,8 +52269,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 243.03323, y: -89.6}
-  m_SizeDelta: {x: 486.06647, y: 100}
+  m_AnchoredPosition: {x: 261.0577, y: -95.233696}
+  m_SizeDelta: {x: 522.1154, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1675087973
 MonoBehaviour:
@@ -53442,7 +53442,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 132.70412, y: -44.82}
+  m_AnchoredPosition: {x: 141.71635, y: -44.82}
   m_SizeDelta: {x: 100, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1720050597
@@ -55778,7 +55778,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 243.03323, y: -71.7}
+  m_AnchoredPosition: {x: 261.0577, y: -71.7}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1801359548
@@ -56984,7 +56984,7 @@ MonoBehaviour:
       m_SceneAsset: {fileID: 102900000, guid: 1ce29d481971d684c972742f7188f58e, type: 3}
       m_SceneName: OthelloGame
     picture: {fileID: 21300000, guid: b85531ea2492bdb47aec9abc411165b6, type: 3}
-    type: 3
+    type: 2
     isRealTime: 0
   gameCreator: {fileID: 1304772618}
 --- !u!114 &1821724482
@@ -57577,8 +57577,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 243.03323, y: -19.800003}
-  m_SizeDelta: {x: 486.06647, y: 39.6}
+  m_AnchoredPosition: {x: 261.0577, y: -19.800003}
+  m_SizeDelta: {x: 522.1154, y: 39.6}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1848994032
 GameObject:
@@ -60840,7 +60840,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 97.82912, y: -5.65}
+  m_AnchoredPosition: {x: 106.841354, y: -5.65}
   m_SizeDelta: {x: 72.24, y: 11.3}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1948275119
@@ -65459,7 +65459,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 132.70412, y: -17.41}
+  m_AnchoredPosition: {x: 141.71635, y: -17.41}
   m_SizeDelta: {x: 219.75, y: 34.82}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2123826732
