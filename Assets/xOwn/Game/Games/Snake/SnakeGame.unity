@@ -306,17 +306,17 @@ MonoBehaviour:
   bgBrick: {fileID: 1193827650867670, guid: b09fdb5e12eea9f4f87e83ea4c081209, type: 2}
   collisionBlock: {fileID: 1181595257980672, guid: dea196d9328d0574ea8c893c4c8c47e7,
     type: 2}
-  redHead: {fileID: 2100000, guid: 269f0a354729a7d4f99f18eb30a5fc51, type: 2}
-  redBody: {fileID: 2100000, guid: 6b2aafce510a44141a0a10ed9ad9ff49, type: 2}
-  blueHead: {fileID: 2100000, guid: bd8b73bc8b42da04dad9672be716acf7, type: 2}
-  blueBody: {fileID: 2100000, guid: 0e3de56380878224dbf3c2ba93a0d394, type: 2}
+  redHead: {fileID: 2100000, guid: b16e08e070ef3d94d8de119732651626, type: 2}
+  redBody: {fileID: 2100000, guid: 2314d85e849f6db4b8b8b125ef09f911, type: 2}
+  blueHead: {fileID: 2100000, guid: 4e2a886c040d1cc44ade5af430d120b3, type: 2}
+  blueBody: {fileID: 2100000, guid: 82413fac71ee09248a37fc57451da3f4, type: 2}
 --- !u!114 &137424726
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 137424722}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 421c7f514d0c796498cdfa6a705d0f6c, type: 3}
   m_Name: 
@@ -336,8 +336,8 @@ MonoBehaviour:
   theRenderer: {fileID: 137424725}
   headPrefab: {fileID: 1493163482208450, guid: 0a3a7879e7cb671488aaebdc794d7915, type: 2}
   playerColors:
-  - {fileID: 2100000, guid: bd8b73bc8b42da04dad9672be716acf7, type: 2}
-  - {fileID: 2100000, guid: 269f0a354729a7d4f99f18eb30a5fc51, type: 2}
+  - {fileID: 2100000, guid: 4e2a886c040d1cc44ade5af430d120b3, type: 2}
+  - {fileID: 2100000, guid: b16e08e070ef3d94d8de119732651626, type: 2}
 --- !u!1 &160727935
 GameObject:
   m_ObjectHideFlags: 0
@@ -536,10 +536,11 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_text: 
+  m_text: FreddeFrallan
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 0812dd76e216cc74dbb67cec665ff4d5, type: 2}
+  m_sharedMaterial: {fileID: 21696752713677696, guid: 0812dd76e216cc74dbb67cec665ff4d5,
+    type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -603,13 +604,13 @@ MonoBehaviour:
   m_margin: {x: -29.227167, y: 4.172692, z: -55.670887, w: 3.2454407}
   m_textInfo:
     textComponent: {fileID: 233576182}
-    characterCount: 0
+    characterCount: 13
     spriteCount: 0
     spaceCount: 0
-    wordCount: 0
+    wordCount: 1
     linkCount: 0
-    lineCount: 0
-    pageCount: 0
+    lineCount: 1
+    pageCount: 1
     materialCount: 1
   m_havePropertiesChanged: 0
   m_isUsingLegacyAnimationComponent: 0
@@ -1405,7 +1406,7 @@ MonoBehaviour:
   username: {fileID: 1679979195}
   timerText: {fileID: 0}
   scoreText: {fileID: 0}
-  timerActive: {r: 0.21176472, g: 0.6862745, b: 0.2784314, a: 1}
+  timerActive: {r: 0.99607843, g: 0.32156864, b: 0.7882353, a: 1}
   timerPaused: {r: 0.3137255, g: 0.37254903, b: 0.43921572, a: 1}
 --- !u!114 &1519534656
 MonoBehaviour:
@@ -1419,14 +1420,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0.09019608, b: 1, a: 1}
+  m_Color: {r: 0.99607843, g: 0.32156864, b: 0.7882353, a: 0.64705884}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: 7f1c6edc3ea21684d89c435ac848c9b6, type: 3}
+  m_Sprite: {fileID: 0}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1564,7 +1565,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.3137255, g: 0.37254903, b: 0.43921572, a: 1}
+  m_BackGroundColor: {r: 0.06666667, g: 0.0627451, b: 0.19607843, a: 1}
   m_projectionMatrixMode: 1
   m_SensorSize: {x: 36, y: 24}
   m_LensShift: {x: 0, y: 0}
@@ -1662,10 +1663,11 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_text: 
+  m_text: Pajsmak
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 0812dd76e216cc74dbb67cec665ff4d5, type: 2}
+  m_sharedMaterial: {fileID: 21696752713677696, guid: 0812dd76e216cc74dbb67cec665ff4d5,
+    type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1729,13 +1731,13 @@ MonoBehaviour:
   m_margin: {x: -75.15564, y: 3.7091043, z: 0, w: 2.781803}
   m_textInfo:
     textComponent: {fileID: 1679979195}
-    characterCount: 0
+    characterCount: 7
     spriteCount: 0
     spaceCount: 0
-    wordCount: 0
+    wordCount: 1
     linkCount: 0
-    lineCount: 0
-    pageCount: 0
+    lineCount: 1
+    pageCount: 1
     materialCount: 1
   m_havePropertiesChanged: 0
   m_isUsingLegacyAnimationComponent: 0
@@ -1817,7 +1819,7 @@ MonoBehaviour:
   username: {fileID: 233576182}
   timerText: {fileID: 0}
   scoreText: {fileID: 0}
-  timerActive: {r: 0.21176472, g: 0.6862745, b: 0.2784314, a: 1}
+  timerActive: {r: 0.99607843, g: 0.57254905, b: 0.20784314, a: 1}
   timerPaused: {r: 0.3137255, g: 0.37254903, b: 0.43921572, a: 1}
 --- !u!114 &1713156340
 MonoBehaviour:
@@ -1831,14 +1833,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.99607843, g: 0.57254905, b: 0.20784314, a: 0.64705884}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: 12a10d35fcb01754ea3a7cfbb200af25, type: 3}
+  m_Sprite: {fileID: 0}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1971,7 +1973,7 @@ Light:
   m_RenderMode: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 3895
   m_Lightmapping: 4
   m_LightShadowCasterMode: 0
   m_AreaSize: {x: 1, y: 1}

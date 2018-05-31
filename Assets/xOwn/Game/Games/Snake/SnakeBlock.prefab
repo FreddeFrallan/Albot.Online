@@ -22,7 +22,7 @@ GameObject:
   - component: {fileID: 33265325425755286}
   - component: {fileID: 23352724162620364}
   - component: {fileID: 114660096232802054}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: SnakeBlock
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -39,7 +39,7 @@ GameObject:
   - component: {fileID: 4177487035366510}
   - component: {fileID: 33773530979855884}
   - component: {fileID: 23785671501945778}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Sphere
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -88,7 +88,7 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RenderingLayerMask: 4294967295
   m_Materials:
-  - {fileID: 2100000, guid: 7ef61ab4671e83f479743a5083f9ab72, type: 2}
+  - {fileID: 2100000, guid: 9213de2575613e9448fbf52408226aec, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
