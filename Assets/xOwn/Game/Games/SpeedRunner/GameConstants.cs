@@ -21,9 +21,16 @@ namespace SpeedRunner {
         public class PlayerSight {
             public static readonly int ROWS = 16;
             public static readonly int COLS = 24;
-            public static readonly float SPACE = 0.1f;
-            public static readonly float START_X_POS = 0.125f;
-            public static readonly float START_Y_POS = 0;
+            public static readonly float SIZE = 1f;
+            public static readonly Vector3 START_POS = new Vector3(0.2f, 0.2f, 0);
+
+            public static char EMPTY_SIGN = '_';
+            public static char GROUND_SIGN = 'X';
+        }
+
+        public class MapProtocol {
+            public static readonly int X_PRECISION = 2;
+            public static readonly int Y_PRECISION = 2;
         }
     }
 }

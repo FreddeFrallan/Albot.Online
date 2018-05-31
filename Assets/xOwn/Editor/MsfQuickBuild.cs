@@ -41,10 +41,9 @@ public class MsfQuickBuild{
 	public static void BuildClient(string path, BuildTarget target, string fileExtension = ".exe", BuildOptions options = BuildOptions.Development){
 		var clientScenes = new[]{
 			QuickSetupRoot+ "/Client/Client.unity",
-			QuickSetupRoot+ "/Client/EmptyScene.unity",
+			QuickSetupRoot+ "/Client/EmptyScene.unity", 
 			// Add all the game scenes
 			QuickSetupRoot+ "/Game/Games/Connect4/Connect4Game.unity",
-			QuickSetupRoot+ "/Game/Games/BumpTag/BumpTagGame.unity",
 			QuickSetupRoot+ "/Game/Games/Othello/OthelloGame.unity",
 			QuickSetupRoot+ "/Game/Games/FallingDebris/FallingDebrisGame.unity",
 			QuickSetupRoot+ "/Game/Games/Chess/ChessGame.unity",
