@@ -7,36 +7,30 @@ namespace SpeedRunner {
 
     public class SpeedRunnerPlayerVision : MonoBehaviour {
 
+        public static SpeedRunnerPlayerVision singleton;
+
         [SerializeField]
         private Transform player;
         [SerializeField]
         private GameObject sightNodePrefab;
 
-        private SpeedRunnerSightNode[,] sightNodes;
+        //Mainly used as optimization when checking coordinates
+        private float maxXOffset = GameConstants.PlayerSight.COLS * GameConstants.PlayerSight.SIZE;
+        private float maxYOffset = GameConstants.PlayerSight.ROWS * GameConstants.PlayerSight.SIZE;
+        private string noCollisionRow;
 
         private void Start() {
-            sightNodes = new SpeedRunnerSightNode[GameConstants.PlayerSight.COLS, GameConstants.PlayerSight.ROWS];
-            generateSightNodes();
+            singleton = this;
+
+            noCollisionRow = "";
+            for (int i = 0; i < GameConstants.PlayerSight.COLS; i++)
+                noCollisionRow += GameConstants.PlayerSight.EMPTY_SIGN;
         }
 
-        private void generateSightNodes() {
-            float startX = GameConstants.PlayerSight.START_X_POS; float startY = GameConstants.PlayerSight.START_Y_POS;
-            float space = GameConstants.PlayerSight.SPACE;
-            traverseSightNodes(
-                (x, y) => {
-                    Vector3 spawnPos = new Vector3(startX + x * space, startY + y * space, 0);
-                    GameObject temp = Instantiate(sightNodePrefab, transform);
-                    temp.transform.localPosition = spawnPos;
-                    sightNodes[x, y] = temp.GetComponent<SpeedRunnerSightNode>();
-                    sightNodes[x, y].init(Camera.main);
-                });
-        }
 
         private void Update() {
             if (Input.GetKeyDown(KeyCode.P))
                 printSnapShot(generateSnapshot());
-            if (Input.GetKeyDown(KeyCode.L))
-                print(sightNodes[0, 0].raycastNode());
         }
 
         // Update is called once per frame
@@ -47,26 +41,58 @@ namespace SpeedRunner {
         }
 
 
-        public string[,] generateSnapshot() {
-            string[,] snapshot = new string[GameConstants.PlayerSight.COLS, GameConstants.PlayerSight.ROWS];
-            traverseSightNodes((x, y) => { snapshot[x, y] = sightNodes[x, y].raycastNode(); });
-            return generateSnapshot();
+        public string[] generateSnapshot() {
+            char[][] snapshot = new char[GameConstants.PlayerSight.ROWS][];
+            for (int y = 0; y < GameConstants.PlayerSight.ROWS; y++)
+                snapshot[y] = noCollisionRow.ToCharArray();
+
+            addCollisionObjects(ref snapshot);
+            string[] temp = new string[GameConstants.PlayerSight.ROWS];
+            for (int y = 0; y < GameConstants.PlayerSight.ROWS; y++)
+                temp[y] = new string(snapshot[y]);
+
+            return temp;
         }
 
-        private void printSnapShot(string[,] snapshot) {
+        private void addCollisionObjects(ref char[][] snapshot) {
+            Vector3 basePos = new Vector3(player.transform.position.x, 0, 0) + GameConstants.PlayerSight.START_POS;
+            foreach (GroundBlock g in MapGenerator.singleton.getCurrentBlocks())
+                addCoordinates(g, ref snapshot, basePos);
+        }
+
+        private void addCoordinates(GroundBlock ground, ref char[][] snapshot, Vector3 basePos) {
+            Vector2 blockOffset = ground.transform.position - basePos;
+
+            foreach (Vector2 localCoord in ground.getCoordList()) {
+                Vector2 coord = blockOffset + localCoord;
+                if (coordIsOutOfRange(coord))
+                    continue;
+                int xGrid = Mathf.RoundToInt(coord.x / GameConstants.PlayerSight.SIZE);
+                int yGrid = Mathf.RoundToInt(coord.y / GameConstants.PlayerSight.SIZE);
+
+                if (xGrid >= GameConstants.PlayerSight.COLS || yGrid >= GameConstants.PlayerSight.ROWS)
+                    continue;
+
+                snapshot[GameConstants.PlayerSight.ROWS - yGrid -1][xGrid] = GameConstants.PlayerSight.GROUND_SIGN;
+            }
+
+        }
+
+        private bool coordIsOutOfRange(Vector2 c) {
+            return c.x < 0 || c.x >= maxXOffset || c.y < 0 || c.y >= maxYOffset;
+        }
+
+
+        private void printSnapShot(string[] snapshot) {
             for (int y = 0; y < GameConstants.PlayerSight.ROWS; y++) {
                 string s = "";
                 for (int x = 0; x < GameConstants.PlayerSight.COLS; x++)
-                    s += snapshot[x, y] + " ";
+                    s += snapshot[y][x] + "  ";
+                print(s);
                 s += "\n";
             }
         }
 
 
-        private void traverseSightNodes(Action<int, int> a) {
-            for (int y = 0; y < GameConstants.PlayerSight.ROWS; y++)
-                for (int x = 0; x < GameConstants.PlayerSight.COLS; x++)
-                    a(x, y);
-        }
     }
 }

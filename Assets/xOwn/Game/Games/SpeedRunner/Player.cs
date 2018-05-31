@@ -13,6 +13,7 @@ namespace SpeedRunner {
         private JumpSkill jumpManager;
 
         private float runVelocity;
+        private bool performJump = false;
 
         private void Start() {
             initStartValues();
@@ -34,8 +35,10 @@ namespace SpeedRunner {
         private void Update() {
             Vector2 tempVelocity = theRigid.velocity;
 
-            if (Input.GetKeyDown(KeyCode.Space))
+            if (Input.GetKeyDown(KeyCode.Space) || performJump) {
                 jumpManager.jump(ref tempVelocity);
+                performJump = false;
+            }
 
             theRigid.velocity = tempVelocity;
         }
@@ -50,6 +53,8 @@ namespace SpeedRunner {
             }
         }
 
-
+        public void activateJump() {
+            performJump = true;
+        }
     }
 }

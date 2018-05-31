@@ -10,6 +10,7 @@ namespace SpeedRunner {
 
         private SpeedRunnerProtocol protocol;
         private SpeedRunnerRenderer localRenderer;
+        public Player localPlayer;
 
         public override GameType getGameType() { return GameType.SpeedRunner; }
         public override void initProtocol(CommProtocol protocol) {this.protocol = (SpeedRunnerProtocol)protocol;}
@@ -26,8 +27,38 @@ namespace SpeedRunner {
             StartCoroutine(handleNetworkMsgQueue());
             RealtimeTCPController.resetController();
 
-            TCPMessageQueue.readMsgInstant = readTCPMsg;
+            localPlayer = FindObjectOfType<Player>();
+            TCPMessageQueue.readMsgInstant = instantReadTCPMsg;
         }
 
+
+        private void instantReadTCPMsg(ReceivedLocalMessage msg) {
+            if (msg.message == "JUMP")
+                localPlayer.activateJump();
+
+            MainThread.fireEventAtMainThread(() => {
+                print("Sending msg");
+                TCPLocalConnection.sendMessage(formatBoard());
+            } );
+        }
+
+        private string formatBoard() {
+            JSONObject jObj = new JSONObject();
+            
+            string[] vision = SpeedRunnerPlayerVision.singleton.generateSnapshot();
+
+            List<JSONObject> jRows = new List<JSONObject>();
+            foreach (string s in vision) {
+                JSONObject temp = new JSONObject();
+                temp.type = JSONObject.Type.STRING;
+                temp.str = s;
+                jRows.Add(temp);
+            }
+            
+            jObj.AddField("Msg", "Empty");
+            jObj.AddField("Board", new JSONObject(jRows.ToArray()));
+            //jObj.AddField("Board", jRows);
+            return jObj.Print();
+        }
     }
 }
