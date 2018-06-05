@@ -80,6 +80,7 @@ namespace AlbotServer{
 
 			
 		private void initDLLBasedGame(){
+            Debug.LogError("Initing DLL based game");
 			DllManager.loadServerGameLogic(ref wrapper, ref gameController, ref currentGameType, preGamePlayers);
 		}
 		private IEnumerator turnsTimer(){
