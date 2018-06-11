@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 namespace Barebones.MasterServer{
     /// <summary>
@@ -10,10 +11,9 @@ namespace Barebones.MasterServer{
         public Image BgImage;
         public Color DefaultBgColor;
 		public ClientUI.GameSelectionUI ListView;
-        public GameObject LockImage;
-        public Text MapName;
-        public Text Name;
-        public Text Online;
+        public TextMeshProUGUI MapName;
+        public TextMeshProUGUI Name;
+        public TextMeshProUGUI Online;
 
         public Color SelectedBgColor;
 
@@ -46,7 +46,6 @@ namespace Barebones.MasterServer{
             SetIsSelected(false);
             Name.text = data.Name;
             GameId = data.Id;
-            LockImage.SetActive(data.IsPasswordProtected);
 
 
             if (data.MaxPlayers > 0)
