@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace ClientUI {
     public class GameSelectionButtonUI : MonoBehaviour{
@@ -8,9 +9,11 @@ namespace ClientUI {
         private MapSelection gameMap;
         [SerializeField]
         private NewGameCreator gameCreator;
+        [SerializeField]
+        private Toggle trainingMode;
 
         public void onClick() {
-            gameCreator.createNewGame(gameMap, false);
+            gameCreator.createNewGame(gameMap, trainingMode.isOn);
         }
     }
 }
