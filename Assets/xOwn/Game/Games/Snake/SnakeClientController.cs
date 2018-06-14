@@ -5,6 +5,8 @@ using Game;
 using UnityEngine.Networking;
 using AlbotServer;
 using System;
+using TCP_API;
+using TCP_API.Snake;
 
 namespace Snake{
 
@@ -17,6 +19,7 @@ namespace Snake{
 		private uint lastUpdateID = 0;
 		private PlayerColor localPlayerColor = PlayerColor.None, localHumanColor = PlayerColor.None;
 		private SnakeTCPFormater[] TCPFormater = new SnakeTCPFormater[2];
+        private SnakeAPIRouter APIRouter = new SnakeAPIRouter();
 		private bool hasLocalBluePlayer = false, hasLocalRedPlayer = false;
 
 
@@ -105,13 +108,17 @@ namespace Snake{
 				RealtimeTCPController.requestBoard (convertColorToTeam(localPlayerColor), true);
 				return;
 			}
-				
-			int dir = -1;
-			if(parseCommandMsg(msg.message, out dir))
-				sendServerMsg(new GameCommand(localPlayerColor, dir), (short)SnakeProtocol.MsgType.playerCommands);
 
-			RealtimeTCPController.requestBoard (convertColorToTeam(localPlayerColor), true);
-		}
+            APIMsgConclusion conclusion = APIRouter.handleIncomingMsg(msg.message);
+            if (conclusion.toServer) {
+                int dir = -1;
+                if (parseCommandMsg(msg.message, out dir))
+                    sendServerMsg(new GameCommand(localPlayerColor, dir), (short)SnakeProtocol.MsgType.playerCommands);
+
+                RealtimeTCPController.requestBoard(convertColorToTeam(localPlayerColor), true);
+            } else if (conclusion.status == Barebones.Networking.ResponseStatus.Success)
+                ClientPlayersHandler.getPlayerFromColor(localPlayerColor).takeInput(conclusion.msg);
+        }
 
 
 
@@ -131,13 +138,12 @@ namespace Snake{
 				TCPLocalConnection.sendMessage ("GameOver: 0");
 			}
 			else {
-				gameOverMsg = infoMsg.winnerColor + " won";
+				gameOverMsg = (infoMsg.winnerColor == PlayerColor.Blue ? "Pink" : "Yellow") + " won";
 				TCPLocalConnection.sendMessage ("GameOver: " + (infoMsg.winnerColor == PlayerColor.Blue ? "1" : "-1"));
 			}
 
 			foreach (int[] crash in infoMsg.crashPos)
 				localRenderer.displayCrash (new Vector2(crash[0], crash[1]));
-
 
 			ClientUI.AlbotDialogBox.setGameOver ();
 			ClientUI.AlbotDialogBox.activateButton (ClientUI.ClientUIStateManager.requestGotoGameLobby, ClientUI.DialogBoxType.GameState, gameOverMsg, "Return to lobby", 70, 25);
@@ -151,11 +157,11 @@ namespace Snake{
 
 			localRenderer.handleBoardUpdate (updateMsg);
 
-			List<int> blocked = new List<int> ();
+			List<Position2D> blocked = new List<Position2D> ();
 			blocked.AddRange (updateMsg.blueCoords);
 			blocked.AddRange (updateMsg.redCoords);
-			int bluePos = updateMsg.blueCoords [updateMsg.blueCoords.Length - 1];
-			int redPos = updateMsg.redCoords [updateMsg.redCoords.Length - 1];
+            Position2D bluePos = updateMsg.blueCoords [updateMsg.blueCoords.Length - 1];
+            Position2D redPos = updateMsg.redCoords [updateMsg.redCoords.Length - 1];
 
 			if(hasLocalBluePlayer)
 				TCPFormater [0].addNewUpdate (blocked, updateMsg.blueDir, updateMsg.redDir, bluePos, redPos);

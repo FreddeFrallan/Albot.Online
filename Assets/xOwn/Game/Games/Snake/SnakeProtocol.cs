@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using UnityEngine.Networking;
+using Game;
 
 namespace Snake{
 
@@ -55,13 +56,13 @@ namespace Snake{
 		
 	[Serializable]
 	public class BoardUpdate{
-		public int[] redCoords, blueCoords;
+		public Position2D[] redCoords, blueCoords;
 		public int redDir, blueDir;
 		public uint updateNumber;
 		public bool gameOver;
 		public Game.PlayerColor winnerColor, myColor;
 		public BoardUpdate (){}
-		public BoardUpdate(uint updateNumber, int[] redC, int[] blueC, int blueDir, int redDir, Game.PlayerColor myColor = Game.PlayerColor.None, bool gameOver = false, Game.PlayerColor winnerColor = Game.PlayerColor.None){
+		public BoardUpdate(uint updateNumber, Position2D[] redC, Position2D[] blueC, int blueDir, int redDir, Game.PlayerColor myColor = Game.PlayerColor.None, bool gameOver = false, Game.PlayerColor winnerColor = Game.PlayerColor.None){
 			this.updateNumber = updateNumber;
 			this.redCoords = redC;
 			this.blueCoords = blueC;

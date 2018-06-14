@@ -101,8 +101,8 @@ MonoBehaviour:
   SecondsPerLine: 0
   StartColor: {r: 1, g: 1, b: 1, a: 1}
   EndColor: {r: 1, g: 1, b: 1, a: 1}
-  StartWidth: 1
-  EndWidth: 1
+  StartWidth: 0.7
+  EndWidth: 0.7
   SortLayerName: Default
   OrderInSortLayer: 1
 --- !u!114 &114638114224808920
@@ -132,6 +132,12 @@ LineRenderer:
   m_ReflectionProbeUsage: 0
   m_RenderingLayerMask: 4294967295
   m_Materials:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   - {fileID: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0

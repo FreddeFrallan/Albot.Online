@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Game;
 
 namespace Snake{
 	
@@ -33,9 +34,9 @@ namespace Snake{
 				b.redDir = 0;
 				b.blueDir = 2;
 				b.updateNumber = (uint)i;
-				b.blueCoords = new int[]{ 2 + i};
-				b.redCoords = new int[]{ 38 - i};
-				moves.Add (b);
+                b.blueCoords = newPos(2 + i, 5);//new int[]{ 2 + i};
+                b.redCoords = newPos(8 - i, 7);//new int[]{ 38 - i};
+                moves.Add (b);
 			}
 
 			finalMsg = new GameInfo ("Some Username", Game.PlayerColor.None, 
@@ -44,6 +45,10 @@ namespace Snake{
 			);
 			
 		}
+
+        private Position2D[] newPos(int x, int y) {
+            return new Position2D[] { new Position2D() { x = x, y = y } };
+        }
 	}
 
 }

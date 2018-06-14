@@ -8,26 +8,9 @@ namespace TCP_API.Connect4{
     /// <summary>
     /// Constants regarding API commands and fields.
     /// </summary>
-	public class Consts{
+	public class Consts : APIStandardConstants{
 		public static readonly int BOARD_HEIGHT = 6;
 		public static readonly int BOARD_WIDTH = 7;
-
-		public static class Fields{
-			public const string board = "Board";
-			public const string evaluate = "Evaluate";
-			public const string possibleMoves = "PossMoves";
-            public const string winner = "Winner";
-            public const string move = "Move";
-			public const string player = "Player";
-            public const string action = "Action";
-		}
-
-		public static class Actions{
-            public const string makeMove = "MakeMove";
-            public const string simMove = "SimulateMove";
-			public const string evalBoard = "EvaluateBoard";
-			public const string getPossMoves = "GetPossibleMoves";
-		}
 	}
 
     /// <summary>
@@ -88,6 +71,8 @@ namespace TCP_API.Connect4{
             string[] rDiags = new string[6] { "", "", "", "", "", "" };
             Utils.iterateBoard((x, y) => {
                 string cell = cells[y * Consts.BOARD_WIDTH + x];
+                cell = (cell == "-1" ? "2" : cell); //Switch "-1" to a "2"
+
                 grid[x, y] = cell;
                 rows[y] += cell;
                 cols[x] += cell;
@@ -104,6 +89,13 @@ namespace TCP_API.Connect4{
             winChecks.AddRange(cols);
             winChecks.AddRange(lDiags);
             winChecks.AddRange(rDiags);
+        }
+
+        public string getWinChecks() {
+            string temp = "";
+            for(int i = 0; i < winChecks.Count; i++)
+                temp += i + ":  " + winChecks[i] + "\n";
+            return temp;
         }
 
         public override string ToString() {

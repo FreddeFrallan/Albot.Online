@@ -71,5 +71,8 @@ namespace ClientUI{
 			ClientUIStateManager.requestGotoGameLobby ();
 			gameObject.SetActive (false);
 		}
+
+        //Used for Anne Hacks
+        public void setScene(SceneField scene) {this.scene = scene;}
 	}
 }

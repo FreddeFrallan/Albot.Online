@@ -41,7 +41,8 @@ namespace Game{
 			}
 		}
 
-		[Serializable]
+
+        [Serializable]
 		public class StringMessage{ 
 			public string msg;  
 			public Game.PlayerColor color;

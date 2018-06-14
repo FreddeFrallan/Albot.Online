@@ -4,7 +4,6 @@ using UnityEngine;
 using Game;
 using System.Threading;
 using System;
-using BombermanBot;
 
 namespace Bomberman{
 
@@ -44,7 +43,7 @@ namespace Bomberman{
 
 
 		private void cleverPlayMove(){
-			while (isPlaying) {
+            while (isPlaying) {
 				Thread.Sleep (100);
 				if (hasNewInput == false)
 					continue;
@@ -57,21 +56,16 @@ namespace Bomberman{
 
 				//Obvious quick fix, we should not have to try catch the DLL....
 				try{
-					moveDir = BombermanBot.MainClass.getCurrentAction (lastInput, ref dropBomb);
+					//moveDir = BombermanBot.MainClass.getCurrentAction (lastInput, ref dropBomb);
 					PlayerCommand outMsg = new PlayerCommand (botColor, moveDir, dropBomb);
-					theClientController.onOutgoingLocalMsgObj (outMsg, (short)BombermanProtocol.MsgType.playerCommands);
-				
+                    theClientController.onOutgoingLocalMsgObj(outMsg, (short)BombermanProtocol.MsgType.playerCommands);
 				}catch{}
 				RealtimeTCPController.requestBoard (BombermanOverlord.convertColorToTeam (botColor));
 			}
 		}
-
-		#endregion
-
-
-		
-		#region Random Bot
-		private void stupidAction(){
+#endregion
+        #region Random Bot
+        private void stupidAction(){
 			if (updateCounter++ == 0) {
 				moveThread = new Thread(() => playMove(lastInput));
 				moveThread.Start ();

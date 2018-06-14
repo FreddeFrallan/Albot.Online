@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using Game;
 
 namespace Snake{
 
@@ -11,7 +12,7 @@ namespace Snake{
 		public GameObject headPrefab;
 		public Material[] playerColors;
 
-		private List<int>[] addedPlayerPos = new List<int>[2];
+		private List<Position2D>[] addedPlayerPos = new List<Position2D>[2];
 		private List<SnakeHead> players = new List<SnakeHead>();
 
 		private float interpolationCounter;
@@ -26,9 +27,9 @@ namespace Snake{
 			else if (updateCounter == 1)//We can't interpolate until we have atleast two updates
 				startInterpolation ();
 
-			foreach (int i in update.blueCoords.Distinct().Where((c) => !addedPlayerPos[0].Contains(c)))
+			foreach (Position2D i in update.blueCoords.Distinct().Where((c) => !addedPlayerPos[0].Contains(c)))
 				distributeNewPosition (0, i);
-			foreach (int i in update.redCoords.Distinct().Where((c) => !addedPlayerPos[1].Contains(c)))
+			foreach (Position2D i in update.redCoords.Distinct().Where((c) => !addedPlayerPos[1].Contains(c)))
 				distributeNewPosition (1, i);
 
 			addedPlayerPos [0].AddRange (update.blueCoords);
@@ -41,11 +42,11 @@ namespace Snake{
 
 
 		private void initSmoothRenderer(BoardUpdate initUpdate){
-			addedPlayerPos [0] = new List<int> ();
-			addedPlayerPos [1] = new List<int> ();
+			addedPlayerPos [0] = new List<Position2D> ();
+			addedPlayerPos [1] = new List<Position2D> ();
 
-			Vector3 firstPosBlue = theRenderer.getBlockFromNumber(initUpdate.blueCoords [0]).getPos(); 
-			Vector3 firstPosRed = theRenderer.getBlockFromNumber(initUpdate.redCoords [0]).getPos(); 
+			Vector3 firstPosBlue = theRenderer.getBlockFromPos(initUpdate.blueCoords [0]).getPos(); 
+			Vector3 firstPosRed = theRenderer.getBlockFromPos(initUpdate.redCoords [0]).getPos(); 
 
 			players.Add(Instantiate (headPrefab, firstPosBlue, Quaternion.identity).GetComponent<SnakeHead> ());
 			players.Add(Instantiate (headPrefab, firstPosRed, Quaternion.identity).GetComponent<SnakeHead> ());
@@ -58,8 +59,8 @@ namespace Snake{
 			StartCoroutine (interpolateToNext ());
 		}
 			
-		private void distributeNewPosition(int playerIndex, int coord){
-			Vector3 targetPos = theRenderer.getBlockFromNumber (coord).getPos();
+		private void distributeNewPosition(int playerIndex, Position2D coord){
+			Vector3 targetPos = theRenderer.getBlockFromPos(coord).getPos();
 			players[playerIndex].addTargetPos (targetPos);
 			addedPlayerPos [playerIndex].Add (coord);
 		}

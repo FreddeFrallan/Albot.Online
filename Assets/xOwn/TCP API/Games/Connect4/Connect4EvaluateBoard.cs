@@ -10,7 +10,7 @@ namespace TCP_API.Connect4{
             foreach(string c in board.winChecks) {
                 if (c.Contains("1111"))
                     return 1;
-                if (c.Contains("-1-1-1-1"))
+                if (c.Contains("2222"))
                     return -1;
             }
 

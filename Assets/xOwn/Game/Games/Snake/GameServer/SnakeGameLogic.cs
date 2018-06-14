@@ -7,7 +7,8 @@ using System;
 namespace Snake{
 
 	public class SnakeGameLogic : MonoBehaviour {
-		public static readonly float refreshRate = 0.5f;
+		public static readonly float refreshRate = 1.5f;
+        public const int GRID_SIZE = 10;
 
         private System.Random rand = new System.Random();
 		private static SnakeGameLogic singleton;
@@ -15,11 +16,10 @@ namespace Snake{
 		public SnakeGameStateUpdater updater;
 		public SnakeGameMaster master;
 
-		private int gridSize = 20;
 		private int[,] gameGrid;
 		private bool gameRunning = true;
 
-		private Vector2[] playerPos = new Vector2[2];
+		private Position2D[] playerPos = new Position2D[2];
 		private Vector2[] crashPos = new Vector2[2];
 		private int[] dir = new int[]{ 0, 2 };
 
@@ -34,24 +34,24 @@ namespace Snake{
 		}
 
 		private void initGameGrid(){
-			gameGrid = new int[gridSize, gridSize];
-			for (int x = 0; x < gridSize; x++)
-				for (int y = 0; y < gridSize; y++)
+			gameGrid = new int[GRID_SIZE, GRID_SIZE];
+			for (int x = 0; x < GRID_SIZE; x++)
+				for (int y = 0; y < GRID_SIZE; y++)
 					gameGrid [x, y] = 0;
 		
 			generateRandomStartPos ();
 		}
 
 		private void generateRandomStartPos(){
-			int x = rand.Next (2, gridSize/2-3);
-			int y = rand.Next (2, gridSize/2-3);
+			int x = rand.Next (2, GRID_SIZE / 2-3);
+			int y = rand.Next (2, GRID_SIZE / 2-3);
 
-			playerPos [0] = new Vector2 (x, y);
+			playerPos [0] = new Position2D() {x = x, y = y};
 			gameGrid [(int)playerPos[0].x, (int)playerPos[0].y] = 1;
 			submitPlayerBody (playerPos[0], 0);
 
-			playerPos [1] = new Vector2 (gridSize - x-1, gridSize - y-1);
-			gameGrid [(int)playerPos[1].x, (int)playerPos[1].y] = 2;
+            playerPos[1] = new Position2D() { x = GRID_SIZE - x - 1, y = GRID_SIZE - y - 1 };
+            gameGrid [(int)playerPos[1].x, (int)playerPos[1].y] = 2;
 			submitPlayerBody (playerPos[1], 1);
 
 			if (rand.Next (0, 100) >= 50)
@@ -92,27 +92,27 @@ namespace Snake{
 			//Update game board
 			gameGrid [(int)tPos1.x, (int)tPos1.y] = 1;
 			gameGrid [(int)tPos2.x, (int)tPos2.y] = 2;
-			playerPos [0] = tPos1;
-			playerPos [1] = tPos2;
+            playerPos[0] = new Position2D() { x = (int)tPos1.x, y = (int)tPos1.y };
+            playerPos[1] = new Position2D() { x = (int)tPos2.x, y = (int)tPos2.y };
 
-			submitPlayerBody (playerPos[0], 0);
+            submitPlayerBody (playerPos[0], 0);
 			submitPlayerBody (playerPos[1], 1);
 			submitToGameLog ();
 		}
 
 		private bool movePlayer(int playerIndex, ref Vector2 targetPos){
-			Vector2 currentPos = playerPos [playerIndex];
+			Position2D currentPos = playerPos [playerIndex];
 			targetPos = new Vector2 (currentPos.x, currentPos.y);
 
 			switch (dir [playerIndex]) {
 				case 0: targetPos.x++; break;
-				case 1: targetPos.y++; break;
+				case 1: targetPos.y--; break;
 				case 2: targetPos.x--; break;
-				case 3: targetPos.y--; break;
+				case 3: targetPos.y++; break;
 			}
 			crashPos[playerIndex] = new Vector2(targetPos.x, targetPos.y);
 
-			if (targetPos.x < 0 || targetPos.x >= gridSize || targetPos.y < 0 || targetPos.y >= gridSize) //Out of map
+			if (targetPos.x < 0 || targetPos.x >= GRID_SIZE || targetPos.y < 0 || targetPos.y >= GRID_SIZE) //Out of map
 				return true;
 			if (gameGrid [(int)targetPos.x, (int)targetPos.y] != 0)//Check crash
 				return true;
@@ -180,7 +180,7 @@ namespace Snake{
 		#region Util
 		private bool compPos(Vector2 v1, Vector2 v2){return v1.x == v2.x && v1.y == v2.y;}
 		public static int convertColorToTeam(Game.PlayerColor color){	return color == Game.PlayerColor.Blue ? 0 : 1;}
-		private void submitPlayerBody(Vector2 pos, int playerIndex){updater.addNewPlayerBody ((int)pos.x + (int)pos.y * gridSize, playerIndex);}
+		private void submitPlayerBody(Position2D pos, int playerIndex){updater.addNewPlayerBody (pos, playerIndex);}
 
 		private void submitToGameLog(){
 			string updateMsg = ("B " + (int)playerPos [0].x + " " + (int)playerPos [0].y + " " + dir[0]);

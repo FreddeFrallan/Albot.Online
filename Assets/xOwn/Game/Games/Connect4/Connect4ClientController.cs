@@ -18,8 +18,9 @@ namespace Connect4{
 
 
 		//Ingame Unity Components that we are going to talk to.
-		private Renderer localGameController;
+		private Renderer localRenderer;
         private Connect4APIRouter APIRouter = new Connect4APIRouter();
+        private Connect4HumanControlls humanControlls;
 
         #region override from base clientController
         public override void initProtocol (Game.CommProtocol protocol){this.protocol = (Connect4.CommProtocol)protocol;}
@@ -34,10 +35,21 @@ namespace Connect4{
 			connectionToServer.RegisterHandler ((short)ServerCommProtocl.PlayerLeftGameRoom, handlePlayerLeftRoom);
 			connectionToServer.RegisterHandler ((short)ServerCommProtocl.PlayerTimerInit, handlePlayerTimerInit);
 			connectionToServer.RegisterHandler ((short)ServerCommProtocl.PlayerTimerCommand, handlePlayerTimerCommand);
-			StartCoroutine (findAndInitRenderer<Renderer>((x) => localGameController = x));
+			StartCoroutine (findAndInitRenderer<Renderer>((x) => localRenderer = x));
 			StartCoroutine (handleNetworkMsgQueue ());
 
-			TCPMessageQueue.readMsgInstant = ((msg) => {
+            //Quick hack
+            humanControlls = localRenderer.gameObject.GetComponent<Connect4HumanControlls>();
+            humanControlls.init((move) => {
+                onOutgoingLocalMsg(move.ToString(), ClientPlayersHandler.sendFromCurrentPlayer());
+                humanControlls.endPlayerTurn();
+            });
+            if (ClientPlayersHandler.hasLocalHumanPlayer())
+                ClientPlayersHandler.getLocalHumanPlayer().onHumanTakeInput = () => {
+                    humanControlls.startPlayerTurn();
+                };
+
+            TCPMessageQueue.readMsgInstant = ((msg) => {
 				TCPMessageQueue.popMessage();
 				readTCPMsg(msg);
 			});
@@ -53,7 +65,7 @@ namespace Connect4{
 			APIMsgConclusion outMsg = APIRouter.handleIncomingMsg (inMsg.message);
 			if (outMsg.toServer)
 				onOutgoingLocalMsg (outMsg.msg, ClientPlayersHandler.sendFromCurrentPlayer ());
-			else 
+			else
 				ClientPlayersHandler.getCurrentPlayer ().takeInput (outMsg.msg);
 		}
 
@@ -97,7 +109,7 @@ namespace Connect4{
 			Game.PlayerColor color = msg.color;
 			int move = msg.move;
 
-			localGameController.dropPiece (move, color == Game.PlayerColor.Yellow ? Piece.Yellow : Piece.Red);
+            localRenderer.dropPiece (move, color == Game.PlayerColor.Yellow ? Piece.Yellow : Piece.Red);
 		}
 		public void handleGameStatus(NetworkMessage gameStatusMsg){
 			byte[] bytes = gameStatusMsg.reader.ReadBytesAndSize ();
@@ -105,7 +117,7 @@ namespace Connect4{
 			
 			if (msg.gameOver) {
 				TCPLocalConnection.sendMessage ("GameOver");
-				localGameController.onGameOver (msg.winnerColor == Game.PlayerColor.Yellow ? Piece.Yellow : Piece.Red);
+                localRenderer.onGameOver (msg.winnerColor == Game.PlayerColor.Yellow ? Piece.Yellow : Piece.Red);
 				gameOver ();
 
 				string gameOverMsg;

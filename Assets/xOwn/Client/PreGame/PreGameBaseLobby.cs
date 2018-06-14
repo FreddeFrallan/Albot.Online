@@ -48,9 +48,8 @@ namespace ClientUI{
 			
 	
 		private void setPlayerSlots(PreGamePlayer[] players){
-			for (int i = 0; i < players.Length; i++) {
+			for (int i = 0; i < players.Length; i++)
 				initUserPanel (players [i], i);
-			}
 		}
 		private void initUserPanel(PreGamePlayer p, int index){
 			if (p.type != PreGameSlotType.Empty)
@@ -130,6 +129,15 @@ namespace ClientUI{
 		//Called from "onJoinStartedGame" in GameConnectorUI
 		public virtual void setLocalPreGamePlayers (){ ClientPlayersHandler.resetLocalPLayers ();}
 		abstract public void onStartClick();
-	}
+
+        #region AnneHacks
+
+        public void setPlayerReady(bool value) {
+            currentPlayers[0].isReady = value;
+            setAdminStartButton();
+        }
+
+        #endregion
+    }
 
 }

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Game;
 
 namespace Snake{
 
@@ -10,13 +11,14 @@ namespace Snake{
 		public GameObject bgBrick, collisionBlock;
 		public Material redHead, redBody, blueHead, blueBody;
 
-		private int gridSize = 20;
 		private float blockSize = 1.15f;
 		private SnakeBlock[,] blocks;
 		private bool isInit = false;
+        private int gridSize;
 
 		// Use this for initialization
 		void Start () {
+            gridSize = SnakeGameLogic.GRID_SIZE;
 			blocks = new SnakeBlock[gridSize, gridSize];
 			createBackground ();
 			isInit = true;
@@ -40,31 +42,34 @@ namespace Snake{
 
 
 		public void displayCrash(Vector2 crashPos){
-			int extraX = 0, extraY = 0; 
-			int posX = setBlockCoord ((int)crashPos.x, ref extraX);
-			int posY = setBlockCoord ((int)crashPos.y, ref extraY);
+            Position2D extraPos = new Position2D() { x = 0, y = 0 };
+            Position2D pos = setBlockCoords(crashPos, ref extraPos);
 
 
-			SnakeBlock block = blocks [posX, posY];
-			Vector3 spawnPos = block.transform.position + new Vector3 (extraX, 2, extraY);
+            SnakeBlock block = getBlockFromPos(pos);
+            Vector3 spawnPos = block.transform.position + new Vector3 (extraPos.x, 2, extraPos.y);
 			Instantiate (collisionBlock, spawnPos, Quaternion.identity);
 		}
 
-		private int setBlockCoord(int coord, ref int extraCoord){
-			if (coord < 0) {
-				extraCoord = -1;
-				return 0;
-			}
-			if (coord >= gridSize) {
-				extraCoord = 1;
-				return gridSize - 1;
-			}
-			return coord;
+		private Position2D setBlockCoords(Vector2 coord, ref Position2D extraCoord){
+			if (coord.x < 0)
+                extraCoord.x = -1;
+            if(coord.x >= gridSize)
+                extraCoord.x = 1;
+            if (coord.y < 0)
+                extraCoord.y = 1;
+            if (coord.y >= gridSize)
+                extraCoord.y = -1;
+
+
+            return new Position2D() {x = (int)Mathf.Clamp(coord.x, 0, gridSize-1), y = (int)Mathf.Clamp(coord.y, 0, gridSize - 1) };
 		}
 
+
+        public SnakeBlock getBlockFromPos(Position2D p) {return blocks[p.x, gridSize - p.y -1];}
 		public SnakeBlock getBlockFromNumber(int coord){
 			int x = coord % gridSize;
-			int y = coord / gridSize;
+			int y = gridSize - (coord / gridSize);
 			return blocks [x, y];
 		}
 	}

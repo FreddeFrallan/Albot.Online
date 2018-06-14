@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 0
+    path: Assets/xOwn/Admin Client/Admin Client.unity
+    guid: ed61a98dfd8f05f47b1bcea526d970fa
+  - enabled: 0
     path: Assets/xOwn/MasterServer/MasterAndSpawner.unity
     guid: 509fff7ccdb83524f8454caad1c7f27d
   - enabled: 0
@@ -87,6 +90,6 @@ EditorBuildSettings:
     path: Assets/xOwn/Game/Games/SpeedRunner/SpeedRunnerGame.unity
     guid: 50797186f25c6774081e424a35c1875a
   - enabled: 1
-    path: Assets/xOwn/Game/Games/SpeedRunner/GameServer/SpeedRunnerServer.unity
+    path: Assets/xOwn/Game/Games/SpeedRunner/GameServer/SpeedRunnerGameServer.unity
     guid: 5e473cd4bd9146b48bdc23e3bad30a0e
   m_configObjects: {}

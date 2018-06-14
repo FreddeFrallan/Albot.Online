@@ -6,8 +6,7 @@ using SnakeBot;
 namespace Snake{
 
 	public class SnakeTrainingBot : Game.TrainingBot {
-
-		private CurrentBoard snakeBoard;
+		private SnakeBot.Board snakeBoard;
 
 		public override int defaultSettings (){return 0;}
 		public override List<Dictionary<string, string>> botSettings (){
@@ -27,6 +26,5 @@ namespace Snake{
 		}
 			
 
-			
-	}
+    }
 }

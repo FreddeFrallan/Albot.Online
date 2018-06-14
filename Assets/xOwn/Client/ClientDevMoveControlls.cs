@@ -13,11 +13,13 @@ namespace ClientUI {
         private MapSelection speedRunnerGameSelection;
 
 
+        /*
         // Update is called once per frame
         private void Update() {
             if (Input.GetKeyDown(KeyCode.O) && ClientUIOverlord.currentState == ClientUIStates.GameLobby)
                 createNewSpeedRunnerGame();
         }
+        */
 
         private void createNewSpeedRunnerGame() {
             print("Sending Create Game");

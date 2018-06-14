@@ -149,7 +149,19 @@ public class Connect4EvaluateBoardTest{
         evaluateAndInvert(expected, board);
     }
     #endregion
-
+    #region Earlier Problems
+    [TestCase(0,
+    "0 0 0 0 0 0 0 " +
+    "0 0 0 0 0 0 0 " +
+    "-1 0 0 0 0 0 0 " +
+    "1 0 0 0 0 0 0 " +
+    "1 0 0 -1 0 0 0 " +
+    "1 0 0 -1 0 0 0 "
+    )]
+    public void evaluateEarlierProblems(int expected, string board) {
+        evaluateAndInvert(expected, board);
+    }
+    #endregion
 
     private void evaluateAndInvert(int expected, string rawBoard) {
         string invertedBoard = rawBoard.Replace("1", "-1");
@@ -162,6 +174,6 @@ public class Connect4EvaluateBoardTest{
     private void evaluateWin(int expected, string board) {
         Board b = new Board(board, true);
         int actual = BoardEvaluator.evaluateBoard(b);
-        Assert.AreEqual(expected, actual);
+        Assert.AreEqual(expected, actual, b.getWinChecks());
     }
 }

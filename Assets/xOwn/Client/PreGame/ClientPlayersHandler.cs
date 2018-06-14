@@ -101,7 +101,9 @@ namespace Game{
 		}
 
 
-		public static bool hasLocalPlayerOfColor(PlayerColor color){return players.Find (x => x.info.color == color) != null;}
+        public static bool hasLocalHumanPlayer() { return players.Any(p => p.Human); }
+        public static LocalPlayer getLocalHumanPlayer() { return players.FirstOrDefault(p => p.Human); }
+        public static bool hasLocalPlayerOfColor(PlayerColor color){return players.Find (x => x.info.color == color) != null;}
 		public static LocalPlayer getPlayerFromColor(PlayerColor color){return players.Find (x => x.info.color == color);}
 		public static LocalPlayer getCurrentPlayer(){return getPlayerFromColor (getCurrentPlayerColor ());}
 		public static bool hasRequestedPlayerMoves(){return currentPlayerQ.Count > 0;}
@@ -126,17 +128,21 @@ namespace Game{
 		public bool isNPC(){return NPC;}
 		public PlayerInfo info;
 		public TrainingBot bot;
+        public Action onHumanTakeInput;
 
 		public LocalPlayer(bool isBot, bool isHuman, PlayerInfo info){
 			this.NPC = isBot; this.Human = isHuman; this.info = info;
 		}
 
 		public void takeInput(string msg){
-			if (NPC == false)
-				TCPLocalConnection.sendMessage (msg);
-			else
-				bot.onReceiveInput (msg);
-		}
+            if (isMainPlayer())
+                TCPLocalConnection.sendMessage(msg);
+            else if (NPC)
+                bot.onReceiveInput(msg);
+            else if (Human)
+                onHumanTakeInput();
+            //Do nothing if us human
+        }
 
 		public Action<string> getTakeInputFunc(){
 			if (Human)
