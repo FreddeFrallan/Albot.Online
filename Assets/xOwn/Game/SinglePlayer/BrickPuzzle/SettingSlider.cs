@@ -18,5 +18,6 @@ public class SettingSlider : MonoBehaviour {
 
     public void updateValue() {
         this.sliderValueText.text = this.slider.value.ToString();
+        PuzzleGameMaster.slideSpeed = this.slider.value;
     }
 }

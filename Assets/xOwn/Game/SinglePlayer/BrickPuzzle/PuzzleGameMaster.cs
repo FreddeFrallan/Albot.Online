@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class PuzzleGameMaster : MonoBehaviour {
 
-	public static float slideSpeed;
+	public static float slideSpeed = 15;
 	public SettingSlider size, shuffleAmount, moveSpeedSlider;
 	public PuzzleGameLogic logic;
 	private int[,] currentBoard;
