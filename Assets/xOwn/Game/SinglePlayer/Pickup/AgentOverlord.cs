@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 
 	namespace Pickup{
@@ -10,9 +11,9 @@ using UnityEngine.UI;
 		public static float moveSpeed;
 
 		public AgentLogic logic;
-		public Slider sizeSlider, slideSpeed;
+		public SettingSlider sizeSlider, slideSpeed;
 		public Toggle generate;
-		public Text console;
+		public TextMeshProUGUI console;
 		private List<int> moveQ = new List<int> ();
 		private bool initBoard = false;
 		private string[,] currentBoard;
@@ -83,11 +84,11 @@ using UnityEngine.UI;
 			initBoard = false;
 			moveQ.Clear ();
 			console.text = "";
-			string[,] newBoard = new string[(int)sizeSlider.value, (int)sizeSlider.value];
+			string[,] newBoard = new string[(int)sizeSlider.slider.value, (int)sizeSlider.slider.value];
 
 			if (generate.isOn) {
 				newBoard = generateNewBoard ();
-				currentBoard = logic.resetGame ((int)sizeSlider.value, newBoard);
+				currentBoard = logic.resetGame ((int)sizeSlider.slider.value, newBoard);
 				TCPLocalConnection.sendMessage (formatBoard (currentBoard));
 			} else
 				requestBoard ();
@@ -95,7 +96,7 @@ using UnityEngine.UI;
 
 
 		private string[,] generateNewBoard(){
-			currentBoardSize = (int)sizeSlider.value;
+			currentBoardSize = (int)sizeSlider.slider.value;
 			return BoardGenerator.generateBoard(currentBoardSize);
 		}
 
@@ -139,8 +140,8 @@ using UnityEngine.UI;
 			TCPLocalConnection.sendMessage ("Victory " + moves.ToString ());
 			victory = true;
 		}
-		public void togglePressed(){sizeSlider.interactable = generate.isOn;}
-		public void setMoveSpeed(int x = 0){moveSpeed = slideSpeed.value / 100;}
+		public void togglePressed(){sizeSlider.slider.interactable = generate.isOn;}
+		public void setMoveSpeed(int x = 0){moveSpeed = slideSpeed.slider.value / 100;}
 		private string formatBoard(string[,] board){
 			string s = "";
 			for (int y = 0; y < currentBoardSize; y++)

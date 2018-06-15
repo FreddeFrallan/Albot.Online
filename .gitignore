@@ -34,3 +34,6 @@ sysinfo.txt
 # Builds
 *.apk
 *.unitypackage
+
+# Custom ignore for different unity versions
+ProjectSettings/ProjectVersion.txt

@@ -9,7 +9,7 @@ namespace Snake{
 		public SnakeRenderer theRenderer;
 		private List<BoardUpdate> moves = new List<BoardUpdate> ();
 		private GameInfo finalMsg;
-		private float refreshRate = 1;
+		private float refreshRate = 0.5f;
 
 		// Use this for initialization
 		private void Start () {

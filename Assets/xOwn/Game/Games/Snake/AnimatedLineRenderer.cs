@@ -20,6 +20,9 @@ namespace DigitalRuby.AnimatedLineRenderer
         [Tooltip("End color for the line renderer since Unity does not provide a getter for this")]
         public Color EndColor = Color.white;
 
+        [Tooltip("Optional gradient color, match with StartColor for no gradient")]
+        public Color GradientColor = Color.white;
+
         [Tooltip("Start line width")]
         public float StartWidth = 2.0f;
 
@@ -89,10 +92,21 @@ namespace DigitalRuby.AnimatedLineRenderer
         private void Update(){
             ProcessCurrent();
             if (!Resetting){
-                lineRenderer.SetColors(StartColor, EndColor);
-                lineRenderer.SetWidth(StartWidth, EndWidth);
+                lineRenderer.startColor = StartColor;
+                lineRenderer.endColor = EndColor;
+                lineRenderer.startWidth = StartWidth;
+                lineRenderer.endWidth = EndWidth;
                 lineRenderer.sortingLayerName = SortLayerName;
                 lineRenderer.sortingOrder = OrderInSortLayer;
+
+                //Setting up gradient
+                float alpha = 1.0f;
+                Gradient grad = new Gradient();
+                grad.SetKeys(
+                    new GradientColorKey[] { new GradientColorKey(GradientColor, 0.0f), new GradientColorKey(StartColor, 1.0f) },
+                    new GradientAlphaKey[] { new GradientAlphaKey(alpha, 0.0f), new GradientAlphaKey(alpha, 1.0f) }
+                    );
+                lineRenderer.colorGradient = grad;
             }
         }
 

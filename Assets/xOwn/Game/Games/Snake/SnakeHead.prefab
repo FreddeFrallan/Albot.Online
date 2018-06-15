@@ -101,6 +101,7 @@ MonoBehaviour:
   SecondsPerLine: 0
   StartColor: {r: 1, g: 1, b: 1, a: 1}
   EndColor: {r: 1, g: 1, b: 1, a: 1}
+  GradientColor: {r: 0.06666667, g: 0.0627451, b: 0.19607845, a: 1}
   StartWidth: 1
   EndWidth: 1
   SortLayerName: Default
