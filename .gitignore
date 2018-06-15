@@ -35,4 +35,5 @@ sysinfo.txt
 *.apk
 *.unitypackage
 
-Assets/xOwn/Client/Client\.unity
+# Custom ignore for different unity versions
+ProjectSettings/ProjectVersion.txt

@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class PuzzleGameMaster : MonoBehaviour {
 
 	public static float slideSpeed;
-	public Slider size, shuffleAmount, moveSpeedSlider;
+	public SettingSlider size, shuffleAmount, moveSpeedSlider;
 	public PuzzleGameLogic logic;
 	private int[,] currentBoard;
 	private int moveCounter = 0;
@@ -15,8 +15,8 @@ public class PuzzleGameMaster : MonoBehaviour {
 
 	void Start(){
 		SinglePlayerGameMaster.init (takeInput, () => {});
-		slideSpeed = moveSpeedSlider.value;
-	}
+		slideSpeed = moveSpeedSlider.slider.value;
+    }
 
 
 	public void takeInput(string msg){
@@ -67,7 +67,7 @@ public class PuzzleGameMaster : MonoBehaviour {
 
 
 	public void restartGame(){
-		currentBoard = logic.restartGame ((int)size.value, (int)shuffleAmount.value);
+		currentBoard = logic.restartGame ((int)size.slider.value, (int)shuffleAmount.slider.value);
 		moveCounter = 0;
 		StartCoroutine (sendBoardToPlayer ());
 	}
@@ -92,6 +92,6 @@ public class PuzzleGameMaster : MonoBehaviour {
 	}
 
 	public void speedValueChanged(int t){
-		slideSpeed = moveSpeedSlider.value;
+		slideSpeed = moveSpeedSlider.slider.value;
 	}
 }
