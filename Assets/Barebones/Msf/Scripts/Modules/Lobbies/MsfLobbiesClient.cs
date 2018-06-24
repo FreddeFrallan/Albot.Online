@@ -7,7 +7,7 @@ namespace Barebones.MasterServer
     public class MsfLobbiesClient : MsfBaseClient
     {
         public delegate void JoinLobbyCallback(JoinedLobby lobby, string error);
-        public delegate void CreateLobbyCallback(int? lobbyId, string error);
+        public delegate void CreateLobbyCallback(string lobbyId, string error);
 
         /// <summary>
         /// Invoked, when user joins a lobby
@@ -50,13 +50,13 @@ namespace Barebones.MasterServer
         {
             CreateLobby(factory, properties, (id, error) =>
             {
-                if (!id.HasValue)
+                if (string.IsNullOrEmpty(id))
                 {
                     callback.Invoke(null, "Failed to create lobby: " + error);
                     return;
                 }
 
-                JoinLobby(id.Value, (lobby, joinError) =>
+                JoinLobby(id, (lobby, joinError) =>
                 {
                     if (lobby == null)
                     {
@@ -72,9 +72,7 @@ namespace Barebones.MasterServer
         /// <summary>
         /// Sends a request to create a lobby, using a specified factory
         /// </summary>
-        public void CreateLobby(string factory, Dictionary<string, string> properties,
-            CreateLobbyCallback calback)
-        {
+        public void CreateLobby(string factory, Dictionary<string, string> properties, CreateLobbyCallback calback){
             CreateLobby(factory, properties, calback, Connection);
         }
 
@@ -100,7 +98,7 @@ namespace Barebones.MasterServer
                     return;
                 }
 
-                var lobbyId = response.AsInt();
+                var lobbyId = response.AsString();
 
                 calback.Invoke(lobbyId, null);
             });
@@ -111,7 +109,7 @@ namespace Barebones.MasterServer
         /// </summary>
         /// <param name="lobbyId"></param>
         /// <param name="callback"></param>
-        public void JoinLobby(int lobbyId, JoinLobbyCallback callback)
+        public void JoinLobby(string lobbyId, JoinLobbyCallback callback)
         {
             JoinLobby(lobbyId, callback, Connection);
         }
@@ -119,7 +117,7 @@ namespace Barebones.MasterServer
         /// <summary>
         /// Sends a request to join a lobby
         /// </summary>
-        public void JoinLobby(int lobbyId, JoinLobbyCallback callback, IClientSocket connection)
+        public void JoinLobby(string lobbyId, JoinLobbyCallback callback, IClientSocket connection)
         {
             // Send the message
             connection.SendMessage((short) MsfOpCodes.JoinLobby, lobbyId, (status, response) =>
@@ -158,7 +156,7 @@ namespace Barebones.MasterServer
         /// <summary>
         /// Sends a request to leave a lobby
         /// </summary>
-        public void LeaveLobby(int lobbyId)
+        public void LeaveLobby(string lobbyId)
         {
             LeaveLobby(lobbyId, () => { }, Connection);
         }
@@ -166,7 +164,7 @@ namespace Barebones.MasterServer
         /// <summary>
         /// Sends a request to leave a lobby
         /// </summary>
-        public void LeaveLobby(int lobbyId, Action callback)
+        public void LeaveLobby(string lobbyId, Action callback)
         {
             LeaveLobby(lobbyId, callback, Connection);
         }
@@ -174,7 +172,7 @@ namespace Barebones.MasterServer
         /// <summary>
         /// Sends a request to leave a lobby
         /// </summary>
-        public void LeaveLobby(int lobbyId, Action callback, IClientSocket connection)
+        public void LeaveLobby(string lobbyId, Action callback, IClientSocket connection)
         {
             connection.SendMessage((short)MsfOpCodes.LeaveLobby, lobbyId, (status, response) =>
             {
@@ -224,7 +222,7 @@ namespace Barebones.MasterServer
         /// <param name="lobbyId"></param>
         /// <param name="properties"></param>
         /// <param name="callback"></param>
-        public void SetLobbyProperties(int lobbyId, Dictionary<string, string> properties,
+        public void SetLobbyProperties(string lobbyId, Dictionary<string, string> properties,
             SuccessCallback callback)
         {
             SetLobbyProperties(lobbyId, properties, callback, Connection);
@@ -233,7 +231,7 @@ namespace Barebones.MasterServer
         /// <summary>
         /// Sets lobby properties of a specified lobby id
         /// </summary>
-        public void SetLobbyProperties(int lobbyId, Dictionary<string, string> properties,
+        public void SetLobbyProperties(string lobbyId, Dictionary<string, string> properties,
             SuccessCallback callback, IClientSocket connection)
         {
             var packet = new LobbyPropertiesSetPacket()
@@ -283,7 +281,7 @@ namespace Barebones.MasterServer
         /// <param name="lobbyId"></param>
         /// <param name="teamName"></param>
         /// <param name="callback"></param>
-        public void JoinTeam(int lobbyId, string teamName, SuccessCallback callback)
+        public void JoinTeam(string lobbyId, string teamName, SuccessCallback callback)
         {
             JoinTeam(lobbyId, teamName, callback, Connection);
         }
@@ -291,7 +289,7 @@ namespace Barebones.MasterServer
         /// <summary>
         /// Current player sends a request to join a team
         /// </summary>
-        public void JoinTeam(int lobbyId, string teamName, SuccessCallback callback, IClientSocket connection)
+        public void JoinTeam(string lobbyId, string teamName, SuccessCallback callback, IClientSocket connection)
         {
             var packet = new LobbyJoinTeamPacket()
             {

@@ -38,8 +38,7 @@ namespace Barebones.MasterServer{
             }
 
             connection.SendMessage((short) MsfOpCodes.FindGames, filter.ToBytes(), (status, response) =>{
-                if (status != ResponseStatus.Success)
-                {
+                if (status != ResponseStatus.Success){
                     Logs.Error(response.AsString("Unknown error while requesting a list of games"));
                     callback.Invoke(new List<GameInfoPacket>());
                     return;

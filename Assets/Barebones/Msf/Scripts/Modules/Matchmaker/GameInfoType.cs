@@ -5,5 +5,6 @@
         Room,
         Lobby,
 		PreGame,
+        PreTournament
     }
 }

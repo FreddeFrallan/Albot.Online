@@ -154,7 +154,7 @@ public class SpawnerBehaviour : MonoBehaviour
         });
     }
 
-    private void HandleKillRequest(int spawnid){
+    private void HandleKillRequest(string spawnid){
         SpawnerController.DefaultKillRequestHandler(spawnid);
     }
 

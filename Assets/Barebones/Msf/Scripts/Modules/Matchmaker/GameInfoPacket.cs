@@ -4,7 +4,7 @@ using Barebones.Networking;
 namespace Barebones.MasterServer{
     public class GameInfoPacket : SerializablePacket{
         public string Address = "";
-        public int Id;
+        public string Id;
         public GameInfoType Type;
         public string Name = "";
 
@@ -27,7 +27,7 @@ namespace Barebones.MasterServer{
 
         public override void FromBinaryReader(EndianBinaryReader reader){
             Address = reader.ReadString();
-            Id = reader.ReadInt32();
+            Id = reader.ReadString();
             Type = (GameInfoType) reader.ReadInt32();
             Name = reader.ReadString();
 

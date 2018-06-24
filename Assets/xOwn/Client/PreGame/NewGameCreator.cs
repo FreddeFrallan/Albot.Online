@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Barebones.MasterServer;
 using Barebones.Networking;
+using AlbotServer;
 
 namespace ClientUI{
 	
@@ -12,57 +13,77 @@ namespace ClientUI{
 		public PreTrainingLobby preTrainingLobby;
 		private MapSelection currentMap;
 
-		//Enter preGameLobby
-		public void createNewGame(MapSelection selectedMap, bool isTraining){
+        #region Create new Game
+        public void createNewGame(MapSelection selectedMap, bool isTraining){
 			currentMap = selectedMap;
-            print(selectedMap.picture);
-            print(currentMap);
 
-			AccountInfoPacket currentUser = ClientUI.ClientUIOverlord.getCurrentAcountInfo();
-			AlbotServer.PreGameCreateMSg msg = new AlbotServer.PreGameCreateMSg(){type = selectedMap.type, 
-				isTraining = isTraining,
-				mainPlayer = new AlbotServer.PlayerInfo{
-					username = currentUser.Username,
-					iconNumber = int.Parse(currentUser.Properties["icon"]),
-				}};
-			Msf.Connection.SendMessage((short)AlbotServer.ServerCommProtocl.CreatePreGame, msg);
-		}
+			AccountInfoPacket currentUser = ClientUIOverlord.getCurrentAcountInfo();
+            PreGameSpecs msg = Msf.Helper.createGameSpecs(selectedMap.type, selectedMap.maxPlayers, currentUser.Username, isTraining);
+            Msf.Connection.SendMessage((short)ServerCommProtocl.CreatePreGame, msg, handleCreatedGameResponse);
+        }
 
-		public void joinPreGame(int gameId){
+        private void handleCreatedGameResponse(ResponseStatus status, IIncommingMessage rawMsg) {
+            if (responseSuccess(status, rawMsg) == false)
+                return;
+            joinPreGame(rawMsg.AsString());
+        }
+        #endregion
+
+
+        #region Joining
+        public void joinPreGame(string gameId){
 			AccountInfoPacket ac = ClientUIOverlord.getCurrentAcountInfo();
-			AlbotServer.PreGameJoinRequest msg = new AlbotServer.PreGameJoinRequest () {
+			PreGameJoinRequest msg = new PreGameJoinRequest () {
 				roomID = gameId,
-				joiningPlayer = new AlbotServer.PlayerInfo {
+				joiningPlayer = new PlayerInfo {
 					username = ac.Username,
 					iconNumber = int.Parse(ac.Properties["icon"])
 				}
 			};
-			Msf.Connection.SendMessage((short)AlbotServer.ServerCommProtocl.RequestJoinPreGame, msg);
+			Msf.Connection.SendMessage((short)ServerCommProtocl.RequestJoinPreGame, msg, handleJoinPreGameMsg);
 		}
 
+		private void handleJoinPreGameMsg(ResponseStatus status, IIncommingMessage rawMsg){
+            if (responseSuccess(status, rawMsg) == false)
+                return;
 
-		public void handleJoinPreGameMsg(IIncommingMessage message){
-			AlbotServer.PreGameRoomMsg msg = message.Deserialize<AlbotServer.PreGameRoomMsg> ();
+			PreGameRoomMsg msg = rawMsg.Deserialize<PreGameRoomMsg> ();
+            print("Room id: " + msg.specs.roomID + "  " + msg.specs.type);
+            printPlayerSlots(msg.players);
 
-			if (msg.errorMsg != "") {
-				Msf.Events.Fire(Msf.EventNames.ShowDialogBox, DialogBoxData.CreateError(msg.errorMsg));
-				Debug.LogError (msg.errorMsg);
-				return;
-			}
-			currentMap = GameSelectionUI.getMatchingMapSelection (msg.type);
-			AccountInfoPacket playerInfo = ClientUI.ClientUIOverlord.getCurrentAcountInfo ();
-			bool isAdmin = playerInfo.Username == msg.players [0].info.username;
 
+            currentMap = GameSelectionUI.getMatchingMapSelection (msg.specs.type);
+			AccountInfoPacket playerInfo = ClientUIOverlord.getCurrentAcountInfo ();
+			bool isAdmin = playerInfo.Username == msg.players [0].playerInfo.username;
 			ClientUIStateManager.requesGotoPreGame ();
 
-            print(msg.type.ToString());
-
-            if (msg.isTraining)
-				preTrainingLobby.initPreGameLobby (msg.type.ToString(), currentMap.picture, msg.players, true, msg.roomID, msg.type);
+			preGameLobby.initPreGameLobby (currentMap.picture, msg);
+            /*
+            if (msg.specs.isTraining)
+				preTrainingLobby.initPreGameLobby (currentMap.picture, msg);
 			else
-				preGameLobby.initPreGameLobby (msg.type.ToString(), currentMap.picture, msg.players, isAdmin, msg.roomID, msg.type);
+            */
 		}
+        #endregion
 
-	}
+
+
+        #region Deubbing
+        private bool responseSuccess(ResponseStatus status, IIncommingMessage rawMsg) {
+            if (status != ResponseStatus.Success) {
+                Msf.Events.Fire(Msf.EventNames.ShowDialogBox, DialogBoxData.CreateError(rawMsg.AsString()));
+                Debug.LogError(status + " - " + rawMsg.AsString());
+                return false;
+            }
+            return true;
+        }
+
+        private void printPlayerSlots(PreGameSlotInfo[] slots) {
+            foreach(PreGameSlotInfo slot in slots)
+                print(slot.type + " " + slot.playerInfo.username);
+            
+        }
+        #endregion
+    }
 
 }

@@ -6,30 +6,26 @@ using UnityEngine.UI;
 using ClientUI;
 using Barebones.MasterServer;
 using Barebones.Networking;
+using AlbotServer;
 
-namespace ClientUI
-{
+namespace ClientUI{
 	/// <summary>
 	///     Game creation window
 	/// </summary>
 	public class GameConnectorUI : MonoBehaviour{
 		public CreateGameProgressUi ProgressUi;
 		private PreGameBaseLobby preLobby;
-		//Sends a request to the master server to join the game
-		//If yes, UnetRoomConnector will run "ConnectToGame" function
+        //Sends a request to the master server to join the game
+        //If yes, UnetRoomConnector will run "ConnectToGame" function
 
-		public void onJoinStartedGame(IIncommingMessage message){
-			AlbotServer.PreGameStartMsg msg = message.Deserialize<AlbotServer.PreGameStartMsg> ();
-			if (msg.errorMsg != "") {
-				Msf.Events.Fire(Msf.EventNames.ShowDialogBox, DialogBoxData.CreateError(msg.errorMsg));
-				return;
-			}
+        public void onJoinStartedGame(PreGameStartedMsg gameInfo) { 
 			preLobby.removeHandlers ();
 			preLobby.setLocalPreGamePlayers ();
-			SpawnRequestController controller = new SpawnRequestController(msg.roomID, Msf.Connection);
+			SpawnRequestController controller = new SpawnRequestController(gameInfo.gameRoomID, Msf.Connection);
 			MsfSpawnersClient._localSpawnRequests[controller.SpawnId] = controller;
 			ProgressUi.Display(controller);
-			StaticClientTrainingMode.setTrainingActivated (msg.isTraining, msg.trainingRoomID);
+            CurrentGame.setNewCurrentGame(gameInfo);
+			//StaticClientTrainingMode.setTrainingActivated (gameInfo.specs.isTraining, gameInfo.specs.roomID);
 		}
 
 

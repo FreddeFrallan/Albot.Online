@@ -20,8 +20,8 @@ namespace ClientUI{
 		}
 
 
-		public override void initPreGameLobby (string gameTittle, Sprite gameSprite, PreGamePlayer[] players, bool isAdmin, int roomId, GameType type){
-			base.initPreGameLobby (gameTittle, gameSprite, players, isAdmin, roomId, type);
+		public override void initPreGameLobby (Sprite gameSprite, PreGameRoomMsg roomInfo){
+			base.initPreGameLobby (gameSprite, roomInfo);
 
 			p2Settings.ClearOptions ();
 			p2Settings.AddOptions (LocalTrainingBots.getBotModeNames (type));
@@ -50,7 +50,8 @@ namespace ClientUI{
 		}
 
 		public override void onStartClick (){
-			Msf.Connection.SendMessage((short)ServerCommProtocl.StartPreGame, new PreGameStartMsg(){roomID = roomId});
+            if(AnneHacks.playingSinglePlayerGame == false)
+			    Msf.Connection.SendMessage((short)ServerCommProtocl.StartPreGame, roomId);
 		}
 			
 	}

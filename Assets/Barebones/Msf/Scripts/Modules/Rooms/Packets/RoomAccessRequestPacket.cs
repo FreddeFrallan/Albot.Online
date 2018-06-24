@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
 using Barebones.Networking;
 
-namespace Barebones.MasterServer
-{
-    public class RoomAccessRequestPacket : SerializablePacket
-    {
-        public int RoomId;
+namespace Barebones.MasterServer{
+
+    public class RoomAccessRequestPacket : SerializablePacket{
+        public string RoomId;
         public string Password = "";
         public Dictionary<string, string> Properties;
 
@@ -18,7 +17,7 @@ namespace Barebones.MasterServer
 
         public override void FromBinaryReader(EndianBinaryReader reader)
         {
-            RoomId = reader.ReadInt32();
+            RoomId = reader.ReadString();
             Password = reader.ReadString();
             Properties = reader.ReadDictionary();
         }

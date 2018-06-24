@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Barebones.Networking;
+using Barebones.MasterServer;
+using AlbotServer;
 
 public class AnneHacks : MonoBehaviour{
 
@@ -13,7 +15,7 @@ public class AnneHacks : MonoBehaviour{
 
     private static MapSelection gameMap;
     private static PreGameBaseLobby lobby;
-    private static bool playingSinglePlayerGame = false;
+    public static bool playingSinglePlayerGame = false;
 
 
     private void Start() {
@@ -55,8 +57,8 @@ public class AnneHacks : MonoBehaviour{
     public void startGameClicked() {
         if (playingSinglePlayerGame)
             realSinglePlayerLobby.startButtonClicked();
-        else
-            print("not Starting Game");
+        else 
+            print("Starting Training game");
     }
 
 }

@@ -23,7 +23,7 @@ public class ClientTrainingMode : MonoBehaviour {
 public class StaticClientTrainingMode{
 
 	public static bool isReady = false;
-	private static Game.ClientController currentClientController;
+	private static ClientController currentClientController;
 
 	private static bool trainingActivated = false;
 
@@ -31,7 +31,7 @@ public class StaticClientTrainingMode{
 	private static ClientTrainingMode singleton;
 
 	#region tempGameSettings 
-	public static int lastRoomId;
+	public static string lastRoomId;
 	public static Game.PlayerColor currentColor = PlayerColor.Yellow;
 	#endregion
 	
@@ -46,10 +46,11 @@ public class StaticClientTrainingMode{
 		if (trainingActivated == false)
 			return;
 
+        /*
 		if (status == ConnectionStatus.Connected) {
 			UnetRoomConnector.shutdownCurrentConnection ();
 			AlbotDialogBox.removeAllPopups ();
-			Msf.Connection.SendMessage ((short)AlbotServer.ServerCommProtocl.RestartTrainingGame, new AlbotServer.PreGameStartMsg (){roomID = lastRoomId});
+			Msf.Connection.SendMessage ((short)AlbotServer.ServerCommProtocl.RestartTrainingGame, lastRoomId);
 			playingGame = true;
 		}
 		if (status == ConnectionStatus.Disconnected && ClientUIOverlord.currentState == ClientUIStates.PlayingGame) {
@@ -59,6 +60,7 @@ public class StaticClientTrainingMode{
 			TCPLocalConnection.restartServer ();
 			currentClientController.stopGameTimers ();
 		}
+        */
 	}
 
 
@@ -74,7 +76,7 @@ public class StaticClientTrainingMode{
 	}
 
 
-	public static void setTrainingActivated(bool state, int roomID = -1){
+	public static void setTrainingActivated(bool state, string roomID = ""){
 		trainingActivated = state;
 		lastRoomId = roomID;
 		playingGame = state;

@@ -11,7 +11,7 @@ namespace Barebones.MasterServer
         public float WaitSecondsAfterMinPlayersReached = 10;
         public float WaitSecondsAfterFullTeams = 5;
 
-        public BaseLobbyAuto(int lobbyId, IEnumerable<LobbyTeam> teams, LobbiesModule module, LobbyConfig config) : base(lobbyId, teams, module, config)
+        public BaseLobbyAuto(string lobbyId, IEnumerable<LobbyTeam> teams, LobbiesModule module, LobbyConfig config) : base(lobbyId, teams, module, config)
         {
             config.EnableManualStart = true;
             config.PlayAgainEnabled = false;

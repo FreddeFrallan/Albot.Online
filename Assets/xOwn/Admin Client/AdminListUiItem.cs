@@ -21,7 +21,7 @@ namespace AdminUI{
 
 		public string UnknownMapName = "Unknown";
 
-		public int GameId { get; private set; }
+		public string GameId { get; private set; }
 		public bool IsSelected { get; private set; }
 		public bool IsLobby { get; private set; }
 

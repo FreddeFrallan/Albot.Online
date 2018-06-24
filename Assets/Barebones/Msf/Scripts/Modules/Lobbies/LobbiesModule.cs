@@ -14,7 +14,7 @@ namespace Barebones.MasterServer
 
         protected Dictionary<string, ILobbyFactory> Factories;
 
-        protected Dictionary<int, ILobby> Lobbies;
+        protected Dictionary<string, ILobby> Lobbies;
 
         public BmLogger Logger = Msf.Create.Logger(typeof(LobbiesModule).Name);
         public LogLevel LogLevel = LogLevel.Warn;
@@ -47,7 +47,7 @@ namespace Barebones.MasterServer
             RoomsModule = server.GetModule<RoomsModule>();
 
             Factories = Factories ?? new Dictionary<string, ILobbyFactory>();
-            Lobbies = Lobbies ?? new Dictionary<int, ILobby>();
+            Lobbies = Lobbies ?? new Dictionary<string, ILobby>();
 
             server.SetHandler((short)MsfOpCodes.CreateLobby, HandleCreateLobby);
             server.SetHandler((short)MsfOpCodes.JoinLobby, HandleJoinLobby);
@@ -120,9 +120,10 @@ namespace Barebones.MasterServer
             return extension;
         }
 
-        public int GenerateLobbyId()
+        public string GenerateLobbyId()
         {
-            return _nextLobbyId++;
+            return "LOBBY ID CHANGE ME";
+            //return _nextLobbyId++;
         }
 
         #region Message Handlers
@@ -191,7 +192,7 @@ namespace Barebones.MasterServer
                 return;
             }
 
-            var lobbyId = message.AsInt();
+            var lobbyId = message.AsString();
 
             ILobby lobby;
             Lobbies.TryGetValue(lobbyId, out lobby);
@@ -220,7 +221,7 @@ namespace Barebones.MasterServer
         /// <param name="message"></param>
         protected virtual void HandleLeaveLobby(IIncommingMessage message)
         {
-            var lobbyId = message.AsInt();
+            var lobbyId = message.AsString();
 
             ILobby lobby;
             Lobbies.TryGetValue(lobbyId, out lobby);
@@ -411,7 +412,7 @@ namespace Barebones.MasterServer
 
         protected virtual void HandleGetLobbyInfo(IIncommingMessage message)
         {
-            var lobbyId = message.AsInt();
+            var lobbyId = message.AsString();
 
             ILobby lobby;
             Lobbies.TryGetValue(lobbyId, out lobby);

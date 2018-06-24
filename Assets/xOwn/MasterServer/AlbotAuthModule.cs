@@ -17,6 +17,13 @@ public enum CustomMasterServerMSG{
 	stopSpectate = 6,
 	adminLogin = 7,
 	adminLogout = 8,
+
+    //Tournament
+    joinTournament = 9,
+    leaveTournament = 10,
+    startTournament = 11,
+    createTournament = 12,
+    closeTournament = 13,
 }
 
 public class AlbotAuthModule : ServerModuleBehaviour {

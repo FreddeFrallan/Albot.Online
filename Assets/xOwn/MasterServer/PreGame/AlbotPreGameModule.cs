@@ -9,204 +9,150 @@ using UnityEngine.Networking;
 namespace AlbotServer{
 
 	public class AlbotPreGameModule : ServerModuleBehaviour {
-		public static AlbotPreGameModule singleton;
+		private static AlbotPreGameModule singleton;
 		public AlbotSpectatorModule spectatorModule;
 
-		public List<PreGame> currentPreGames = new List<PreGame>();
-		public List<PreGame> currentTrainingGames = new List<PreGame> ();
-		private int idCounter = 0;
+        private Dictionary<string, PreGame> currentPreGames = new Dictionary<string, PreGame>();
+        private Dictionary<string, PreGame> currentTrainingGames = new Dictionary<string, PreGame>();
+        private List<Dictionary<string, PreGame>> allGameDicts = new List<Dictionary<string, PreGame>>();
+        private List<PreGame> allGames = new List<PreGame>();
 
-
-		public override void Initialize (IServer server){
+        public override void Initialize (IServer server){
 			singleton = this;
-			base.Initialize (server);
 			server.SetHandler ((short)ServerCommProtocl.CreatePreGame, handleCreatePreGame);
 			server.SetHandler ((short)ServerCommProtocl.RequestJoinPreGame, handleRequestJoinPreGame);
 			server.SetHandler ((short)ServerCommProtocl.UpdatePreGame, handlePlayerReadyUpdate);
 			server.SetHandler ((short)ServerCommProtocl.StartPreGame, handleStartPreGame);
 			server.SetHandler ((short)ServerCommProtocl.RestartTrainingGame, handleRestartTrainingGame);
-			server.SetHandler ((short)ServerCommProtocl.PlayerLeftPreGame, handlePeerLeft);
 			server.SetHandler ((short)ServerCommProtocl.SlotTypeChanged, handleSlotTypeChanged);
-		}
+            server.SetHandler((short)ServerCommProtocl.StartSinglePlayerGame, handleStartSingleplayerGame);
+            server.SetHandler((short)ServerCommProtocl.PlayerLeftPreGame, handlePlayerLeft);
+            
+            allGameDicts.Add(currentPreGames);
+            allGameDicts.Add(currentTrainingGames);
+        }
 
-        
 		private void handleCreatePreGame(IIncommingMessage message){
-			PreGameCreateMSg msg = message.Deserialize<PreGameCreateMSg> ();
-            Debug.LogError("Creating pre game: " + msg.type);
+            PreGameSpecs msg = message.Deserialize<PreGameSpecs> ();
+            msg.roomID = generatePreGameID();
 
-            PreGame newGame = new PreGame (this, 2, msg.type, msg.mainPlayer.username, idCounter++, msg.isTraining, message.Peer);
-			newGame.changePlayer (0, PreGameSlotType.Player, msg.mainPlayer, message.Peer, false);
-			currentPreGames.Add (newGame);
-
-			message.Peer.Disconnected += handlePlayerDissconnect;
-			message.Peer.SendMessage((short)AlbotServer.ServerCommProtocl.RequestJoinPreGame, new PreGameRoomMsg(){players = newGame.players.ToArray(), type = newGame.type, roomID = newGame.roomID, isTraining = msg.isTraining,});
+            PreGame newGame = new PreGame (message.Peer, msg); 
+			currentPreGames.Add (msg.roomID, newGame);
+            allGames.Add(newGame);
+			message.Respond(msg.roomID, ResponseStatus.Success);
 		}
         
 
-		private void handleRequestJoinPreGame(IIncommingMessage message){
-			PreGameJoinRequest msg = message.Deserialize<PreGameJoinRequest> ();
-			PreGame targetGame = currentPreGames.Find (x => x.roomID == msg.roomID);
+		private void handleRequestJoinPreGame(IIncommingMessage rawMsg){
+			PreGameJoinRequest msg = rawMsg.Deserialize<PreGameJoinRequest> ();
+            PreGameRoomMsg returnMsg;
+            PreGame targetGame;
+            if (!findGame(msg.roomID, out targetGame, rawMsg) || !targetGame.peerJoined(rawMsg, msg.joiningPlayer, out returnMsg))
+                return;
+           
+            rawMsg.Respond(returnMsg, ResponseStatus.Success);
+        }
 
-			if (targetGame == null) {
-				message.Peer.SendMessage ((short)AlbotServer.ServerCommProtocl.RequestJoinPreGame, new PreGameRoomMsg (){ errorMsg = "Selected game was not found!" });
-				return;
-			} else if (targetGame.getAmountCurrentPlayers () == targetGame.maxPlayers) {
-				message.Peer.SendMessage((short)AlbotServer.ServerCommProtocl.RequestJoinPreGame, new PreGameRoomMsg(){errorMsg = "Game is already full"});
-				return;
-			}
-
-			//Is allowed to join
-			int freeId = targetGame.getFreeSlotId();
-			targetGame.changePlayer(freeId ,PreGameSlotType.Player,  msg.joiningPlayer, message.Peer, false);
-			message.Peer.SendMessage((short)AlbotServer.ServerCommProtocl.RequestJoinPreGame, new PreGameRoomMsg(){players = targetGame.players.ToArray(), type = targetGame.type, roomID = targetGame.roomID});
-			message.Peer.Disconnected += handlePlayerDissconnect;
-			broadcastUpdate (targetGame, freeId);
+        #region Slot Changes
+        private void handlePlayerReadyUpdate(IIncommingMessage rawMsg) {
+			PreGameReadyUpdate msg = rawMsg.Deserialize<PreGameReadyUpdate> ();
+            PreGame targetGame;
+            if (findGame(msg.roomID, out targetGame, rawMsg) && targetGame.containsPeer(rawMsg.Peer))
+                targetGame.updatePeerReady(rawMsg.Peer, msg.isReady);
 		}
 
-		private void handlePlayerReadyUpdate(IIncommingMessage message){
-			PreGameReadyUpdate msg = message.Deserialize<PreGameReadyUpdate> ();
-			PreGame targetGame = currentPreGames.Find (x => x.roomID == msg.roomID);
-			if (targetGame == null)
-				return;
+        private void handleSlotTypeChanged(IIncommingMessage rawMsg) {
+            PreGameSlotSTypeMsg msg = rawMsg.Deserialize<PreGameSlotSTypeMsg>();
+            PreGame targetGame;
+            if (findGame(msg.roomID, out targetGame, rawMsg))
+                targetGame.updateSlotType(msg.slot, rawMsg.Peer);
+        }
 
-			int playerID = targetGame.getMatchingPlayerID (message.Peer);
-			if (playerID < 0)
-				return;
+        private void handlePlayerLeft(IIncommingMessage rawMsg) {
+            PreGame targetGame;
+            if (findGame(rawMsg.AsString(), out targetGame, rawMsg) && targetGame.containsPeer(rawMsg.Peer))
+                targetGame.peerLeft(rawMsg.Peer);
+        }
+        #endregion
+
+
+        #region Staring Games
+        private void handleStartSingleplayerGame(IIncommingMessage rawMsg) { GamesData.totallGamesPlayed++; }
+		private void handleStartPreGame(IIncommingMessage rawMsg) { 
+            PreGame targetGame;
+            string roomID = rawMsg.AsString();
+            Debug.LogError("Trying to start game: " + roomID);
+            string errorMsg = "";
+
+            if (findGame(roomID, out targetGame, rawMsg) == false)
+                return;
+            else if (targetGame.canGameStart() == false)
+                errorMsg = "Not all players are ready";
+            else if (targetGame.isAdmin(rawMsg.Peer) == false)
+                errorMsg = "Only the Admin can start the game";
 			
-			targetGame.changePlayer (playerID, msg.isReady);
-			broadcastUpdate (targetGame, playerID);
+            if(string.IsNullOrEmpty(errorMsg) == false) {
+                rawMsg.Respond(errorMsg, ResponseStatus.Failed);
+                return;
+            }
+
+			if (targetGame.specs.isTraining) //Adding the game to the training pool, so it can be re-started easily.
+				currentTrainingGames.Add (roomID, targetGame);
+
+			removeGame (targetGame, roomID);
+			startGame (targetGame, rawMsg);
 		}
 
-		private void handleStartPreGame(IIncommingMessage message){
-			PreGameStartMsg msg = message.Deserialize<PreGameStartMsg> ();
-				
-			//Quick Hack
-			if (msg.isSinglePlayer) {
-				handleSinglePlayerGame ();
-				return;
-			}
+		private void startGame(PreGame targetGame, IIncommingMessage rawMsg) {
+            string newGameRoomId = SpawnersModule.singleton.createNewRoomFromPreGame(targetGame.getPeers(), targetGame.generateGameSettings());
+            if (string.IsNullOrEmpty(newGameRoomId)) { // We encountered some kind of error when spawning a new gameRoom
+                rawMsg.Respond("Server error during game startup", ResponseStatus.Error);
+                return;
+            }
+            rawMsg.Respond(ResponseStatus.Success);
 
-			PreGame targetGame = currentPreGames.Find (x => x.roomID == msg.roomID);
-			if (targetGame == null)
-				return;
-			else if (targetGame.canGameStart () == false) {
-				message.Peer.SendMessage ((short)ServerCommProtocl.StartPreGame, new PreGameStartMsg (){ errorMsg = "Not all players are ready" });
-				return;
-			} else if (targetGame.getMatchingPlayerID (message.Peer) != 0) {
-				message.Peer.SendMessage ((short)ServerCommProtocl.StartPreGame, new PreGameStartMsg (){ errorMsg = "Only the Admin can start the game" });
-				return;
-			}	
-				
-			if (targetGame.isTraining) {
-				Debug.LogError ("Saving: " + targetGame.roomID);
-				currentTrainingGames.Add (targetGame);
-			}
-			removeGame (targetGame);
-			startGame (targetGame);
+
+            PreGameStartedMsg msg = new PreGameStartedMsg() { specs = targetGame.specs, gameRoomID = newGameRoomId };
+            Debug.LogError("Starting game: " + targetGame.specs.roomID + " with: " + targetGame.getPeers().Count + " peers.");
+
+            GamesData.totallGamesPlayed++;
+            spectatorModule.preGameStarted(targetGame, newGameRoomId);//Allerting pending spectators
+            foreach (IPeer p in targetGame.getPeers())
+                p.SendMessage((short)ServerCommProtocl.GameRoomInvite, msg);
 		}
 
-		private void startGame(PreGame targetGame){
-			GameSettings constants = InduvidualGameData.games [targetGame.type];
-			Dictionary<string, string> settings = new Dictionary<string, string>{
-				{MsfDictKeys.MaxPlayers, constants.maxPlayers.ToString()},
-				{MsfDictKeys.RoomName, targetGame.hostName},
-				{MsfDictKeys.MapName, constants.mapName},
-				{MsfDictKeys.SceneName, constants.sceneName},
-				{MsfDictKeys.IsRealtime, constants.isRealTime.ToString()},
-				{MsfDictKeys.GameType, targetGame.type.ToString()},
-				{MsfDictKeys.Spectators, targetGame.hasSpectators().ToString()}
-			};
-
-			Debug.LogError (targetGame.type + " with players: " + targetGame.players.Count);
-			for (int i = 0; i < targetGame.players.Count; i++) {
-				settings.Add ("p" + i, targetGame.players [i].info.username);
-				Debug.LogError ("p" + i + targetGame.players [i].info.username);
-			}
-
-			//Create new game room
-			int newGameRoomId = SpawnersModule.singleton.createNewRoomFromPreGame(targetGame.getPeers(), settings);
-			if (newGameRoomId == -1) { // We encountered some kind of error when spawning a new gameRoom
-				Debug.LogError("Error spawning new game");
-				return;
-			}
-
-			//Allerting pending spectators
-			spectatorModule.preGameStarted(targetGame, newGameRoomId);
-
-			foreach(IPeer p in targetGame.getPeers())
-				p.SendMessage((short)ServerCommProtocl.StartPreGame, new PreGameStartMsg(){roomID = newGameRoomId, trainingRoomID = targetGame.roomID, isTraining = targetGame.isTraining});
-			GamesData.totallGamesPlayed++;
+		private void handleRestartTrainingGame(IIncommingMessage rawMsg){
+            PreGame targetGame;
+            if (findGame(rawMsg.AsString(), out targetGame, rawMsg) && targetGame.isAdmin(rawMsg.Peer)) {
+                Debug.LogError("Restaring training game: " + rawMsg.AsString());
+                startGame(targetGame, rawMsg );
+            }
 		}
+        #endregion
 
 
-		private void handleRestartTrainingGame(IIncommingMessage message){
-			PreGameStartMsg msg = message.Deserialize<PreGameStartMsg> ();
-			Debug.LogError ("Search ID: " + msg.roomID);
-			PreGame targetGame = currentTrainingGames.Find (x => x.roomID == msg.roomID);
-			foreach (PreGame p in currentTrainingGames)
-				Debug.LogError ("Game ID: " + p.roomID);
+
+        #region Getters
+        public static void removeGame(PreGame targetGame, string roomID){
+            singleton.currentPreGames.Remove(roomID);
+            singleton.allGames.Remove(targetGame);
+        }
+        public static List<PreGame> getCurrentPreGames() { return singleton.getAllPreGames(); }
+        public List<PreGame> getAllPreGames() { return allGames; }
+        private bool findGame(string key, out PreGame game, IIncommingMessage rawMsg = null) {
+            if (currentPreGames.TryGetValue(key, out game))
+                return true;
+            
+            if (rawMsg != null)
+                rawMsg.Respond("Could not find matching game", ResponseStatus.Error);
+            return false;
+        }
+        #endregion
 
 
-			if (targetGame != null  /* && targetGame.admin.Id != message.Peer.Id */)
-				startGame (targetGame);
-			else {
-				print ("Could not find matching training game");
-			}
-		}
-
-			
-		private void handleSlotTypeChanged(IIncommingMessage message){
-			PreGameSlotSTypeMsg msg = message.Deserialize<PreGameSlotSTypeMsg> ();
-			PreGame targetGame = currentPreGames.Find (x => x.roomID == msg.roomID);
-			if (targetGame == null)
-				return;
-
-			Debug.LogError ("Change: " + msg.slotID + "    " + msg.type);
-			targetGame.updateSlotType (msg.slotID, msg.type, msg.newPlayerInfo);
-			broadcastUpdate (targetGame);
-		}
-
-		public void handleKickPeerRequest(IPeer peer){
-			if (peer != null) {
-				peer.SendMessage ((short)ServerCommProtocl.PreGameKick, new PreGameKickMsg());
-				removePeerDissconnectEvent (peer);
-			}
-		}
-
-
-		private void handleSinglePlayerGame(){
-			GamesData.totallGamesPlayed++;
-		}
-
-
-		public void removeGame(PreGame targetGame){currentPreGames.Remove (targetGame);}
-		public void removePeerDissconnectEvent(IPeer p){p.Disconnected -= handlePlayerDissconnect;}
-		private void handlePeerLeft(IIncommingMessage message){handlePlayerDissconnect (message.Peer);}
-		private void handlePlayerDissconnect(IPeer peer){
-			PreGame targetGame = currentPreGames.Find (x => x.containsPeer (peer));
-			peer.Disconnected -= handlePlayerDissconnect;
-
-			if (targetGame != null) 
-				targetGame.peerDissconnected (peer);
-		}
-			
-		public void broadcastUpdate(PreGame targetGame, int skipID = -1){
-			targetGame.setAdminClonesReadyState ();
-			PreGameRoomMsg msg = new PreGameRoomMsg () {players = targetGame.players.ToArray(),};
-			for (int i = 0; i < targetGame.connectedPeers.Count; i++) {
-				if (skipID == i || targetGame.connectedPeers [i] == null)
-					continue;
-
-				targetGame.connectedPeers [i].SendMessage ((short)ServerCommProtocl.UpdatePreGame, msg);
-			}
-		}
-
-
-		public List<PreGame> getAllPreGames(){
-			List<PreGame> totalGames = new List<PreGame> ();
-			totalGames.AddRange (currentPreGames);
-			totalGames.AddRange (currentTrainingGames);
-			return totalGames;
-		}
-	}
+        #region Keys
+        private bool keyIsInUse(string key) { return allGames.Any(p => p.specs.roomID == key); }
+        private string generatePreGameID() {return Msf.Helper.CreateRandomStringMatch( MasterServerConstants.KEY_LENGTH,keyIsInUse);}
+        #endregion
+    }
 }

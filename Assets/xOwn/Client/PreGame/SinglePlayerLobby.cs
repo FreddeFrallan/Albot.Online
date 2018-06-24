@@ -18,9 +18,10 @@ namespace ClientUI{
 		public Dropdown settings;
 		public LoginTCPUI loginTCPUI;
 
+        public string roomID;
 		private GameType type;
 		private SceneField scene;
-		private PreGamePlayer[] currentPlayers;
+		private PreGameSlotInfo[] currentPlayers;
 
 
 		void Start(){
@@ -42,7 +43,7 @@ namespace ClientUI{
 		}
 
 		public void startButtonClicked(){
-			Msf.Connection.SendMessage((short)ServerCommProtocl.StartPreGame, new PreGameStartMsg(){isSinglePlayer = true});
+			Msf.Connection.SendMessage((short)ServerCommProtocl.StartSinglePlayerGame);
 			ClientPlayersHandler.resetLocalPLayers ();
 			gameObject.SetActive (false);
 			SceneManager.LoadScene (scene.SceneName);

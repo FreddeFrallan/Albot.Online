@@ -6,13 +6,13 @@ namespace Barebones.MasterServer
     public class SpawnRequestController
     {
         private readonly IClientSocket _connection;
-        public int SpawnId { get; set; }
+        public string SpawnId { get; set; }
 
         public event Action<SpawnStatus> StatusChanged;
 
         public SpawnStatus Status { get; private set; }
 
-        public SpawnRequestController(int spawnId, IClientSocket connection)
+        public SpawnRequestController(string spawnId, IClientSocket connection)
         {
             _connection = connection;
             SpawnId = spawnId;

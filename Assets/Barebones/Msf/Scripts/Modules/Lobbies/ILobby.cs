@@ -6,7 +6,7 @@ namespace Barebones.MasterServer
 {
     public interface ILobby
     {
-        int Id { get; }
+        string Id { get; }
         string Type { get; set; }
 
         string GameIp { get; }

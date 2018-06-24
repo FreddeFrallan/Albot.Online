@@ -4,7 +4,7 @@ namespace Barebones.MasterServer
 {
     public class IntPairPacket : SerializablePacket
     {
-        public int A;
+        public string A;
         public int B;
 
         public override void ToBinaryWriter(EndianBinaryWriter writer)
@@ -15,7 +15,7 @@ namespace Barebones.MasterServer
 
         public override void FromBinaryReader(EndianBinaryReader reader)
         {
-            A = reader.ReadInt32();
+            A = reader.ReadString();
             B = reader.ReadInt32();
         }
     }

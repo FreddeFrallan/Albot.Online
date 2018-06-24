@@ -19,7 +19,7 @@ namespace Barebones.MasterServer
         /// <param name="lobbyId"></param>
         /// <param name="peerId"></param>
         /// <param name="callback"></param>
-        public void GetMemberData(int lobbyId, int peerId, LobbyMemberDataCallback callback)
+        public void GetMemberData(string lobbyId, int peerId, LobbyMemberDataCallback callback)
         {
             GetMemberData(lobbyId, peerId, callback, Connection);
         }
@@ -28,7 +28,7 @@ namespace Barebones.MasterServer
         /// Retrieves lobby member data of user, who has connected to master server with
         /// a specified peerId
         /// </summary>
-        public void GetMemberData(int lobbyId, int peerId, LobbyMemberDataCallback callback, IClientSocket connection)
+        public void GetMemberData(string lobbyId, int peerId, LobbyMemberDataCallback callback, IClientSocket connection)
         {
             var packet = new IntPairPacket
             {

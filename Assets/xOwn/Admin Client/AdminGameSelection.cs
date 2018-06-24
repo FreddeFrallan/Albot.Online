@@ -20,7 +20,7 @@ namespace AdminUI{
 		public AdminListUiItem ItemPrefab;
 		public LayoutGroup LayoutGroup;
 		public Text currentGames, totalGames;
-		private int selectedID = -1;
+		private string selectedID = "";
 		private bool waitingForPreGame = false;
 
 		// Use this for initialization
@@ -56,11 +56,11 @@ namespace AdminUI{
 
 		private void UpdateGameJoinButton(){
 			AdminListUiItem item = GetSelectedItem ();
-			if (item == null && selectedID >= 0) { item = items.FindObject<AdminListUiItem> ((x) => {return x.GameId == selectedID; });
+			if (item == null && string.IsNullOrEmpty(selectedID) == false) { item = items.FindObject<AdminListUiItem> ((x) => {return x.GameId == selectedID; });
 				if (item != null)
 					Select (item);
 				else {
-					selectedID = -1;
+					selectedID = "";
 					GameJoinButton.interactable = false;
 				}
 			}else

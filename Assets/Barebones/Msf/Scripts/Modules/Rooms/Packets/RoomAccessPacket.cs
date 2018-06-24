@@ -8,7 +8,7 @@ namespace Barebones.MasterServer
         public string RoomIp;
         public int RoomPort;
         public string Token;
-        public int RoomId;
+        public string RoomId;
         public string SceneName = "";
         public Dictionary<string, string> Properties;
 
@@ -27,7 +27,7 @@ namespace Barebones.MasterServer
             Token = reader.ReadString();
             RoomIp = reader.ReadString();
             RoomPort = reader.ReadInt32();
-            RoomId = reader.ReadInt32();
+            RoomId = reader.ReadString();
             SceneName = reader.ReadString();
             Properties = reader.ReadDictionary();
         }

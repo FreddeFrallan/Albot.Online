@@ -28,7 +28,7 @@ namespace Barebones.MasterServer
         protected SpawnTask GameSpawnTask;
         protected RegisteredRoom Room;
 
-        public BaseLobby(int lobbyId, IEnumerable<LobbyTeam> teams,
+        public BaseLobby(string lobbyId, IEnumerable<LobbyTeam> teams,
             LobbiesModule module, LobbyConfig config)
         {
             Id = lobbyId;
@@ -52,7 +52,7 @@ namespace Barebones.MasterServer
         public string Name { get; set; }
         public int PlayerCount { get { return Members.Count; } }
 
-        public int Id { get; private set; }
+        public string Id { get; private set; }
         protected LobbiesModule Module { get; private set; }
 
         public bool IsDestroyed { get; private set; }
@@ -560,7 +560,7 @@ namespace Barebones.MasterServer
             }
 
             // Get room id from finalization data
-            var roomId = int.Parse(data[MsfDictKeys.RoomId]);
+            var roomId = data[MsfDictKeys.RoomId];
             var room = Module.RoomsModule.GetRoom(roomId);
 
             if (room == null)
