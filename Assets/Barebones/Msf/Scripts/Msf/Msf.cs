@@ -381,9 +381,17 @@ namespace Barebones.MasterServer
                 return settings;
             }
 
-            public PreGameSpecs createGameSpecs(Game.GameType type, int maxPlayers, string hostName, bool isTraining, string roomID = "") {
-                return new PreGameSpecs() { type = type, roomID = roomID, hostName = hostName, maxPlayers = maxPlayers, isTraining = isTraining };
+            public PreGameSpecs createGameSpecs(Game.GameType type, int maxPlayers, string hostName, string roomID = "") {
+                return new PreGameSpecs() { type = type, roomID = roomID, hostName = hostName, maxPlayers = maxPlayers};
             }
+
+            public void handleErrorResponse(ResponseStatus status, IIncommingMessage rawMsg) {
+                if (status != ResponseStatus.Success) {
+                    Debug.LogError(rawMsg.AsString());
+                    Events.Fire(EventNames.ShowDialogBox, DialogBoxData.CreateError(rawMsg.AsString()));
+                }
+            }
+
 
             /// <summary>
             /// Retrieves current public IP

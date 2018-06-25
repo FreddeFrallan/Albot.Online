@@ -47,6 +47,7 @@ namespace ClientUI{
 			extractLocalPlayerSlotId (roomInfo.players);
 			loginTCPUI.startServerClicked (true);
 			handlers.Add(Msf.Connection.SetHandler ((short)ServerCommProtocl.UpdatePreGame, updatePreGameLobby));
+
             CurrentGame.setNewCurrentPreGame(roomInfo.specs);
 		}
 			
@@ -120,16 +121,7 @@ namespace ClientUI{
 
 		//Called from "onJoinStartedGame" in GameConnectorUI
 		public virtual void setLocalPreGamePlayers (){ ClientPlayersHandler.resetLocalPLayers ();}
-        public virtual void onStartClick() {
-            print("Sending from base Lobby");
-            Msf.Connection.SendMessage((short)ServerCommProtocl.StartPreGame, roomId, handleStartGameResponse);
-        }
-        private void handleStartGameResponse(ResponseStatus status, IIncommingMessage rawMsg) {
-            if (status != ResponseStatus.Success) {
-                Debug.LogError(rawMsg.AsString());
-                Msf.Events.Fire(Msf.EventNames.ShowDialogBox, DialogBoxData.CreateError(rawMsg.AsString()));
-            } 
-        }
+        public virtual void onStartClick() {Msf.Connection.SendMessage((short)ServerCommProtocl.StartPreGame, roomId, Msf.Helper.handleErrorResponse);}
 
 
         #region AnneHacks

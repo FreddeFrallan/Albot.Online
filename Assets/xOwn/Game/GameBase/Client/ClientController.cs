@@ -30,36 +30,20 @@ namespace Game{
 		protected GameUI localGameUI;
 
 
-		public void initController(Game.GameType currentType){
+		public void initController(GameType currentType){
             if (currentType != getGameType()) {
 				Destroy (this);
 				return;
 			}
 			ClientPlayersHandler.init (this);
-			StaticClientTrainingMode.setCurrentClientController (this);
 
 			base.OnStartAuthority();
 			initHandlers ();
 			ClientReadyMsg msg = new ClientReadyMsg (){players = ClientPlayersHandler.generatePlayersInfoArray()};
 			connectionToServer.Send ((short)ServerCommProtocl.ClientReadyChannel, msg);
-			//StartCoroutine (listenForTCP ());
 		}
-        
-        //LEGACY, will soon be obselete
-		protected IEnumerator listenForTCP(){
-			while (true) {
-				yield return new WaitForEndOfFrame ();
-				//If we have receveid some Local TCP msg. Listen to them all
-                /*
-				while (isListeningForTCP && TCPMessageQueue.hasUnread)
-					readTCPMsg(TCPMessageQueue.popMessage ());
-                    */
-			}
-		}
-			
 
-		//This will be replaced when we move the renderer to seperate project!!!
-		//Coroutine that we run until we find a localGameController in the scene we are in
+
 		protected IEnumerator findAndInitRenderer<T>(Action<T> found) where T : Component{
 			GameObject foundObj = GameObject.FindGameObjectWithTag ("GameController");;
 			while (foundObj == null) {

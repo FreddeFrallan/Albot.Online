@@ -79,7 +79,7 @@ namespace ClientUI{
 
 			MapSelection selectedMap = getSelectedMap (isTraining ? newTrainingDropdown.value : newGameDropdown.value);
 			resetSelection ();
-			gameCreator.createNewGame (selectedMap, isTraining);
+			gameCreator.createNewGame (selectedMap);
 		}
 		private void handleGameStatsUpdate(IIncommingMessage message){
 			LobbyGameStatsMsg msg = message.Deserialize<LobbyGameStatsMsg> ();

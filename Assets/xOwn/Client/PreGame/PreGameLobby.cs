@@ -32,7 +32,7 @@ namespace ClientUI{
             base.initPreGameLobby(gameSprite, roomInfo);
             handlers.Add(Msf.Connection.SetHandler((short)ServerCommProtocl.PreGameKick, handlePreGameKickMsg));
             initPlayerInfos();
-            initP2Settings(roomInfo.specs.type, roomInfo.specs.isTraining);
+            initP2Settings(roomInfo.specs.type);
         }
 
         private void initPlayerInfos() {
@@ -41,8 +41,8 @@ namespace ClientUI{
             p2Slot = new PreGameSlotInfo() { slotID = 1, playerInfo = localInfo };
         }
 
-        private void initP2Settings(GameType type, bool isTraining) {
-            currentSettings = PreGameSlotTypes.getSlotOptions(type, isTraining);
+        private void initP2Settings(GameType type) {
+            currentSettings = PreGameSlotTypes.getSlotOptions(type);
             p2Settings.ClearOptions();
             p2Settings.AddOptions(currentSettings.Select(s => s.ToString()).ToList());
             newp2SettingSelected(0);
@@ -63,24 +63,6 @@ namespace ClientUI{
 
             sendChangeSlot();
         }
-   
-
-        public override void setLocalPreGamePlayers() {
-            base.setLocalPreGamePlayers();
-            ClientPlayersHandler.addSelf();
-            if (isAdmin == false)
-                return;
-
-            PreGameSlotType selectedSetting = currentSettings[p2Settings.value];
-            if (selectedSetting == PreGameSlotType.TrainingBot)
-                LocalTrainingBots.addBot(type);
-            else if (selectedSetting ==  PreGameSlotType.SelfClone)
-                ClientPlayersHandler.addClone();
-            else if (selectedSetting == PreGameSlotType.Human)
-                ClientPlayersHandler.addHuman();
-        }
-
-
 
         private void handlePreGameKickMsg(IIncommingMessage message) { ClientUIStateManager.requestGotoGameLobby(); }
         private void sendChangeSlot() {

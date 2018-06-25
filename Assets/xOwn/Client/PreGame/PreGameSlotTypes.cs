@@ -19,15 +19,7 @@ namespace AlbotServer {
             {GameType.SpeedRunner, new List<PreGameSlotType>(){PreGameSlotType.Player, PreGameSlotType.Human}},
         };
 
-
-
-        public static List<PreGameSlotType> getSlotOptions(GameType type, bool isTraining) {
-            List<PreGameSlotType> temp = gameP2Settings[type];
-            if (isTraining && temp.Contains(PreGameSlotType.Player))
-                temp.Remove(PreGameSlotType.Player);
-            return temp;
-        }
-
+        public static List<PreGameSlotType> getSlotOptions(GameType type) {return gameP2Settings[type];}
         public static PlayerInfo getSelfInfo(PlayerInfo i) { return new PlayerInfo() { iconNumber = i.iconNumber, username = "<" + i.username + ">" }; }
         public static PlayerInfo getHumanInfo(PlayerInfo i) { return new PlayerInfo() { iconNumber = i.iconNumber, username = "<" + "Human" + ">" }; }
     }

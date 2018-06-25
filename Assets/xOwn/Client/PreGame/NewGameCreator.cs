@@ -14,11 +14,10 @@ namespace ClientUI{
 		private MapSelection currentMap;
 
         #region Create new Game
-        public void createNewGame(MapSelection selectedMap, bool isTraining){
+        public void createNewGame(MapSelection selectedMap){
 			currentMap = selectedMap;
-
 			AccountInfoPacket currentUser = ClientUIOverlord.getCurrentAcountInfo();
-            PreGameSpecs msg = Msf.Helper.createGameSpecs(selectedMap.type, selectedMap.maxPlayers, currentUser.Username, isTraining);
+            PreGameSpecs msg = Msf.Helper.createGameSpecs(selectedMap.type, selectedMap.maxPlayers, currentUser.Username);
             Msf.Connection.SendMessage((short)ServerCommProtocl.CreatePreGame, msg, handleCreatedGameResponse);
         }
 
@@ -58,11 +57,6 @@ namespace ClientUI{
 			ClientUIStateManager.requesGotoPreGame ();
 
 			preGameLobby.initPreGameLobby (currentMap.picture, msg);
-            /*
-            if (msg.specs.isTraining)
-				preTrainingLobby.initPreGameLobby (currentMap.picture, msg);
-			else
-            */
 		}
         #endregion
 

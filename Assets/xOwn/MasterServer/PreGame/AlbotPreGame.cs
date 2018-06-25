@@ -11,6 +11,7 @@ namespace AlbotServer{
 	public class PreGame{
         public PreGamePlayerSlot[] playerSlots;
         public PreGameSpecs specs;
+        private bool isRunning = false;
 
         private IPeer admin;
         private List<PreGamePeer> connectedPeers = new List<PreGamePeer>();
@@ -33,10 +34,13 @@ namespace AlbotServer{
         #endregion
 
         #region Join & Leave
-        public bool peerJoined(IIncommingMessage rawMsg, PlayerInfo info, out PreGameRoomMsg returnMsg) {
+        public bool peerJoined(IIncommingMessage rawMsg, PlayerInfo info, ref PreGameRoomMsg returnMsg) {
             if (getAmountCurrentPlayers() >= specs.maxPlayers) {
                 rawMsg.Respond("Game is already full", ResponseStatus.Failed);
-                returnMsg = new PreGameRoomMsg();
+                return false;
+            }
+            if (isRunning) {
+                rawMsg.Respond("Game has already started", ResponseStatus.Failed);
                 return false;
             }
 
@@ -63,6 +67,7 @@ namespace AlbotServer{
             p.clearReferences();
             connectedPeers.Remove(p);
 
+            Debug.LogError("Players left: " + connectedPeers.Count);
             if (connectedPeers.Count == 0) //Check if Game should be terminated
                 AlbotPreGameModule.removeGame(this, specs.roomID);
             else
@@ -73,20 +78,22 @@ namespace AlbotServer{
         #region Slots
         private void setplayerSlotEmpty(int slotID){playerSlots[slotID].info.type = PreGameSlotType.Empty;}
         private void changePlayerSlot(int slotID, PreGameSlotType newType, PlayerInfo newInfo, PreGamePeer newPeer, bool newIsReady){
-            PreGamePlayerSlot slot = playerSlots[slotID];
-            if (slot.peer != null && newPeer != slot.peer) {
-                slot.peer.removePlayerSlot(slotID);
-                if (newPeer != null)
-                    newPeer.addPlayerSlot(slotID);
-            }
+            removeOldPeerFromSlot(slotID, newPeer);
 
             playerSlots[slotID].peer = newPeer;
-            playerSlots[slotID].info = new PreGameSlotInfo {
-				slotID = slotID,
-				playerInfo = newInfo,
-				type = newType,
-				isReady = newIsReady,
-			};
+            playerSlots[slotID].info.belongsToPlayer = newPeer == null ? "" : newPeer.info.username;
+
+            playerSlots[slotID].info.slotID = slotID;
+            playerSlots[slotID].info.playerInfo = newInfo;
+            playerSlots[slotID].info.type = newType;
+            playerSlots[slotID].info.isReady = newIsReady;
+            
+        }
+
+        private void removeOldPeerFromSlot(int slotID, PreGamePeer newPeer) {
+            PreGamePlayerSlot slot = playerSlots[slotID];
+            if (slot.peer != null && newPeer != slot.peer)
+                slot.peer.removePlayerSlot(slotID);
         }
 
         public void updateSlotType(PreGameSlotInfo slot,  IPeer peer){
@@ -117,7 +124,6 @@ namespace AlbotServer{
 
             broadcastUpdate();
         }
-
 
         private bool getIsPreReady(PreGameSlotType type, PreGamePeer peer) {
             if ((type == PreGameSlotType.TrainingBot || type == PreGameSlotType.Human))
@@ -155,6 +161,14 @@ namespace AlbotServer{
                     p.SendMessage((short)ServerCommProtocl.UpdatePreGame, msg);
         }
 
+        #region Start Game
+        public void gameStarted() {
+            isRunning = true;
+            resetPlayerReady();
+        }
+
+        private void resetPlayerReady() {connectedPeers.ForEach(p => updatePeerReady(p.peer, false));}
+        #endregion
 
 
         #region Spectators
@@ -181,7 +195,6 @@ namespace AlbotServer{
         public string roomID;
         public int maxPlayers;
         public string hostName;
-        public bool isTraining;
     }
 
     public struct PreGameSlotInfo {
@@ -189,6 +202,7 @@ namespace AlbotServer{
 		public PreGameSlotType type;
 		public int slotID;
 		public bool isReady;
+        public string belongsToPlayer;
     }
 
 	public struct PreGamePlayerSlot{

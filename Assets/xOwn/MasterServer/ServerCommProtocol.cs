@@ -58,6 +58,7 @@ namespace AlbotServer{
     public class PreGameStartedMsg : MessageBase {
         public PreGameSpecs specs;
         public string gameRoomID;
+        public PreGameSlotInfo[] slots;
     }
 	public class PreGameReadyUpdate : MessageBase{
 		public string roomID;

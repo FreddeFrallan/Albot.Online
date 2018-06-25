@@ -45,7 +45,6 @@ namespace ClientUI{
 				singelton.onEnterPreGame ();
 		}
 		public static void requestGotoGameLobby(){
-			StaticClientTrainingMode.setTrainingActivated (false);
 			singelton.winPanel.SetActive(false);
 			if (isInGameScene()) {
 				singelton.enteringGameLobby = true;

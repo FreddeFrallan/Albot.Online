@@ -22,11 +22,10 @@ namespace ClientUI {
         //Quick hacks for Anne 
 
         public void onClick() {
-
             if (isSinglePlayer)
                 activateSinglePlayerLobby();
             else
-                gameCreator.createNewGame(gameMap, trainingMode.isOn);
+                gameCreator.createNewGame(gameMap);
         }
 
 

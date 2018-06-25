@@ -53,7 +53,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   LogLevel: 3
   ReadMasterServerAddressFromCmd: 1
-  ServerIp: 127.0.0.1
+  ServerIp: 139.162.231.108
   ServerPort: 5001
   ConnectOnStart: 1
   MinTimeToConnect: 0.5
