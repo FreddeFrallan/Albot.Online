@@ -9,7 +9,7 @@ namespace Barebones.MasterServer{
         private readonly SpawnersModule _module;
         public static int MaxConcurrentRequests = 8;
 
-        public int SpawnerId { get; set; }
+        public string SpawnerId { get; set; }
         public IPeer Peer { get; set; }
         public SpawnerOptions Options { get; set; }
 
@@ -20,7 +20,7 @@ namespace Barebones.MasterServer{
 
         private HashSet<SpawnTask> _beingSpawned;
 
-        public RegisteredSpawner(int spawnerId, IPeer peer, SpawnerOptions options){
+        public RegisteredSpawner(string spawnerId, IPeer peer, SpawnerOptions options){
             SpawnerId = spawnerId;
             Peer = peer;
             Options = options;
@@ -91,7 +91,7 @@ namespace Barebones.MasterServer{
             });
         }
 
-        public void SendKillRequest(int spawnId, KillRequestCallback callback){
+        public void SendKillRequest(string spawnId, KillRequestCallback callback){
             var packet = new KillSpawnedProcessPacket(){
                 SpawnerId = SpawnerId,
                 SpawnId = spawnId

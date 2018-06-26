@@ -47,6 +47,15 @@ namespace Connect4{
 			protocol.requestMove (mainGame.getCurrentPlayer().client.peerID, board.ToString (), mainGame.getCurrentPlayer().color);
 		}
 
+
+        private void foo() {
+            bar((int x) => { return x * x; });
+        }
+
+        private void bar(Func<int, int> a) {
+            int result = a(10);
+        }
+
 	}
 }
 

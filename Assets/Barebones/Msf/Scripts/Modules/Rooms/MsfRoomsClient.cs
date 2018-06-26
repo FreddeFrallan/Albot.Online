@@ -33,21 +33,21 @@ namespace Barebones.MasterServer
         /// </summary>
         /// <param name="roomId"></param>
         /// <param name="callback"></param>
-        public void GetAccess(int roomId, RoomAccessCallback callback){
+        public void GetAccess(string roomId, RoomAccessCallback callback){
             GetAccess(roomId, callback, "", new Dictionary<string, string>(), Connection);
         }
 
         /// <summary>
         /// Tries to get an access to a room with a given room id and password
         /// </summary>
-        public void GetAccess(int roomId, string password, RoomAccessCallback callback){
+        public void GetAccess(string roomId, string password, RoomAccessCallback callback){
             GetAccess(roomId, callback, password, new Dictionary<string, string>(), Connection);
         }
 
         /// <summary>
         /// Tries to get an access to a room with a given room id and password
         /// </summary>
-        public void GetAccess(int roomId, RoomAccessCallback callback, string password){
+        public void GetAccess(string roomId, RoomAccessCallback callback, string password){
             GetAccess(roomId, callback, password, new Dictionary<string, string>(), Connection);
         }
 
@@ -55,7 +55,7 @@ namespace Barebones.MasterServer
         /// Tries to get an access to a room with a given room id, password,
         /// and some other properties, which will be visible to the room (game server)
         /// </summary>
-        public void GetAccess(int roomId, RoomAccessCallback callback, Dictionary<string, string> properties){
+        public void GetAccess(string roomId, RoomAccessCallback callback, Dictionary<string, string> properties){
             GetAccess(roomId, callback, "", properties, Connection);
         }
 
@@ -63,7 +63,7 @@ namespace Barebones.MasterServer
         /// Tries to get an access to a room with a given room id, password,
         /// and some other properties, which will be visible to the room (game server)
         /// </summary>
-        public void GetAccess(int roomId, RoomAccessCallback callback, string password, Dictionary<string, string> properties){
+        public void GetAccess(string roomId, RoomAccessCallback callback, string password, Dictionary<string, string> properties){
             GetAccess(roomId, callback, password, properties, Connection);
         }
 
@@ -71,7 +71,7 @@ namespace Barebones.MasterServer
         /// Tries to get an access to a room with a given room id, password,
         /// and some other properties, which will be visible to the room (game server)
         /// </summary>
-        public void GetAccess(int roomId, RoomAccessCallback callback, string password, Dictionary<string, string> properties, IClientSocket connection){
+        public void GetAccess(string roomId, RoomAccessCallback callback, string password, Dictionary<string, string> properties, IClientSocket connection){
             if (!connection.IsConnected){
                 callback.Invoke(null, "Not connected");
                 return;

@@ -16,9 +16,9 @@ namespace Barebones.MasterServer{
 		public AlbotPreGameModule preGameModule;
 		public RoomsModule roomsModule; 
 
-		private Dictionary<int, RegisteredRoom> currentRooms;
-		private Dictionary<int, List<IPeer>> currentSpectators = new Dictionary<int, List<IPeer>> ();
-		private Dictionary<int, int> adminToRooms = new Dictionary<int, int> ();
+		private Dictionary<string, RegisteredRoom> currentRooms;
+		private Dictionary<string, List<IPeer>> currentSpectators = new Dictionary<string, List<IPeer>> ();
+		private Dictionary<int, string> adminToRooms = new Dictionary<int, string> ();
 
 
 		public override void Initialize (IServer server){
@@ -48,12 +48,12 @@ namespace Barebones.MasterServer{
 		}
 
 
-		public void preGameStarted(PreGame game, int roomID){
+		public void preGameStarted(PreGame game, string roomID){
 			if (game.hasSpectators () == false)
 				return;
 
 			SpectatorInfoMsg msg = new SpectatorInfoMsg (){
-				gameType = game.type,
+				gameType = game.specs.type,
 				status = SpectatorGameStatus.Running
 				};
 			foreach (IPeer p in game.getSpectators()) {
@@ -85,8 +85,8 @@ namespace Barebones.MasterServer{
 		}
 
 		private void subscribePreGame(SpectatorSubscriptionsMsg msg, IIncommingMessage originalMsg){
-			List<PreGame> preGames = preGameModule.getAllPreGames ();
-			PreGame game = preGames.Find (x => x.roomID == msg.broadcastID);
+			List<PreGame> preGames = preGameModule.getAllGames ();
+			PreGame game = preGames.Find (x => x.specs.roomID == msg.broadcastID);
 	
 			if (game == null) {
 				originalMsg.Respond ("RoomID can't be found", ResponseStatus.Error);
@@ -124,7 +124,7 @@ namespace Barebones.MasterServer{
 			}));
 		}
 			
-		private void subscribeUserRunningGame(IPeer p, int broadcastID){
+		private void subscribeUserRunningGame(IPeer p, string broadcastID){
 			if (currentSpectators.ContainsKey (broadcastID) == false)
 				currentSpectators.Add (broadcastID, new List<IPeer> ());
 
@@ -146,7 +146,7 @@ namespace Barebones.MasterServer{
 		}
 
 
-		private void removeSpectator(int broadcastID, int peerID){
+		private void removeSpectator(string broadcastID, int peerID){
 			if(adminToRooms.ContainsKey(peerID))
 				adminToRooms.Remove (peerID);
 
@@ -164,14 +164,14 @@ namespace Barebones.MasterServer{
 					removeSpectator (broadcastID, p);
 			}
 			else { //Pregame
-				List<PreGame> preGames = preGameModule.getAllPreGames ();
-				PreGame game = preGames.Find (x => x.roomID == broadcastID);
+				List<PreGame> preGames = preGameModule.getAllGames ();
+				PreGame game = preGames.Find (x => x.specs.roomID == broadcastID);
 				if (game != null)
 					game.removeSpectator (peerID);
 			}
 
 		}
-		private void removeSpectator(int broadcastID, IPeer peer){
+		private void removeSpectator(string broadcastID, IPeer peer){
 			if(adminToRooms.ContainsKey(peer.Id))
 				adminToRooms.Remove (peer.Id);
 
@@ -206,7 +206,6 @@ namespace Barebones.MasterServer{
 			}catch{msg.Respond (ResponseStatus.Error);}
 		}
 			
-
 	}
 
 
@@ -220,12 +219,13 @@ namespace Barebones.MasterServer{
 
 	public class SpectatorSubscriptionsMsg : MessageBase{
 		public bool active, preGame;
-		public int broadcastID = -1;
+		public string broadcastID;
 	}
 
 	public class SpectatorGameLog : MessageBase{
 		public string[] gameLog;
-		public int id, updateNumber;
+        public string id;
+		public int updateNumber;
 		public bool initLog;
 	}
 	public class SpectatorInfoMsg : MessageBase{

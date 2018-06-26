@@ -13,7 +13,7 @@ namespace Barebones.MasterServer{
         public Dictionary<string, string> Properties { get; private set; }
         public string CustomArgs { get; private set; }
 
-        public int SpawnId { get; private set; }
+        public string SpawnId { get; private set; }
         public event Action<SpawnStatus> StatusChanged;
 
         private SpawnStatus _status;
@@ -24,7 +24,7 @@ namespace Barebones.MasterServer{
 
         protected List<Action<SpawnTask>> WhenDoneCallbacks;
 
-        public SpawnTask(int spawnId, RegisteredSpawner spawner, Dictionary<string, string> properties, string customArgs) {
+        public SpawnTask(string spawnId, RegisteredSpawner spawner, Dictionary<string, string> properties, string customArgs) {
             SpawnId = spawnId;
 
             Spawner = spawner;

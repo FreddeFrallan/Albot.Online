@@ -33,6 +33,8 @@ namespace AlbotServer{
 		PlayerLeftPreGame = 618,
 		SlotTypeChanged = 619,
 		PreGameKick = 620,
+        StartSinglePlayerGame = 621,
+        GameRoomInvite = 622,
 	}
 
 
@@ -47,46 +49,33 @@ namespace AlbotServer{
 
 	#region PreGame
 	public class PreGameMsg : MessageBase {
-		public int roomID;
-		public string errorMsg;
-	}
+        public string errorMsg, roomID;
+    }
 	public class PreGameSlotSTypeMsg : MessageBase{
-		public int roomID;
-		public string errorMsg;
-		public int slotID;
-		public PreGameSlotType type;
-		public PlayerInfo newPlayerInfo;
+        public string roomID;
+        public PreGameSlotInfo slot;
 	}
-	public class PreGameKickMsg : MessageBase{
-		public int roomID;
-		public string errorMsg;
-		public int peerID;
-	}
-	public class PreGameStartMsg : MessageBase{		
-		public int roomID, trainingRoomID;
-		public string errorMsg;
-		public bool isTraining, isSinglePlayer;
-	}
+    public class PreGameStartedMsg : MessageBase {
+        public PreGameSpecs specs;
+        public string gameRoomID;
+        public PreGameSlotInfo[] slots;
+    }
 	public class PreGameReadyUpdate : MessageBase{
-		public int roomID;
-		public string errorMsg;
+		public string roomID;
 		public bool isReady;
 	}
 	public class PreGameJoinRequest : MessageBase{
-		public int roomID;
-		public string errorMsg;
-		public PlayerInfo joiningPlayer;
+        public string errorMsg, roomID;
+        public PlayerInfo joiningPlayer;
 	}
 	public class PreGameRoomMsg : MessageBase{
-		public int roomID;
-		public string errorMsg;
-		public PreGamePlayer[] players;
-		public Game.GameType type;
-		public bool isTraining;
+        public PreGameSpecs specs;
+        public PreGameSlotInfo[] players;
 	}
 	public class PreGameCreateMSg : MessageBase{
 		public PlayerInfo mainPlayer;
 		public Game.GameType type;
+        public int maxPlayers;
 		public bool isTraining;
 	}
 	#endregion

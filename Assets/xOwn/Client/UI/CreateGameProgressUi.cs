@@ -65,14 +65,14 @@ namespace Barebones.MasterServer
             });
         }
 
-        public IEnumerator EnableAbortDelayed(float seconds, int spawnId){
+        public IEnumerator EnableAbortDelayed(float seconds, string spawnId){
             yield return new WaitForSeconds(seconds);
 
             if ((Request != null) && (Request.SpawnId == spawnId))
                 AbortButton.interactable = true;
         }
 
-        public IEnumerator CloseAfterRequest(float seconds, int spawnId){
+        public IEnumerator CloseAfterRequest(float seconds, string spawnId){
             yield return new WaitForSeconds(seconds);
 
             if ((Request != null) && (Request.SpawnId == spawnId)){
@@ -120,7 +120,7 @@ namespace Barebones.MasterServer
                 throw new Exception("Game server finalized, but didn't include room id");
             }
 
-            var roomId = int.Parse(data[MsfDictKeys.RoomId]);
+            string roomId = data[MsfDictKeys.RoomId];
 
             Msf.Client.Rooms.GetAccess(roomId, (access, error) =>{
                 if (access == null){

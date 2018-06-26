@@ -11,11 +11,11 @@ using UnityEngine;
 namespace Barebones.MasterServer{
     public class SpawnerController{
         public delegate void SpawnRequestHandler(SpawnRequestPacket packet, IIncommingMessage message);
-        public delegate void KillSpawnedProcessHandler(int spawnId);
+        public delegate void KillSpawnedProcessHandler(string spawnId);
 
         public readonly IClientSocket Connection;
 
-        public int SpawnerId { get; set; }
+        public string SpawnerId { get; set; }
         public SpawnerOptions Options { get; private set; }
 
         private SpawnRequestHandler _spawnRequestHandler;
@@ -36,11 +36,11 @@ namespace Barebones.MasterServer{
 
         public static BmLogger Logger = Msf.Create.Logger(typeof(SpawnerController).Name, LogLevel.Warn);
         private static object _processLock = new object();
-        private static Dictionary<int, Process> _processes = new Dictionary<int, Process>();
+        private static Dictionary<string, Process> _processes = new Dictionary<string, Process>();
 
         #endregion
 
-        public SpawnerController(int spawnerId, IClientSocket connection, SpawnerOptions options){
+        public SpawnerController(string spawnerId, IClientSocket connection, SpawnerOptions options){
             Connection = connection;
             SpawnerId = spawnerId;
             Options = options;
@@ -59,8 +59,8 @@ namespace Barebones.MasterServer{
 
         public void SetSpawnRequestHandler(SpawnRequestHandler handler){ _spawnRequestHandler = handler;}
         public void SetKillRequestHandler(KillSpawnedProcessHandler handler){ _killRequestHandler = handler;}
-        public void NotifyProcessStarted(int spawnId, int processId, string cmdArgs){ Msf.Server.Spawners.NotifyProcessStarted(spawnId, processId, cmdArgs, Connection);}
-        public void NotifyProcessKilled(int spawnId){ Msf.Server.Spawners.NotifyProcessKilled(spawnId);}
+        public void NotifyProcessStarted(string spawnId, int processId, string cmdArgs){ Msf.Server.Spawners.NotifyProcessStarted(spawnId, processId, cmdArgs, Connection);}
+        public void NotifyProcessKilled(string spawnId){ Msf.Server.Spawners.NotifyProcessKilled(spawnId);}
 		public void UpdateProcessesCount(int count){Msf.Server.Spawners.UpdateProcessesCount(SpawnerId, count, Connection);}
 
         private void HandleSpawnRequest(SpawnRequestPacket packet, IIncommingMessage message){
@@ -72,7 +72,7 @@ namespace Barebones.MasterServer{
             _spawnRequestHandler.Invoke(packet, message);
         }
 
-        private void HandleKillSpawnedProcessRequest(int spawnId){
+        private void HandleKillSpawnedProcessRequest(string spawnId){
             if (_killRequestHandler == null){
                 DefaultKillRequestHandler(spawnId);
                 return;
@@ -114,7 +114,7 @@ namespace Barebones.MasterServer{
 
         #region Default handlers
 
-        public static void DefaultKillRequestHandler(int spawnId){
+        public static void DefaultKillRequestHandler(string spawnId){
             Logger.Debug("Default kill request handler started handling a request to kill a process");
 
             try{

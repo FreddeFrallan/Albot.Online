@@ -14,7 +14,7 @@ namespace AdminUI{
 		private static AdminController controller;
 		private static List<SpectatorGameLog> logQueue = new List<SpectatorGameLog> ();
 		private static bool isSpectating = false;
-		private static int roomID;
+		private static string roomID;
 		private static AlbotServer.PlayerInfo[] currentPlayers = new AlbotServer.PlayerInfo[0];
 
 		void Start () {
@@ -84,7 +84,7 @@ namespace AdminUI{
 			}
 		}
 
-		public static void requestStartSpectate(int gameID){
+		public static void requestStartSpectate(string gameID){
 			isSpectating = true;
 			roomID = gameID;
 		}

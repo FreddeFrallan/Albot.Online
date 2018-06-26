@@ -8,7 +8,7 @@ namespace Barebones.MasterServer
     /// </summary>
     public class LobbyMemberPropChangePacket : SerializablePacket
     {
-        public int LobbyId;
+        public string LobbyId;
         public string Username;
         public string Property;
         public string Value;
@@ -23,7 +23,7 @@ namespace Barebones.MasterServer
 
         public override void FromBinaryReader(EndianBinaryReader reader)
         {
-            LobbyId = reader.ReadInt32();
+            LobbyId = reader.ReadString();
             Username = reader.ReadString();
             Property = reader.ReadString();
             Value = reader.ReadString();

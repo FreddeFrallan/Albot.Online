@@ -24,7 +24,7 @@ namespace Barebones.MasterServer{
 
         public event Action<RegisteredRoom> Destroyed; 
 
-        public RegisteredRoom(int roomId, IPeer peer, RoomOptions options){
+        public RegisteredRoom(string roomId, IPeer peer, RoomOptions options){
             RoomId = roomId;
             Peer = peer;
             Options = options;
@@ -41,7 +41,7 @@ namespace Barebones.MasterServer{
         }
 
         public RoomOptions Options { get; private set; }
-        public int RoomId { get; private set; }
+        public string RoomId { get; private set; }
         public IPeer Peer { get; private set; }
 
         public int OnlineCount { get { return _accessesInUse.Count; } }

@@ -42,7 +42,7 @@ namespace Barebones.MasterServer{
             MachineIp = ExtractValue(Names.MachineIp);
             DestroyUi = IsProvided(Names.DestroyUi);
 
-            SpawnId = ExtractValueInt(Names.SpawnId, -1);
+            SpawnId = ExtractValue(Names.SpawnId, "");
             AssignedPort = ExtractValueInt(Names.AssignedPort, -1);
             SpawnCode = ExtractValue(Names.SpawnCode);
             ExecutablePath = ExtractValue(Names.ExecutablePath);
@@ -105,7 +105,7 @@ namespace Barebones.MasterServer{
         /// <summary>
         /// SpawnId of the spawned process
         /// </summary>
-        public int SpawnId { get; private set; }
+        public string SpawnId { get; private set; }
 
         /// <summary>
         /// Port, assigned to the spawned process (most likely a game server)

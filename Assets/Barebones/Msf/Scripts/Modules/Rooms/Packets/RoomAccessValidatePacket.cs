@@ -5,7 +5,7 @@ namespace Barebones.MasterServer
     public class RoomAccessValidatePacket : SerializablePacket
     {
         public string Token;
-        public int RoomId;
+        public string RoomId;
 
         public override void ToBinaryWriter(EndianBinaryWriter writer)
         {
@@ -16,7 +16,7 @@ namespace Barebones.MasterServer
         public override void FromBinaryReader(EndianBinaryReader reader)
         {
             Token = reader.ReadString();
-            RoomId = reader.ReadInt32();
+            RoomId = reader.ReadString();
         }
     }
 }

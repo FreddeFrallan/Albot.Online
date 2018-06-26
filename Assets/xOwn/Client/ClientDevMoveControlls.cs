@@ -23,7 +23,7 @@ namespace ClientUI {
 
         private void createNewSpeedRunnerGame() {
             print("Sending Create Game");
-            gameCreator.createNewGame(speedRunnerGameSelection, false);
+            gameCreator.createNewGame(speedRunnerGameSelection);
         }
     }
 }

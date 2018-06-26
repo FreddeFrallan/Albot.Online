@@ -5,6 +5,7 @@ using System.Linq;
 using Barebones.Logging;
 using Barebones.Networking;
 using UnityEngine;
+using AlbotServer;
 
 namespace Barebones.MasterServer
 {
@@ -30,16 +31,14 @@ namespace Barebones.MasterServer
 
         #endregion
 
-        private int _spawnerId = 0;
-        private int _spawnTaskId = 0;
 
         public event Action<RegisteredSpawner> SpawnerRegistered; 
         public event Action<RegisteredSpawner> SpawnerDestroyed;
         public event SpawnedProcessRegistrationHandler SpawnedProcessRegistered;
 
-        protected Dictionary<int, RegisteredSpawner> Spawners;
+        protected Dictionary<string, RegisteredSpawner> Spawners;
 
-        protected Dictionary<int, SpawnTask> SpawnTasks;
+        protected Dictionary<string, SpawnTask> SpawnTasks;
 
         public BmLogger Logger = Msf.Create.Logger(typeof(SpawnersModule).Name);
 
@@ -51,8 +50,8 @@ namespace Barebones.MasterServer
             base.Initialize(server);
 			singleton = this;
 
-            Spawners = new Dictionary<int, RegisteredSpawner>();
-            SpawnTasks = new Dictionary<int, SpawnTask>();
+            Spawners = new Dictionary<string, RegisteredSpawner>();
+            SpawnTasks = new Dictionary<string, SpawnTask>();
 
             // Add handlers
             server.SetHandler((short) MsfOpCodes.RegisterSpawner, HandlerRegisterSpawner);
@@ -73,14 +72,14 @@ namespace Barebones.MasterServer
             var spawner = new RegisteredSpawner(GenerateSpawnerId(), peer, options);
 
             var peerSpawners =
-                peer.GetProperty((int) MsfPropCodes.RegisteredSpawners) as Dictionary<int, RegisteredSpawner>;
+                peer.GetProperty((int) MsfPropCodes.RegisteredSpawners) as Dictionary<string, RegisteredSpawner>;
 
             if (peerSpawners == null)
             {
                 // If this is the first time registering a spawners
 
                 // Save the dictionary
-                peerSpawners = new Dictionary<int, RegisteredSpawner>();
+                peerSpawners = new Dictionary<string, RegisteredSpawner>();
                 peer.SetProperty((int) MsfPropCodes.RegisteredSpawners, peerSpawners);
 
                 peer.Disconnected += OnRegisteredPeerDisconnect;
@@ -100,7 +99,7 @@ namespace Barebones.MasterServer
         }
 
         private void OnRegisteredPeerDisconnect(IPeer peer){
-            var peerSpawners = peer.GetProperty((int)MsfPropCodes.RegisteredSpawners) as Dictionary<int, RegisteredSpawner>;
+            var peerSpawners = peer.GetProperty((int)MsfPropCodes.RegisteredSpawners) as Dictionary<string, RegisteredSpawner>;
 
             if (peerSpawners == null)
                 return;
@@ -119,7 +118,7 @@ namespace Barebones.MasterServer
 
             if (peer != null)
             {
-                var peerRooms = peer.GetProperty((int)MsfPropCodes.RegisteredSpawners) as Dictionary<int, RegisteredSpawner>;
+                var peerRooms = peer.GetProperty((int)MsfPropCodes.RegisteredSpawners) as Dictionary<string, RegisteredSpawner>;
 
                 // Remove the spawner from peer
                 if (peerRooms != null)
@@ -134,12 +133,12 @@ namespace Barebones.MasterServer
                 SpawnerDestroyed.Invoke(spawner);
         }
 
-        public int GenerateSpawnerId(){
-            return _spawnerId++;
+        public string GenerateSpawnerId(){
+            return Msf.Helper.CreateRandomStringMatch(MasterServerConstants.KEY_LENGTH, (key) => { return Spawners.ContainsKey(key); });
         }
 
-        public int GenerateSpawnTaskId(){
-            return _spawnTaskId++;
+        public string GenerateSpawnTaskId(){
+            return Msf.Helper.CreateRandomStringMatch(MasterServerConstants.KEY_LENGTH, (key) => { return SpawnTasks.ContainsKey(key); });
         }
 
         public SpawnTask Spawn(Dictionary<string, string> properties){
@@ -295,10 +294,10 @@ namespace Barebones.MasterServer
 		// New Data can be sent by adding it to the Dict "Options" and then later adding it to the Command line arg
 		// These values will automaticlly be read by the Msf.Args module, and be available after startup
 		/************************************************/
-		public int createNewRoomFromPreGame(List<IPeer> peersInRoom, Dictionary<string, string> options){
+		public string createNewRoomFromPreGame(List<IPeer> peersInRoom, Dictionary<string, string> options){
 			var task = Spawn(options, "", "");
 			if (task == null) //All the servers are busy. Try again later"
-				return -1;
+				return "";
 			
 			task.Requester = peersInRoom[0];
 
@@ -311,9 +310,7 @@ namespace Barebones.MasterServer
 				foreach(IPeer p in peersInRoom)
 					p.SendMessage(msg);
 			};
-
-			return task.SpawnId;
-			//message.Respond(task.SpawnId, ResponseStatus.Success);
+            return task.SpawnId;
 		}
 
         private void HandleAbortSpawnRequest(IIncommingMessage message){
@@ -339,7 +336,7 @@ namespace Barebones.MasterServer
 
         protected virtual void HandleGetCompletionData(IIncommingMessage message)
         {
-            var spawnId = message.AsInt();
+            var spawnId = message.AsString();
             SpawnTask task;
             SpawnTasks.TryGetValue(spawnId, out task);
 
@@ -433,7 +430,7 @@ namespace Barebones.MasterServer
         }
 
         protected virtual void HandleProcessKilled(IIncommingMessage message){
-            var spawnId = message.AsInt();
+            var spawnId = message.AsString();
 
             SpawnTask task;
             SpawnTasks.TryGetValue(spawnId, out task);
@@ -446,7 +443,7 @@ namespace Barebones.MasterServer
         }
 
         protected virtual void HandleProcessStarted(IIncommingMessage message){
-            var spawnId = message.AsInt();
+            var spawnId = message.AsString();
 
             SpawnTask task;
             SpawnTasks.TryGetValue(spawnId, out task);

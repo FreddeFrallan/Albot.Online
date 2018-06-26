@@ -50,7 +50,7 @@ namespace Barebones.MasterServer
 
         public string LobbyName { get { return Data.LobbyName; } }
 
-        public int Id { get { return Data.LobbyId; } }
+        public string Id { get { return Data.LobbyId; } }
 
         public LobbyState State { get { return Data.LobbyState; } }
 
@@ -236,7 +236,7 @@ namespace Barebones.MasterServer
 
         private void HandleLeftLobbyMsg(IIncommingMessage message)
         {
-            var id = message.AsInt();
+            var id = message.AsString();
             
             // Check the id in case there's something wrong with message order
             if (Id != id)

@@ -22,7 +22,7 @@ namespace ClientUI{
 		public NewGameCreator gameCreator;
 		public List<MapSelection> maps;
         protected IClientSocket Connection = Msf.Connection;
-		private int selectedID = -1;
+		private string selectedID = "";
 		public Text currentGames, totalGames;
 
         // Use this for initialization
@@ -56,11 +56,11 @@ namespace ClientUI{
 
 		private void UpdateGameJoinButton(){
 			GamesListUiItem item = GetSelectedItem ();
-			if (item == null && selectedID >= 0) { item = _items.FindObject<GamesListUiItem> ((x) => {return x.GameId == selectedID; });
+			if (item == null && string.IsNullOrEmpty(selectedID) == false) { item = _items.FindObject<GamesListUiItem> ((x) => {return x.GameId == selectedID; });
 				if (item != null)
 					Select (item);
 				else {
-					selectedID = -1;
+                    selectedID = "";
 					GameJoinButton.interactable = false;
 				}
 			}else
@@ -79,7 +79,7 @@ namespace ClientUI{
 
 			MapSelection selectedMap = getSelectedMap (isTraining ? newTrainingDropdown.value : newGameDropdown.value);
 			resetSelection ();
-			gameCreator.createNewGame (selectedMap, isTraining);
+			gameCreator.createNewGame (selectedMap);
 		}
 		private void handleGameStatsUpdate(IIncommingMessage message){
 			LobbyGameStatsMsg msg = message.Deserialize<LobbyGameStatsMsg> ();

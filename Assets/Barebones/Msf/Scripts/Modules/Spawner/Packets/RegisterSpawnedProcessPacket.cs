@@ -4,7 +4,7 @@ namespace Barebones.MasterServer
 {
     public class RegisterSpawnedProcessPacket : SerializablePacket
     {
-        public int SpawnId;
+        public string SpawnId;
         public string SpawnCode;
 
         public override void ToBinaryWriter(EndianBinaryWriter writer)
@@ -15,7 +15,7 @@ namespace Barebones.MasterServer
 
         public override void FromBinaryReader(EndianBinaryReader reader)
         {
-            SpawnId = reader.ReadInt32();
+            SpawnId = reader.ReadString();
             SpawnCode = reader.ReadString();
         }
     }

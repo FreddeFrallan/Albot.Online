@@ -3,6 +3,7 @@ using System.Linq;
 using Barebones.Networking;
 using UnityEngine;
 using AlbotServer;
+using Tournament.Server;
 
 namespace Barebones.MasterServer{
 	
@@ -37,13 +38,11 @@ namespace Barebones.MasterServer{
             var list = new List<GameInfoPacket>();
             var filters = new Dictionary<string, string>().FromBytes(message.AsBytes());
 
-			/*
-            foreach (var provider in GameProviders)
-                list.AddRange(provider.GetPublicGames(message.Peer, filters));
-			*/
-
-			foreach (PreGame p in AlbotPreGameModule.singleton.currentPreGames)
+			foreach (PreGame p in AlbotPreGameModule.getCurrentPreGames()) //PreGames
 				list.Add (p.convertToGameInfoPacket ());
+
+            foreach (TournamentGame t in AlbotTournamentModule.getCurrentTournaments())
+                list.Add(t.convertToGameInfoPacket());
 
             // Convert to generic list and serialize to bytes
             var bytes = list.Select(l => (ISerializablePacket)l).ToBytes();
@@ -61,7 +60,7 @@ namespace Barebones.MasterServer{
 
 			foreach (var provider in GameProviders)
 				gameList.AddRange(provider.GetPublicGames(p, new Dictionary<string, string>()));
-			foreach (PreGame g in AlbotPreGameModule.singleton.currentPreGames)
+            foreach (PreGame g in AlbotPreGameModule.getCurrentPreGames())
 				gameList.Add (g.convertToGameInfoPacket ());
 
 			return gameList;

@@ -7,7 +7,7 @@ namespace Barebones.MasterServer
 {
     public class SaveRoomOptionsPacket : SerializablePacket
     {
-        public int RoomId;
+        public string RoomId;
         public RoomOptions Options;
 
         public override void ToBinaryWriter(EndianBinaryWriter writer)
@@ -18,7 +18,7 @@ namespace Barebones.MasterServer
 
         public override void FromBinaryReader(EndianBinaryReader reader)
         {
-            RoomId = reader.ReadInt32();
+            RoomId = reader.ReadString();
             Options = reader.ReadPacket(new RoomOptions());
         }
     }

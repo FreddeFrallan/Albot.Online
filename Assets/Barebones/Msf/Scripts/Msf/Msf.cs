@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using AlbotServer;
 using Barebones.Logging;
 using Barebones.Networking;
 using UnityEngine;
@@ -322,20 +323,75 @@ namespace Barebones.MasterServer
             #endregion
         }
 
-        public class MsfHelper
-        {
+        public class MsfHelper{
             /// <summary>
             /// Creates a random string of a given length.
             /// Uses a substring of guid
             /// </summary>
             /// <param name="length"></param>
             /// <returns></returns>
-            public string CreateRandomString(int length)
-            {
+            public string CreateRandomString(int length){
                 if (length < 0) throw new ArgumentOutOfRangeException("length", "length cannot be less than zero.");
 
                 return Guid.NewGuid().ToString().Substring(0, length);
             }
+
+            public string CreateRandomStringMatch(int length, Func<string, bool> match) {
+                string key = "";
+                do {
+                    key = CreateRandomString(length);
+                } while (match(key));
+                return key;
+            }
+
+
+            public GameInfoPacket createGameInfoPacket(GameInfoType infoType, string roomID, string hostName, int maxPlayers, int playerAmount, Game.GameType type) {
+                return new GameInfoPacket() {
+                    Type = GameInfoType.PreTournament,
+                    Name = hostName,
+                    OnlinePlayers = playerAmount,
+                    MaxPlayers = maxPlayers,
+                    IsPasswordProtected = false,
+                    Properties = new Dictionary<string, string>(){
+                    {MsfDictKeys.MapName, type.ToString()},
+                    {MsfDictKeys.IsPreGame, true.ToString()},
+                    {MsfDictKeys.GameType, type.ToString()}
+                },
+
+                    Id = roomID,
+                    Address = "MasterIP"
+                };
+            }
+
+            public Dictionary<string, string> generateGameSettings(PreGameSpecs specs, bool hasSpectators, PreGameSlotInfo[] players) {
+                GameSettings constants = InduvidualGameData.games[specs.type];
+
+                Dictionary<string, string> settings = new Dictionary<string, string>{
+                    {MsfDictKeys.MaxPlayers, specs.maxPlayers.ToString()},
+                    {MsfDictKeys.RoomName, specs.hostName},
+                    {MsfDictKeys.MapName, constants.mapName},
+                    {MsfDictKeys.SceneName, constants.sceneName},
+                    {MsfDictKeys.IsRealtime, constants.isRealTime.ToString()},
+                    {MsfDictKeys.GameType, specs.type.ToString()},
+                    {MsfDictKeys.Spectators, hasSpectators.ToString()}
+                };
+                for (int i = 0; i < players.Length; i++)
+                    settings.Add("p" + i, players[i].playerInfo.username);
+
+                return settings;
+            }
+
+            public PreGameSpecs createGameSpecs(Game.GameType type, int maxPlayers, string hostName, string roomID = "") {
+                return new PreGameSpecs() { type = type, roomID = roomID, hostName = hostName, maxPlayers = maxPlayers};
+            }
+
+            public void handleErrorResponse(ResponseStatus status, IIncommingMessage rawMsg) {
+                if (status != ResponseStatus.Success) {
+                    Debug.LogError(rawMsg.AsString());
+                    Events.Fire(EventNames.ShowDialogBox, DialogBoxData.CreateError(rawMsg.AsString()));
+                }
+            }
+
 
             /// <summary>
             /// Retrieves current public IP

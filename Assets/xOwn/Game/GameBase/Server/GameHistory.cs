@@ -13,7 +13,7 @@ public class GameHistory{
 	private List<byte> gameLog = new List<byte> ();
 	private List<string> rawGameLog = new List<string>();
 	private bool broadcastToSpectators = false;
-	private int broadcastID;
+	private string broadcastID;
 
 	public void initHandlers(){
 		Msf.Connection.SetHandler ((short)CustomMasterServerMSG.spectateStatus, handleSetSubscribeStatus);
