@@ -25,8 +25,8 @@ namespace TCP_API.Snake {
         )]
         public void getPossibleMovesTest(string playerDir, string enemyDir, string[] playerExpected, string[] enemyExpected, string rawBoard) {
             SnakeAPIRouter router = new SnakeAPIRouter();
-            Board startBoard = SnakeTestUtils.generateBoard(rawBoard, playerDir, enemyDir);
-            JSONObject jMsg = SnakeProtocolEncoder.generateGetPossMovesJMsg(startBoard, playerDir, enemyDir);
+            //Board startBoard = SnakeTestUtils.generateBoard(rawBoard, playerDir, enemyDir);
+            JSONObject jMsg = SnakeProtocolEncoder.generateGetPossMovesJMsg(playerDir, enemyDir);
 
             APIMsgConclusion response = router.handleIncomingMsg(jMsg.Print());
             Assert.True(response.toServer == false);

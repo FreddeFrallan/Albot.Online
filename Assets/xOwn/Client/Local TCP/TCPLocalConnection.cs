@@ -106,7 +106,10 @@ class TCPLocalConnection{
 
 
 	#region monitor TCP
-	public static void clientConnected(TcpClient c){connectionClient = c;}
+	public static void clientConnected(TcpClient c) {
+        connectionClient = c;
+        c.SendBufferSize = 1024;
+    }
 	private static void monitorTCPConnection(){
 		while (true) {
 			if (currentState == ConnectionStatus.Connected) 

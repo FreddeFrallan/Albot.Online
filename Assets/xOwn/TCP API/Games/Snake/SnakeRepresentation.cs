@@ -14,17 +14,17 @@ namespace TCP_API.Snake {
         public const int POSSIBLE_MOVES = 3;
 
         public class JProtocol {
-            public const string board = "Board";
-            public const string posX = "X";
-            public const string posY = "Y";
-            public const string dir = "Dir";
-            public const string player = "Player";
-            public const string enemy = "Enemy";
-            public const string blocked = "Blocked";
-            public const string playerMove = "PlayerMove";
-            public const string enemyMove = "EnemyMove";
-            public const string playerMoves = "PlayerMoves";
-            public const string enemyMoves = "EnemyMoves";
+            public const string board = "board";
+            public const string posX = "x";
+            public const string posY = "y";
+            public const string dir = "dir";
+            public const string player = "player";
+            public const string enemy = "enemy";
+            public const string blocked = "blocked";
+            public const string playerMove = "playerMove";
+            public const string enemyMove = "enemyMove";
+            public const string playerMoves = "playerMoves";
+            public const string enemyMoves = "enemyMoves";
         }
 
         public class Movement {
@@ -76,6 +76,7 @@ namespace TCP_API.Snake {
         public Board(JSONObject jObj) {
             parsePlayer(jObj.GetField(Constants.JProtocol.player), ref players[0]);
             parsePlayer(jObj.GetField(Constants.JProtocol.enemy), ref players[1]);
+            //if(jObj.HasField(Constants.JProtocol.blocked))
             parseBlocked((jObj.GetField(Constants.JProtocol.blocked).list));
         }
 
@@ -105,11 +106,14 @@ namespace TCP_API.Snake {
         }
         private void applyPlayMove(ref SnakePlayer p, string dir) {
             int[] coordChange = Constants.Movement.dirToCoords(dir);
-
+            
             blockedGrid[p.x, p.y] = true;
             blockedList.Add(new Position2D() { x = p.x, y = p.y });
+
             p.x += coordChange[0];
             p.y += coordChange[1];
+
+            p.dir = dir;
         }
 
         #region Evaluation

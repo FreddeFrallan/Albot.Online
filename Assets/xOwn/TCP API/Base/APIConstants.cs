@@ -15,6 +15,7 @@ namespace TCP_API {
             public const string player = "Player";
             public const string enemy = "Enemy";
             public const string action = "Action";
+            public const string boardState = "boardState";
         }
 
         public static class Actions {
