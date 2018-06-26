@@ -23,17 +23,17 @@ namespace SnakeBot {
 
 
         public class Fields {
-            public const string board = "Board";
+            public const string board = "board";
             public const string evaluate = "Evaluate";
             public const string possibleMoves = "PossMoves";
             public const string winner = "Winner";
             public const string move = "Move";
-            public const string player = "Player";
+            public const string player = "player";
             public const string action = "Action";
 
-            public const string posX = "X";
-            public const string posY = "Y";
-            public const string direction = "Dir";
+            public const string posX = "x";
+            public const string posY = "y";
+            public const string direction = "dir";
         }
 
         public static class Actions {
