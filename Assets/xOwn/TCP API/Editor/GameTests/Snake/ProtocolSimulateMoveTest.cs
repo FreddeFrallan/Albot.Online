@@ -8,7 +8,7 @@ namespace TCP_API.Snake {
 
     public class ProtocolSimulateBothPlayerMoveTest {
         [TestCase(
-             "Left", "Up",
+             "left", "up",
              "0 0 0 0 0 P 0 0 0 0 " +
              "X X X X X X 0 0 0 0 " +
              "X 0 0 0 0 0 0 0 0 0 " +
@@ -32,7 +32,7 @@ namespace TCP_API.Snake {
              "0 X X X X X X X X 0 "
              )]
         [TestCase(
-             "Down", "Right",
+             "down", "right",
              "0 0 0 0 0 0 0 0 0 0 " +
              "X X X X X X 0 0 0 0 " +
              "X 0 0 0 0 X 0 E 0 0 " +

@@ -29,11 +29,17 @@ namespace SnakeBot {
             public const string winner = "Winner";
             public const string move = "Move";
             public const string player = "player";
+            public const string enemy = "enemy";
+            public const string blocked = "blocked";
             public const string action = "Action";
 
             public const string posX = "x";
             public const string posY = "y";
             public const string direction = "dir";
+            public const string right = "right";
+            public const string left = "left";
+            public const string up = "up";
+            public const string down = "down";
         }
 
         public static class Actions {

@@ -28,10 +28,10 @@ namespace TCP_API.Snake {
         }
 
         public class Movement {
-            public const string right = "Right";
-            public const string up = "Up";
-            public const string left = "Left";
-            public const string down = "Down";
+            public const string right = "right";
+            public const string up = "up";
+            public const string left = "left";
+            public const string down = "down";
 
             public static int[] dirToCoords(string dir) {
                 switch (dir) {
@@ -42,12 +42,22 @@ namespace TCP_API.Snake {
                 }
             }
 
+            /*
             public static string[] getPossibleMovesFromDir(string dir) {
                 switch (dir) {
                     case right: return new string[] {up, right, down}; break;
                     case up: return new string[] { left, up, right}; break;
                     case left: return new string[] { down, left, up}; break;
                     default: return new string[] { left, down, right}; break;
+                }
+            }
+            */
+            public static List<string> getPossibleMovesFromDir(string dir) {
+                switch (dir) {
+                    case right: return new List<string> { up, right, down }; break;
+                    case up: return new List<string> { left, up, right }; break;
+                    case left: return new List<string> { down, left, up }; break;
+                    default: return new List<string> { left, down, right }; break;
                 }
             }
         }

@@ -27,7 +27,7 @@ namespace TCP_API.Snake {
         public static SimulatedMove[] simulateAllEnemyMoves(Board board, SnakePlayer[] players, string dir) {
             return simulateAllEnemyMoves(board, dir, Constants.Movement.getPossibleMovesFromDir(players[1].dir));
         }
-        public static SimulatedMove[] simulateAllEnemyMoves(Board board, string playerDir, string[] enemyDirs) {
+        public static SimulatedMove[] simulateAllEnemyMoves(Board board, string playerDir, List<string> enemyDirs) {
             SimulatedMove[] newBoards = new SimulatedMove[(Constants.AMOUNT_PLAYERS - 1) * Constants.POSSIBLE_MOVES];
             for (int i = 0; i < newBoards.Length; i++)
                 newBoards[i] = simulateMove(board, new string[] { playerDir, enemyDirs[i] });
@@ -47,7 +47,8 @@ namespace TCP_API.Snake {
         
         public static PossibleMoves getPossibleMoves(Board board) {
             SnakePlayer[] players = board.getPlayers();
-            string[][] moves = new string[players.Length][];
+            //string[][] moves = new string[players.Length][];
+            List<string>[] moves = new List<string>[players.Length];
             for (int i = 0; i < players.Length; i++)
                 moves[i] = Constants.Movement.getPossibleMovesFromDir(players[i].dir);
 
@@ -55,7 +56,7 @@ namespace TCP_API.Snake {
         }
         
         public static PossibleMoves getPossibleMoves(string[] directions) {
-            string[][] moves = new string[directions.Length][];
+            List<string>[] moves = new List<string>[directions.Length];
             for (int i = 0; i < directions.Length; i++)
                 moves[i] = Constants.Movement.getPossibleMovesFromDir(directions[i]);
 
@@ -64,7 +65,9 @@ namespace TCP_API.Snake {
 
     }
 
-    public struct PossibleMoves {public string[] playerMoves, enemyMoves;}
+    //public struct PossibleMoves {public string[] playerMoves, enemyMoves;}
+    public struct PossibleMoves { public List<string> playerMoves, enemyMoves; }
+
     public struct SimulatedMove {
         public Board board;
         public string playerMove, enemyMove;

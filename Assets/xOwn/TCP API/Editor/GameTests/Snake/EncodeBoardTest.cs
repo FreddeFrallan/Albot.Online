@@ -8,7 +8,7 @@ namespace TCP_API.Snake {
     public class EncodeBoardTest {
 
         [TestCase(
-         "Right", "Left",
+         "right", "left",
          "0 0 0 0 0 0 0 0 0 0 " +
          "0 0 0 0 0 0 0 0 0 0 " +
          "X X P 0 0 0 0 0 0 0 " +
@@ -21,7 +21,7 @@ namespace TCP_API.Snake {
          "0 0 0 0 0 0 0 0 0 0 "
         )]
         [TestCase(
-         "Right", "Left",
+         "right", "left",
          "0 0 0 0 0 0 0 0 0 0 " +
          "0 0 0 0 0 0 0 0 0 0 " +
          "X X X X X X X 0 0 0 " +

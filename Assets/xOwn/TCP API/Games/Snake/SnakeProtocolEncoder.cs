@@ -109,8 +109,8 @@ namespace TCP_API.Snake {
             return jObj;
         }
 
-        private static void addPossibleMovesJObj(ref JSONObject jObj, string[] dirs, string fieldName) {
-            JSONObject[] moves = new JSONObject[dirs.Length];
+        private static void addPossibleMovesJObj(ref JSONObject jObj, List<string> dirs, string fieldName) {
+            JSONObject[] moves = new JSONObject[dirs.Count];
             for (int i = 0; i < moves.Length; i++) { 
                 moves[i] = new JSONObject();
                 moves[i].str = dirs[i];

@@ -57,8 +57,8 @@ namespace TCP_API.Snake {
             return true;
         }
 
-        public static bool comparePossibleMoves(string[] a, string[] b) {
-            if (a.Length != b.Length)
+        public static bool comparePossibleMoves(List<string> a, List<string> b) {
+            if (a.Count != b.Count)
                 return false;
             foreach (string s in a)
                 if (b.Any(s2 => s2 == s) == false)

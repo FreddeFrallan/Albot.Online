@@ -5,11 +5,11 @@ using System.Net.Sockets;
 using System.Text;
 using Newtonsoft.Json;
 
-
+using static SnakeBot.Constants;
 
 namespace SnakeBot {
 
-    public enum Move {Right, Up, Left,Down}
+    public enum Move {right, up, left,down}
 
     public class TCP_API {
 
@@ -29,7 +29,7 @@ namespace SnakeBot {
         public static void makeMove(int move) { makeMove(intToMove(move)); }
         public static void makeMove(Move move) {
             JSONObject jMsg = new JSONObject();
-            jMsg.AddField(Constants.Actions.makeMove, move.ToString());
+            jMsg.AddField(Actions.makeMove, move.ToString());
             sendMsg(move.ToString());
         }
 
@@ -42,18 +42,18 @@ namespace SnakeBot {
 
         private static Move intToMove(int dir) {
             switch (dir) {
-                case 0: return Move.Right;
-                case 1: return Move.Up;
-                case 2: return Move.Left;
-                default: return Move.Down;
+                case 0: return Move.right;
+                case 1: return Move.up;
+                case 2: return Move.left;
+                default: return Move.down;
             }
         }
         private static Move stringToMove(string dir) {
             switch (dir) {
-                case "Right": return Move.Right;
-                case "Up": return Move.Up;
-                case "Left": return Move.Left;
-                default: return Move.Down;
+                case Fields.right: return Move.right;
+                case Fields.up: return Move.up;
+                case Fields.left: return Move.left;
+                default: return Move.down;
             }
         }
     }
