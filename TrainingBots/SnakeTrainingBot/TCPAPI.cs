@@ -11,7 +11,7 @@ namespace SnakeBot {
 
     public enum Move {right, up, left,down}
 
-    public class TCP_API {
+    public class TCPAPI {
 
         private static NetworkStream stream;
         public static void initStream(NetworkStream albotStream) { stream = albotStream; }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace TCP_API {
+    public enum BoardState { PlayerWon, EnemyWon, Draw, Ongoing, }
 
     public class APIStandardConstants {
 

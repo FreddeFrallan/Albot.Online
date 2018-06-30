@@ -163,5 +163,5 @@ namespace TCP_API.Snake {
         public int x, y;
         public string dir;
     }
-    public enum BoardState {PlayerWon, EnemyWon,Draw,Ongoing,}
+    
 }
