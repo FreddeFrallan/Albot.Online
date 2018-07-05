@@ -110,6 +110,10 @@ namespace TCP_API.Snake {
         }
         #endregion
 
+        public void playSingleMove(string dir, bool player) {
+            int id = player ? 0 : 1;
+            applyPlayMove(ref players[id], dir);
+        }
         public void playMove(string[] dirs) {
             for (int i = 0; i < dirs.Length; i++)
                 applyPlayMove(ref players[i], dirs[i]);
@@ -129,12 +133,14 @@ namespace TCP_API.Snake {
         #region Evaluation
         public BoardState evaluateBoard() {
             SnakePlayer p = players[0], e = players[1];
-
+            Debug.Log("Player: " + p.x + "," + p.y + "\nEnemy: " + e.x + "," + e.y);
             if (p.x == e.x && p.y == e.y) // Players Crash into eachother
                 return BoardState.Draw;
 
             bool playerCrash = coordCrash(p.x, p.y);
             bool enemyCrash = coordCrash(e.x, e.y);
+
+            Debug.Log("Playercrash: " + playerCrash.ToString() + ", Enemycrash: " + enemyCrash.ToString());
 
             if (playerCrash && enemyCrash)
                 return BoardState.Draw;

@@ -29,18 +29,19 @@ namespace TCP_API.Snake {
             BoardMoves moves = parseBoardMoves(jObj);
             string encodedBoards;
 
+            SimulatedMove temp;
             if (moves.hasPlayerMove == false) {
-                List<SimulatedMove[]> temp = SnakeAPILogic.simulateAllPossibleMoves(startBoard);
-                encodedBoards = SnakeProtocolEncoder.compressSimulatedMove(temp);
+                //List<SimulatedMove[]> temp = SnakeAPILogic.simulateAllPossibleMoves(startBoard);
+                temp = SnakeAPILogic.simulateSingleMove(startBoard, moves.enemyMove, false, false);
             }
             else if (moves.hasEnemyMove == false) {
-                SimulatedMove[] temp = SnakeAPILogic.simulateAllEnemyMoves(startBoard, startBoard.getPlayers(), moves.playerMove);
-                encodedBoards = SnakeProtocolEncoder.compressSimulatedMove(temp);
+                //SimulatedMove[] temp = SnakeAPILogic.simulateAllEnemyMoves(startBoard, startBoard.getPlayers(), moves.playerMove);
+                temp = SnakeAPILogic.simulateSingleMove(startBoard, moves.playerMove, true, false);
             } 
             else {
-                SimulatedMove temp = SnakeAPILogic.simulateMove(startBoard, moves.playerMove, moves.enemyMove, false);
-                encodedBoards = SnakeProtocolEncoder.compressSimulatedMove(temp);
+                temp = SnakeAPILogic.simulateMove(startBoard, moves.playerMove, moves.enemyMove, false);
             }
+            encodedBoards = SnakeProtocolEncoder.compressSimulatedMove(temp);
 
             return new APIMsgConclusion() {status = ResponseStatus.Success, msg = encodedBoards, toServer = false};
         }

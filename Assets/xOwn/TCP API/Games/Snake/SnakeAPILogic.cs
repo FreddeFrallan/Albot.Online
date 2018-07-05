@@ -35,7 +35,11 @@ namespace TCP_API.Snake {
             return newBoards;
         }
 
-
+        public static SimulatedMove simulateSingleMove(Board board, string dir, bool player, bool doDeepCopy = true) {
+            Board newBoard = doDeepCopy ? board.deepCopy() : board;
+            newBoard.playSingleMove(dir, player);
+            return new SimulatedMove() { board = newBoard };
+        }
         public static SimulatedMove simulateMove(Board board, string[] dirs, bool doDeepCopy = true) {
             Board newBoard = doDeepCopy ? board.deepCopy() : board;
             newBoard.playMove(dirs);
