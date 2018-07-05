@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Game;
 
+
 namespace TCP_API.Snake {
 
     public class SnakeProtocolEncoder {
@@ -27,10 +28,11 @@ namespace TCP_API.Snake {
         public static string compressSimulatedMove(SimulatedMove move) { return generateJMove(move).Print(); }
 
         public static JSONObject generateJMove(SimulatedMove move) {
-            JSONObject jObj = new JSONObject();
-            jObj.AddField(Constants.JProtocol.board, compressBoard(move.board));
-            jObj.AddField(Constants.JProtocol.playerMove, move.playerMove);
-            jObj.AddField(Constants.JProtocol.enemyMove, move.enemyMove);
+            JSONObject jObj = compressBoard(move.board);
+            //Debug.Log("SimMove response obj: \n" + jObj.Print(true));
+            //jObj.AddField(Constants.JProtocol.board, compressBoard(move.board));
+            //jObj.AddField(Constants.JProtocol.playerMove, move.playerMove);
+            //jObj.AddField(Constants.JProtocol.enemyMove, move.enemyMove);
             return jObj;
         }
         #endregion
@@ -43,7 +45,7 @@ namespace TCP_API.Snake {
             addPlayerField(ref jBoard, players[0], Constants.JProtocol.player);
             addPlayerField(ref jBoard, players[1], Constants.JProtocol.enemy);
             addBlockedField(ref jBoard, blockedList);
-
+            
             return jBoard;
         }
         #endregion
@@ -71,17 +73,25 @@ namespace TCP_API.Snake {
 
         public static JSONObject generateJBoard(Board b, string playerDir, string enemyDir) {
             JSONObject jObj = new JSONObject();
-            SnakeProtocolEncoder.addPlayerField(ref jObj, b.getPlayers()[0], Constants.Fields.player);
-            SnakeProtocolEncoder.addPlayerField(ref jObj, b.getPlayers()[1], Constants.Fields.enemy);
+            SnakeProtocolEncoder.addPlayerField(ref jObj, b.getPlayers()[0], Constants.JProtocol.player);
+            SnakeProtocolEncoder.addPlayerField(ref jObj, b.getPlayers()[1], Constants.JProtocol.enemy);
             SnakeProtocolEncoder.addBlockedField(ref jObj, b.getBlockedList());
             return jObj;
         }
         #endregion
 
+        #region EvaluateBoard
+        public static string encodeBoardState(string boardState) {
+            JSONObject jObj = new JSONObject();
+            jObj.AddField(Constants.Fields.boardState, boardState);
+            return jObj.Print();
+        }
+        #endregion
 
         #region SimulateMove
         public static JSONObject generateSimulateJMsg(Board b, string playerDir, string enemyDir) {
-            JSONObject jObj = generateJBoard(b, playerDir, enemyDir);
+            JSONObject jObj = new JSONObject();
+            jObj.AddField(Constants.JProtocol.board, generateJBoard(b, playerDir, enemyDir));
             jObj.AddField(Constants.Fields.action, Constants.Actions.simMove);
             jObj.AddField(Constants.JProtocol.playerMove, playerDir);
             jObj.AddField(Constants.JProtocol.enemyMove, enemyDir);
@@ -95,12 +105,12 @@ namespace TCP_API.Snake {
         public static JSONObject encodePossibleMoves(PossibleMoves possMoves) {
             JSONObject jObj = new JSONObject();
             addPossibleMovesJObj(ref jObj, possMoves.playerMoves, Constants.JProtocol.playerMoves);
-            addPossibleMovesJObj(ref jObj, possMoves.playerMoves, Constants.JProtocol.enemyMoves);
+            addPossibleMovesJObj(ref jObj, possMoves.enemyMoves, Constants.JProtocol.enemyMoves);
             return jObj;
         }
 
-        private static void addPossibleMovesJObj(ref JSONObject jObj, string[] dirs, string fieldName) {
-            JSONObject[] moves = new JSONObject[dirs.Length];
+        private static void addPossibleMovesJObj(ref JSONObject jObj, List<string> dirs, string fieldName) {
+            JSONObject[] moves = new JSONObject[dirs.Count];
             for (int i = 0; i < moves.Length; i++) { 
                 moves[i] = new JSONObject();
                 moves[i].str = dirs[i];
@@ -108,9 +118,11 @@ namespace TCP_API.Snake {
             }
             jObj.AddField(fieldName, new JSONObject(moves));
         }
-        public static JSONObject generateGetPossMovesJMsg(Board b, string playerDir, string enemyDir) {
-            JSONObject jObj = generateJBoard(b, playerDir, enemyDir);
+        public static JSONObject generateGetPossMovesJMsg(string playerDir, string enemyDir) {
+            JSONObject jObj = new JSONObject();//generateJBoard(b, playerDir, enemyDir);
             jObj.AddField(Constants.Fields.action, Constants.Actions.getPossMoves);
+            jObj.AddField(Constants.JProtocol.player, playerDir);
+            jObj.AddField(Constants.JProtocol.enemy, enemyDir);
             return jObj;
         }
         #endregion

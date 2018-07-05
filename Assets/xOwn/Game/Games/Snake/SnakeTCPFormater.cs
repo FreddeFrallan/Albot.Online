@@ -71,10 +71,10 @@ namespace Snake{
 
 
 		private static string dirToString(int dir){
-			if (dir == 0)return "Right";
-			if (dir == 1)return "Up";
-			if (dir == 2)return "Left";
-			else return "Down";
+			if (dir == 0)return "right";
+			if (dir == 1)return "up";
+			if (dir == 2)return "left";
+			else return "down";
 		}
 	}
 

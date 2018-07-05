@@ -14,24 +14,24 @@ namespace TCP_API.Snake {
         public const int POSSIBLE_MOVES = 3;
 
         public class JProtocol {
-            public const string board = "Board";
-            public const string posX = "X";
-            public const string posY = "Y";
-            public const string dir = "Dir";
-            public const string player = "Player";
-            public const string enemy = "Enemy";
-            public const string blocked = "Blocked";
-            public const string playerMove = "PlayerMove";
-            public const string enemyMove = "EnemyMove";
-            public const string playerMoves = "PlayerMoves";
-            public const string enemyMoves = "EnemyMoves";
+            public const string board = "board";
+            public const string posX = "x";
+            public const string posY = "y";
+            public const string dir = "dir";
+            public const string player = "player";
+            public const string enemy = "enemy";
+            public const string blocked = "blocked";
+            public const string playerMove = "playerMove";
+            public const string enemyMove = "enemyMove";
+            public const string playerMoves = "playerMoves";
+            public const string enemyMoves = "enemyMoves";
         }
 
         public class Movement {
-            public const string right = "Right";
-            public const string up = "Up";
-            public const string left = "Left";
-            public const string down = "Down";
+            public const string right = "right";
+            public const string up = "up";
+            public const string left = "left";
+            public const string down = "down";
 
             public static int[] dirToCoords(string dir) {
                 switch (dir) {
@@ -42,12 +42,22 @@ namespace TCP_API.Snake {
                 }
             }
 
+            /*
             public static string[] getPossibleMovesFromDir(string dir) {
                 switch (dir) {
                     case right: return new string[] {up, right, down}; break;
                     case up: return new string[] { left, up, right}; break;
                     case left: return new string[] { down, left, up}; break;
                     default: return new string[] { left, down, right}; break;
+                }
+            }
+            */
+            public static List<string> getPossibleMovesFromDir(string dir) {
+                switch (dir) {
+                    case right: return new List<string> { up, right, down }; break;
+                    case up: return new List<string> { left, up, right }; break;
+                    case left: return new List<string> { down, left, up }; break;
+                    default: return new List<string> { left, down, right }; break;
                 }
             }
         }
@@ -76,6 +86,7 @@ namespace TCP_API.Snake {
         public Board(JSONObject jObj) {
             parsePlayer(jObj.GetField(Constants.JProtocol.player), ref players[0]);
             parsePlayer(jObj.GetField(Constants.JProtocol.enemy), ref players[1]);
+            //if(jObj.HasField(Constants.JProtocol.blocked))
             parseBlocked((jObj.GetField(Constants.JProtocol.blocked).list));
         }
 
@@ -99,28 +110,37 @@ namespace TCP_API.Snake {
         }
         #endregion
 
+        public void playSingleMove(string dir, bool player) {
+            int id = player ? 0 : 1;
+            applyPlayMove(ref players[id], dir);
+        }
         public void playMove(string[] dirs) {
             for (int i = 0; i < dirs.Length; i++)
                 applyPlayMove(ref players[i], dirs[i]);
         }
         private void applyPlayMove(ref SnakePlayer p, string dir) {
             int[] coordChange = Constants.Movement.dirToCoords(dir);
-
+            
             blockedGrid[p.x, p.y] = true;
             blockedList.Add(new Position2D() { x = p.x, y = p.y });
+
             p.x += coordChange[0];
             p.y += coordChange[1];
+
+            p.dir = dir;
         }
 
         #region Evaluation
         public BoardState evaluateBoard() {
             SnakePlayer p = players[0], e = players[1];
-
+            Debug.Log("Player: " + p.x + "," + p.y + "\nEnemy: " + e.x + "," + e.y);
             if (p.x == e.x && p.y == e.y) // Players Crash into eachother
                 return BoardState.Draw;
 
             bool playerCrash = coordCrash(p.x, p.y);
             bool enemyCrash = coordCrash(e.x, e.y);
+
+            Debug.Log("Playercrash: " + playerCrash.ToString() + ", Enemycrash: " + enemyCrash.ToString());
 
             if (playerCrash && enemyCrash)
                 return BoardState.Draw;
@@ -149,5 +169,5 @@ namespace TCP_API.Snake {
         public int x, y;
         public string dir;
     }
-    public enum BoardState {PlayerWon, EnemyWon,Draw,Ongoing,}
+    
 }

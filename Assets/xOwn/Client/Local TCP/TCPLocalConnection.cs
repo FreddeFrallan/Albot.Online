@@ -32,8 +32,10 @@ class TCPLocalConnection{
 	private static int lastUsedPort = 0;
 	private static Thread monitorThread;
 
+    private static int sendBufferSize = 2048;
 
-	public static void init(){
+
+    public static void init(){
 		if (isReady)return;
 		ClientUI.ClientUIOverlord.onUIStateChanged += (ClientUI.ClientUIStates newState) => {if(newState == ClientUI.ClientUIStates.GameLobby || newState == ClientUI.ClientUIStates.LoginMenu) stopServer();};
 		monitorThread = new Thread( new ThreadStart(monitorTCPConnection));
@@ -106,7 +108,10 @@ class TCPLocalConnection{
 
 
 	#region monitor TCP
-	public static void clientConnected(TcpClient c){connectionClient = c;}
+	public static void clientConnected(TcpClient c) {
+        connectionClient = c;
+        c.SendBufferSize = sendBufferSize;
+    }
 	private static void monitorTCPConnection(){
 		while (true) {
 			if (currentState == ConnectionStatus.Connected) 

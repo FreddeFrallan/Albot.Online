@@ -17,7 +17,8 @@ namespace Snake{
 
 
 		public override void initBot (Dictionary<string, string> settings){
-			snakeBoard = SnakeBot.MainClass.init ();
+            SnakeBot.MainClass.setPrintFunction(Debug.Log);
+            snakeBoard = SnakeBot.MainClass.init ();
 		}
 
 

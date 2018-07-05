@@ -42,7 +42,7 @@ namespace TCP_API.Connect4 {
         /// <param name="command"></param>
         /// <returns>APIMsgConclusion</returns>
         public static APIMsgConclusion evaluateBoard(Connect4Command command) {
-            command.board.winner = BoardEvaluator.evaluateBoard(command.board);
+            command.board.boardState = BoardEvaluator.evaluateBoard(command.board);
             string boardMsg = command.board.encodeBoard(false, false, true);
             return new APIMsgConclusion() { msg = boardMsg, status = ResponseStatus.Success, toServer = false };
         }
@@ -52,15 +52,19 @@ namespace TCP_API.Connect4 {
 
 
 		#region Simulator
-		private static void getPossibleMoves(Board Board){
-			Board.possibleMoves = new List<int> ();
+		private static void getPossibleMoves(Board board){
+			board.possibleMoves = new List<int> ();
 			for (int i = 0; i < Consts.BOARD_WIDTH; i++)
-				if (Board.grid [i,0] == "0")
-					Board.possibleMoves.Add (i);
+				if (board.grid [i,0] == "0")
+					board.possibleMoves.Add (i);
 		}
 
 		private static void playMove(Board board, int move, string player){
 			int targetRow = findFreeRow (board.grid, move);
+            if (targetRow == -1) {// Do nothing if illegal move
+                Debug.Log("Tried to simulate illegal move: " + move);
+                return;
+            }
 			board.grid [move, targetRow] = player;
 		}
 

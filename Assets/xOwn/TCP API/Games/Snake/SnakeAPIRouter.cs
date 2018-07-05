@@ -11,47 +11,60 @@ namespace TCP_API.Snake {
         public SnakeAPIRouter() {
             APIFuncs.Add(Constants.Actions.getPossMoves, handleGetPossibleMoves);
             APIFuncs.Add(Constants.Actions.simMove, handleSimulateMove);
+            APIFuncs.Add(Constants.Actions.evalBoard, handleEvaluateBoard);
         }
 
-
+        private APIMsgConclusion handleEvaluateBoard(JSONObject jObj) {
+            JSONObject jBoard = jObj.GetField(Constants.JProtocol.board);
+            Board board = new Board(jBoard);
+            string encodedBoardState = SnakeProtocolEncoder.encodeBoardState(board.evaluateBoard().ToString());
+            return new APIMsgConclusion() {
+                status = ResponseStatus.Success, msg = encodedBoardState, toServer = false
+            };
+        }
 
         private APIMsgConclusion handleSimulateMove(JSONObject jObj) {
-            Board startBoard = new Board(jObj);
+            JSONObject jBoard = jObj.GetField(Constants.JProtocol.board);
+            Board startBoard = new Board(jBoard);
             BoardMoves moves = parseBoardMoves(jObj);
             string encodedBoards;
 
+            SimulatedMove temp;
             if (moves.hasPlayerMove == false) {
-                List<SimulatedMove[]> temp = SnakeAPILogic.simulateAllPossibleMoves(startBoard);
-                encodedBoards = SnakeProtocolEncoder.compressSimulatedMove(temp);
+                //List<SimulatedMove[]> temp = SnakeAPILogic.simulateAllPossibleMoves(startBoard);
+                temp = SnakeAPILogic.simulateSingleMove(startBoard, moves.enemyMove, false, false);
             }
             else if (moves.hasEnemyMove == false) {
-                SimulatedMove[] temp = SnakeAPILogic.simualtAllEnemyMoves(startBoard, startBoard.getPlayers(), moves.playerMove);
-                encodedBoards = SnakeProtocolEncoder.compressSimulatedMove(temp);
+                //SimulatedMove[] temp = SnakeAPILogic.simulateAllEnemyMoves(startBoard, startBoard.getPlayers(), moves.playerMove);
+                temp = SnakeAPILogic.simulateSingleMove(startBoard, moves.playerMove, true, false);
             } 
             else {
-                SimulatedMove temp = SnakeAPILogic.simulateMove(startBoard, moves.playerMove, moves.enemyMove, false);
-                encodedBoards = SnakeProtocolEncoder.compressSimulatedMove(temp);
+                temp = SnakeAPILogic.simulateMove(startBoard, moves.playerMove, moves.enemyMove, false);
             }
+            encodedBoards = SnakeProtocolEncoder.compressSimulatedMove(temp);
 
             return new APIMsgConclusion() {status = ResponseStatus.Success, msg = encodedBoards, toServer = false};
         }
 
         private APIMsgConclusion handleGetPossibleMoves(JSONObject jObj) {
-            PossibleMoves possMoves = SnakeAPILogic.getPossibleMoves(new Board(jObj));
-            Debug.Log(possMoves.playerMoves.Length);
-            Debug.Log(possMoves.playerMoves[0]);
+            string[] directions = new string[2];
+            directions[0] = jObj.GetField(Constants.JProtocol.player).str;
+            directions[1] = jObj.GetField(Constants.JProtocol.enemy).str;
+            Debug.Log("Player dir:" + directions[0]);
+            Debug.Log("Enemy dir:" + directions[1]);
+            //PossibleMoves possMoves = SnakeAPILogic.getPossibleMoves(new Board(jObj));
+            PossibleMoves possMoves = SnakeAPILogic.getPossibleMoves(directions);
+
             string responseMsg = SnakeProtocolEncoder.encodePossibleMoves(possMoves).Print();
             return new APIMsgConclusion() { status = ResponseStatus.Success, msg = responseMsg, toServer = false };
         }
-
-
-
+        
         private BoardMoves parseBoardMoves(JSONObject jObj) {
             BoardMoves m = new BoardMoves() {
                 hasPlayerMove = jObj.HasField(Constants.JProtocol.playerMove),
                 hasEnemyMove = jObj.HasField(Constants.JProtocol.enemyMove),
             };
-
+            /*
             if (m.hasPlayerMove == false)
                 return m;
             m.playerMove = jObj.GetField(Constants.JProtocol.playerMove).str;
@@ -59,7 +72,13 @@ namespace TCP_API.Snake {
             if (m.hasEnemyMove == false)
                 return m;
             m.enemyMove = jObj.GetField(Constants.JProtocol.enemyMove).str;
-
+            */
+            if (m.hasPlayerMove)
+                m.playerMove = jObj.GetField(Constants.JProtocol.playerMove).str;
+            
+            if (m.hasEnemyMove)
+                m.enemyMove = jObj.GetField(Constants.JProtocol.enemyMove).str;
+            
             return m;
         }
 

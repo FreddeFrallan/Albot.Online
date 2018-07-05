@@ -33,7 +33,7 @@ namespace TCP_API.Connect4{
         public List<string> winChecks = new List<string>();
 
 		public string[,] grid = new string[Consts.BOARD_WIDTH, Consts.BOARD_HEIGHT];
-		public int winner = 0;
+		public BoardState boardState = 0;
 		public List<int> possibleMoves;
 
         public Board(string rawBoard, bool evaluate) {
@@ -51,13 +51,18 @@ namespace TCP_API.Connect4{
 			if (board)
 				jBoard.AddField (Consts.Fields.board, ToString ());
             if(evaluated)
-                jBoard.AddField(Consts.Fields.winner, winner);
+                jBoard.AddField(Consts.Fields.boardState, boardState.ToString());
 			if (sendPMoves) {
-				JSONObject list = new JSONObject ();
-				foreach (int i in possibleMoves)
-					list.Add (i);
-				
-				jBoard.AddField (Consts.Fields.possibleMoves, list);
+                if (possibleMoves.Count == 0) {
+                    List<JSONObject> list = new List<JSONObject>(); // Ugly fix for sending empty list instead of "null"
+                    jBoard.AddField(Consts.Fields.possibleMoves, new JSONObject(list.ToArray()));
+                } else {
+                    JSONObject list = new JSONObject();
+                    foreach (int i in possibleMoves)
+                        list.Add(i);
+
+                    jBoard.AddField(Consts.Fields.possibleMoves, list);
+                }
 			}
 
             return jBoard.Print();
