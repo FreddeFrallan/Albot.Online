@@ -24332,8 +24332,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 356baab8d50bb984d89f990161070000, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameList: {fileID: 0}
-  createGamesWindow: {fileID: 2020976167}
 --- !u!4 &903965711
 Transform:
   m_ObjectHideFlags: 0

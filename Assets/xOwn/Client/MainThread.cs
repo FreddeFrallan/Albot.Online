@@ -42,19 +42,9 @@ public class MainThread : MonoBehaviour {
 	}
 	#endregion
 
-
-	void OnApplicationQuit(){
-		TCPLocalConnection.OnApplicationQuit ();
-	}
-
-
-	public static void fireEventAtMainThread(Action theEvent){
-		events.Add (theEvent);
-	}
-	public static void createTimedAction(Action a, float wt){
-		timedActions.Add(new timedAction(){waitTime = lastTime + wt, theAction = a});
-	}
-		
+	void OnApplicationQuit(){TCPLocalConnection.OnApplicationQuit ();}
+	public static void fireEventAtMainThread(Action theEvent){events.Add (theEvent);}
+	public static void createTimedAction(Action a, float wt){timedActions.Add(new timedAction(){waitTime = lastTime + wt, theAction = a});}
 
 	private struct timedAction{
 		public float waitTime;

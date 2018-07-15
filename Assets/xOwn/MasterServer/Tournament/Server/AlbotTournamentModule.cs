@@ -70,8 +70,7 @@ namespace Barebones.MasterServer {
 
     public class TournamentSpecsMsg : MessageBase {
         public GameType type;
-       // public IPeer admin;
-       // public TournamentPlayer[] players;
+        public string tournamentID;
         public int maxPlayers;
     }
 

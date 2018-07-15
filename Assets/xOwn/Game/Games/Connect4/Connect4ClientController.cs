@@ -59,6 +59,12 @@ namespace Connect4{
 	
 
 		protected override void readTCPMsg (ReceivedLocalMessage inMsg){
+            if(inMsg.message == "RestartGame") {
+                print("RESTARTING DAS GAME");
+                MainThread.fireEventAtMainThread(() => ClientUI.CurrentGame.restartCurrentGame());
+                return;
+            }
+
 			if(ClientPlayersHandler.hasRequestedPlayerMoves() == false)
 				return;
 
@@ -113,12 +119,17 @@ namespace Connect4{
 		}
 		public void handleGameStatus(NetworkMessage gameStatusMsg){
 			byte[] bytes = gameStatusMsg.reader.ReadBytesAndSize ();
-			Connect4.GameInfo msg = Game.ClientController.Deserialize<GameInfo> (bytes);
+			GameInfo msg = ClientController.Deserialize<GameInfo> (bytes);
 			
 			if (msg.gameOver) {
-				TCPLocalConnection.sendMessage ("GameOver");
-                localRenderer.onGameOver (msg.winnerColor == Game.PlayerColor.Yellow ? Piece.Yellow : Piece.Red);
-				gameOver ();
+                string winner = "0";
+                if (msg.winnerColor == PlayerColor.Yellow)
+                    winner = "1";
+                else if (msg.winnerColor == PlayerColor.Red)
+                    winner = "-1";
+				TCPLocalConnection.sendMessage ("GameOver: " + winner);
+                localRenderer.onGameOver (msg.winnerColor == PlayerColor.Yellow ? Piece.Yellow : Piece.Red);
+				//gameOver ();
 
 				string gameOverMsg;
 				if (msg.winnerColor == Game.PlayerColor.None)
@@ -127,7 +138,7 @@ namespace Connect4{
 					//gameOverMsg = msg.winnerColor == myColor ? "You won!" : "You lost!";
 					gameOverMsg = msg.winnerColor + " won";
 
-				ClientUI.AlbotDialogBox.setGameOver ();
+				//ClientUI.AlbotDialogBox.setGameOver ();
 				ClientUI.AlbotDialogBox.activateButton (ClientUI.ClientUIStateManager.requestGotoGameLobby,  ClientUI.DialogBoxType.GameState, gameOverMsg, "Return to lobby", 70, 25);
 			}
 		}

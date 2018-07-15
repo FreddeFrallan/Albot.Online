@@ -62,13 +62,16 @@ namespace ClientUI {
             if (ClientUIOverlord.currentState != ClientUIStates.PlayingGame)
                 return;
 
-            if (status == ConnectionStatus.Connected) {
-                UnetRoomConnector.shutdownCurrentConnection();
-                AlbotDialogBox.removeAllPopups();
-                Msf.Connection.SendMessage((short)ServerCommProtocl.RestartTrainingGame, gameSpecs.roomID, Msf.Helper.handleErrorResponse);
-            }
+            if (status == ConnectionStatus.Connected)
+                restartCurrentGame();
             if (status == ConnectionStatus.Disconnected && ClientUIOverlord.currentState == ClientUIStates.PlayingGame)
                 TCPLocalConnection.restartServer();
+        }
+
+        public static void restartCurrentGame() {
+            UnetRoomConnector.shutdownCurrentConnection();
+            AlbotDialogBox.removeAllPopups();
+            Msf.Connection.SendMessage((short)ServerCommProtocl.RestartTrainingGame, gameSpecs.roomID, Msf.Helper.handleErrorResponse);
         }
 
         private static bool matchingSpecs(PreGameSpecs a, PreGameSpecs b) {return a.roomID == b.roomID && a.type == b.type;}
