@@ -32,7 +32,7 @@ namespace TCP_API.Snake {
             JSONObject jMsg = SnakeProtocolEncoder.generateGetPossMovesJMsg(playerDir, enemyDir);
 
             APIMsgConclusion response = router.handleIncomingMsg(jMsg.Print());
-            Assert.True(response.toServer == false);
+            Assert.True(response.target == MsgTarget.Player);
             Assert.True(response.status == ResponseStatus.Success);
 
             Debug.Log(response.msg);

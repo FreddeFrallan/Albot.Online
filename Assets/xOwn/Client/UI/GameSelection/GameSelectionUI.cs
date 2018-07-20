@@ -67,10 +67,10 @@ namespace ClientUI{
 				GameJoinButton.interactable = GetSelectedItem() != null;
 		}
 		public void OnJoinGameClick(){
-			var selected = GetSelectedItem();
+			GamesListUiItem selected = GetSelectedItem();
 			if (selected == null)
 				return;
-			gameCreator.joinPreGame (selected.GameId);
+			gameCreator.joinPreGame (selected);
 		}
 			
 		public void newGameSelected(bool isTraining){

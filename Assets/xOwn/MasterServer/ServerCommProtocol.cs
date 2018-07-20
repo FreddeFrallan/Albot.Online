@@ -1,5 +1,6 @@
 ﻿using UnityEngine.Networking;
 using System.Collections.Generic;
+using Barebones.MasterServer;
 
 namespace AlbotServer{
 
@@ -66,6 +67,7 @@ namespace AlbotServer{
 	}
 	public class PreGameJoinRequest : MessageBase{
         public string errorMsg, roomID;
+        public GameInfoType roomType;
         public PlayerInfo joiningPlayer;
 	}
 	public class PreGameRoomMsg : MessageBase{

@@ -22,7 +22,7 @@ namespace ClientUI{
 
 		// Update is called once per frame
 		void Update () {
-			focusBuffer.Add (username.isFocused || password.isFocused);
+			focusBuffer.Add (password.isFocused);
 			focusBuffer.RemoveAt (0);
 
 			if (Input.GetKeyDown (KeyCode.Return)) {

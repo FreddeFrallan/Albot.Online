@@ -18,10 +18,10 @@ namespace Tournament.Client {
         public List<string> playersDebugList = new List<string>();
 
 
-        public void init(TournamentRound serverGame) {
-            setState(serverGame.getState());
-            id = serverGame.getGameID();
-            players = serverGame.getPlayers();
+        public void init(TournamentRound serverRound) {
+            setState(serverRound.getState());
+            id = serverRound.getGameID();
+            players = serverRound.getPlayers();
             setPlayerSlots();
 
             updateDebugList();

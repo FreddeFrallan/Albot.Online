@@ -19,7 +19,8 @@ namespace TCP_API.Snake {
             Board board = new Board(jBoard);
             string encodedBoardState = SnakeProtocolEncoder.encodeBoardState(board.evaluateBoard().ToString());
             return new APIMsgConclusion() {
-                status = ResponseStatus.Success, msg = encodedBoardState, toServer = false
+                status = ResponseStatus.Success, msg = encodedBoardState,
+                target = MsgTarget.Player
             };
         }
 
@@ -43,7 +44,7 @@ namespace TCP_API.Snake {
             }
             encodedBoards = SnakeProtocolEncoder.compressSimulatedMove(temp);
 
-            return new APIMsgConclusion() {status = ResponseStatus.Success, msg = encodedBoards, toServer = false};
+            return new APIMsgConclusion() {status = ResponseStatus.Success, msg = encodedBoards, target = MsgTarget.Player };
         }
 
         private APIMsgConclusion handleGetPossibleMoves(JSONObject jObj) {
@@ -56,7 +57,7 @@ namespace TCP_API.Snake {
             PossibleMoves possMoves = SnakeAPILogic.getPossibleMoves(directions);
 
             string responseMsg = SnakeProtocolEncoder.encodePossibleMoves(possMoves).Print();
-            return new APIMsgConclusion() { status = ResponseStatus.Success, msg = responseMsg, toServer = false };
+            return new APIMsgConclusion() { status = ResponseStatus.Success, msg = responseMsg, target = MsgTarget.Player};
         }
         
         private BoardMoves parseBoardMoves(JSONObject jObj) {

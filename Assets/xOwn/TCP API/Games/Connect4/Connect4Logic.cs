@@ -22,7 +22,7 @@ namespace TCP_API.Connect4 {
 				getPossibleMoves (command.board);
 
 			string boardMsg = command.board.encodeBoard (true, command.getPossibleMoves, command.evaluate);
-			return new APIMsgConclusion(){msg = boardMsg, status = ResponseStatus.Success, toServer = false};
+			return new APIMsgConclusion(){msg = boardMsg, status = ResponseStatus.Success, target = MsgTarget.Player};
 		}
 
         /// <summary>
@@ -33,7 +33,7 @@ namespace TCP_API.Connect4 {
 		public static APIMsgConclusion aquirePossibleMoves(Connect4Command command){
 			getPossibleMoves (command.board);
 			string boardMsg = command.board.encodeBoard (false, true, command.evaluate);
-			return new APIMsgConclusion(){msg = boardMsg, status = ResponseStatus.Success, toServer = false};
+			return new APIMsgConclusion(){msg = boardMsg, status = ResponseStatus.Success, target = MsgTarget.Player };
 		}
 
         /// <summary>
@@ -44,10 +44,10 @@ namespace TCP_API.Connect4 {
         public static APIMsgConclusion evaluateBoard(Connect4Command command) {
             command.board.boardState = BoardEvaluator.evaluateBoard(command.board);
             string boardMsg = command.board.encodeBoard(false, false, true);
-            return new APIMsgConclusion() { msg = boardMsg, status = ResponseStatus.Success, toServer = false };
+            return new APIMsgConclusion() { msg = boardMsg, status = ResponseStatus.Success, target = MsgTarget.Player };
         }
 
-        public static APIMsgConclusion makeClientMove(Connect4Command command) {return new APIMsgConclusion() { msg = command.move.ToString(), toServer = true, status = ResponseStatus.Success };}
+        public static APIMsgConclusion makeClientMove(Connect4Command command) {return new APIMsgConclusion() { msg = command.move.ToString(), target = MsgTarget.Server, status = ResponseStatus.Success };}
 		#endregion
 
 

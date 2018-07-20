@@ -199,11 +199,9 @@ namespace Barebones.MasterServer{
 			if (SpectatorAuthModule.existsAdmin (msg.Peer) == false)
 				return;
 
-			try{
-				List<GameInfoPacket> games = matchMakerModule.getCurrentSpectatorGames(msg.Peer);
-				byte[] bytes = games.Select(l => (ISerializablePacket)l).ToBytes();
-				msg.Respond(bytes, ResponseStatus.Success);
-			}catch{msg.Respond (ResponseStatus.Error);}
+			List<GameInfoPacket> games = matchMakerModule.getCurrentGameInfos();
+			byte[] bytes = games.Select(l => (ISerializablePacket)l).ToBytes();
+			msg.Respond(bytes, ResponseStatus.Success);
 		}
 			
 	}

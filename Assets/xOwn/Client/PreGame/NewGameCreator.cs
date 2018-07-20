@@ -24,23 +24,28 @@ namespace ClientUI{
         private void handleCreatedGameResponse(ResponseStatus status, IIncommingMessage rawMsg) {
             if (responseSuccess(status, rawMsg) == false)
                 return;
-            joinPreGame(rawMsg.AsString());
+            joinPreGame(new GamesListUiItem() { roomType = GameInfoType.PreGame, GameId = rawMsg.AsString() });
         }
         #endregion
 
 
         #region Joining
-        public void joinPreGame(string gameId){
+        public void joinPreGame(GamesListUiItem game){
 			AccountInfoPacket ac = ClientUIOverlord.getCurrentAcountInfo();
 			PreGameJoinRequest msg = new PreGameJoinRequest () {
-				roomID = gameId,
+				roomID = game.GameId,
 				joiningPlayer = new PlayerInfo {
 					username = ac.Username,
 					iconNumber = int.Parse(ac.Properties["icon"])
 				}
 			};
-			Msf.Connection.SendMessage((short)ServerCommProtocl.RequestJoinPreGame, msg, handleJoinPreGameMsg);
-		}
+
+
+            if(game.roomType == GameInfoType.PreGame)
+			    Msf.Connection.SendMessage((short)ServerCommProtocl.RequestJoinPreGame, msg, handleJoinPreGameMsg);
+            else if(game.roomType == GameInfoType.PreTournament)
+                Msf.Connection.SendMessage((short)CustomMasterServerMSG.joinTournament, msg, handleJoinPreTournament);
+        }
 
 		private void handleJoinPreGameMsg(ResponseStatus status, IIncommingMessage rawMsg){
             if (responseSuccess(status, rawMsg) == false)
@@ -58,6 +63,12 @@ namespace ClientUI{
 
 			preGameLobby.initPreGameLobby (currentMap.picture, msg);
 		}
+
+        private void handleJoinPreTournament(ResponseStatus status, IIncommingMessage rawMsg) {
+            if (responseSuccess(status, rawMsg) == false)
+                return;
+            print("Tournament Join: " + rawMsg.AsString());
+        }
         #endregion
 
 

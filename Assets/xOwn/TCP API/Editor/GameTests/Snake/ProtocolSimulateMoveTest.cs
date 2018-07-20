@@ -62,7 +62,7 @@ namespace TCP_API.Snake {
             JSONObject jObj = SnakeProtocolEncoder.generateSimulateJMsg(startBoard, playerDir, enemyDir);
             Debug.Log("Generated simulate move request: \n" + jObj.Print(true) + "\n");
             APIMsgConclusion response = router.handleIncomingMsg(jObj.Print());
-            Assert.True(response.toServer == false);
+            Assert.True(response.target == MsgTarget.Player);
             Assert.True(response.status == ResponseStatus.Success);
             JSONObject newJBoard = new JSONObject(response.msg);
             Debug.Log("Generated simulate move response: \n" + newJBoard.Print(true) + "\n");

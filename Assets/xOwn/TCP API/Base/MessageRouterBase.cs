@@ -25,8 +25,14 @@ namespace TCP_API{
         /// <param name="msg"></param>
         /// <returns>APIMsgConclusion</returns>
         public APIMsgConclusion handleIncomingMsg(string msg) {
+            if (msg == "RestartGame") {
+                MainThread.fireEventAtMainThread(() => ClientUI.CurrentGame.restartCurrentGame());
+                return restartReturnMsg();
+            }
+
+
             if (isJsonMsg(msg) == false)
-                return new APIMsgConclusion() { msg = msg, toServer = true, status = ResponseStatus.Success };
+                return new APIMsgConclusion() { msg = msg, target = MsgTarget.Server, status = ResponseStatus.Success };
 
             try{
                 JSONObject jObj = new JSONObject(msg.Trim());
@@ -41,7 +47,8 @@ namespace TCP_API{
         }
 
 
-        private APIMsgConclusion errorParsingJson(string errorMsg) { return new APIMsgConclusion() { status = ResponseStatus.Error, msg = errorMsg, toServer = false }; }
+        private APIMsgConclusion restartReturnMsg() {return new APIMsgConclusion() { status = ResponseStatus.Success, target = MsgTarget.None}; }
+        private APIMsgConclusion errorParsingJson(string errorMsg) { return new APIMsgConclusion() { status = ResponseStatus.Error, msg = errorMsg, target = MsgTarget.Player}; }
         protected abstract bool isJsonMsg(string input);
     }
 

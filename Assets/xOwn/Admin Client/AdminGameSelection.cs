@@ -51,6 +51,7 @@ namespace AdminUI{
 			Msf.Connection.SendMessage ((short)CustomMasterServerMSG.requestSpectatorGames, ((r, m) => {
 				if(r == ResponseStatus.Success)
 					Setup(m.DeserializeList(() => new GameInfoPacket()).ToList());
+                print("Response: " + r);
 			}));
 		}
 

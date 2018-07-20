@@ -41,10 +41,10 @@ namespace Tournament.Server {
                 List<TournamentRound> temp = firstRow.OrderByDescending(g => g.calcRoundsUntilPossibleBotGame()).ToList(); //Calculate round to bot battle
                 temp = temp.Where(g => g.stashedRoundsUntilBotGame == temp[0].stashedRoundsUntilBotGame).ToList(); //Sort
 
-                TournamentRound game = temp[Random.Range(0, temp.Count)]; //Pick random game
+                TournamentRound round = temp[Random.Range(0, temp.Count)]; //Pick random game
                 TournamentPlayer bot = new TournamentPlayer(true, i);
                 players.Add(bot);
-                game.addPlayer(bot);
+                round.addPlayer(bot);
             }
         }
 

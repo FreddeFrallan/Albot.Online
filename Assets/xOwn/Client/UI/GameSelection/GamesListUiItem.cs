@@ -9,6 +9,7 @@ namespace Barebones.MasterServer{
     public class GamesListUiItem : MonoBehaviour{
         public GameInfoPacket RawData { get; protected set; }
         public Image BgImage;
+        public GameInfoType roomType;
         public Color DefaultBgColor;
 		public ClientUI.GameSelectionUI ListView;
         public TextMeshProUGUI MapName;
@@ -19,7 +20,7 @@ namespace Barebones.MasterServer{
 
         public string UnknownMapName = "Unknown";
 
-        public string GameId { get; private set; }
+        public string GameId { get; set; }
         public bool IsSelected { get; private set; }
         public bool IsLobby { get; private set; }
 
@@ -43,6 +44,7 @@ namespace Barebones.MasterServer{
         public void Setup(GameInfoPacket data){
             RawData = data;
             IsLobby = data.Type == GameInfoType.Lobby;
+            roomType = data.Type;
             SetIsSelected(false);
             Name.text = data.Name;
             GameId = data.Id;

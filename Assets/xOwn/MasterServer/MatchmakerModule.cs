@@ -33,19 +33,11 @@ namespace Barebones.MasterServer{
             GameProviders.Add(provider);
         }
 
-		//For now we only show pre games!
         private void HandleFindGames(IIncommingMessage message){
-            var list = new List<GameInfoPacket>();
+            List<GameInfoPacket> gameList = getCurrentGameInfos();
             var filters = new Dictionary<string, string>().FromBytes(message.AsBytes());
 
-			foreach (PreGame p in AlbotPreGameModule.getCurrentPreGames()) //PreGames
-				list.Add (p.convertToGameInfoPacket ());
-
-            foreach (TournamentGame t in AlbotTournamentModule.getCurrentTournaments())
-                list.Add(t.convertToGameInfoPacket());
-
-            // Convert to generic list and serialize to bytes
-            var bytes = list.Select(l => (ISerializablePacket)l).ToBytes();
+            var bytes = gameList.Select(l => (ISerializablePacket)l).ToBytes();
             message.Respond(bytes, ResponseStatus.Success);
 
 			int currentGamesCounter = 0;
@@ -54,16 +46,15 @@ namespace Barebones.MasterServer{
 			message.Peer.SendMessage ((short)ServerCommProtocl.LobbyGameStats, new LobbyGameStatsMsg () {currentActiveGames = currentGamesCounter, totalGamesPlayed = GamesData.totallGamesPlayed});
         }
 
-		//Sends a list of all the current games that are either being played or in lobby
-		public List<GameInfoPacket> getCurrentSpectatorGames(IPeer p){
+        public List<GameInfoPacket> getCurrentGameInfos() {
 			List<GameInfoPacket> gameList = new List<GameInfoPacket>();
 
-			foreach (var provider in GameProviders)
-				gameList.AddRange(provider.GetPublicGames(p, new Dictionary<string, string>()));
-            foreach (PreGame g in AlbotPreGameModule.getCurrentPreGames())
-				gameList.Add (g.convertToGameInfoPacket ());
+            foreach (PreGame p in AlbotPreGameModule.getCurrentPreGames())
+                gameList.Add(p.convertToGameInfoPacket());
+            foreach (PreTournamentGame t in AlbotTournamentModule.getCurrentTournaments())
+                gameList.Add(t.convertToGameInfoPacket());
 
-			return gameList;
-		}
+            return gameList;
+        }
     }
 }

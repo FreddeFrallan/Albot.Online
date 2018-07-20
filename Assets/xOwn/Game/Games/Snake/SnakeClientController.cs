@@ -7,6 +7,7 @@ using AlbotServer;
 using System;
 using TCP_API;
 using TCP_API.Snake;
+using Barebones.Networking;
 
 namespace Snake{
 
@@ -110,13 +111,13 @@ namespace Snake{
 			}
 
             APIMsgConclusion conclusion = APIRouter.handleIncomingMsg(msg.message);
-            if (conclusion.toServer) {
+            if (conclusion.target == MsgTarget.Server) {
                 int dir = -1;
                 if (parseCommandMsg(msg.message, out dir))
                     sendServerMsg(new GameCommand(localPlayerColor, dir), (short)SnakeProtocol.MsgType.playerCommands);
 
                 RealtimeTCPController.requestBoard(convertColorToTeam(localPlayerColor), true);
-            } else if (conclusion.status == Barebones.Networking.ResponseStatus.Success)
+            } else if (conclusion.status == ResponseStatus.Success && conclusion.target == MsgTarget.Player)
                 ClientPlayersHandler.getPlayerFromColor(localPlayerColor).takeInput(conclusion.msg);
         }
 

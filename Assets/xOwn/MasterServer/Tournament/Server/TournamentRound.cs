@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using AlbotServer;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -69,7 +70,7 @@ namespace Tournament.Server {
 
         #region Setters
         private void setState(GameState newState) { state = newState; }
-        public void setNextGame(TournamentRound nextGame) { this.nextRound = nextRound; }
+        public void setNextGame(TournamentRound nextRound) { this.nextRound = nextRound; }
 
         public void addPlayer(TournamentPlayer player) {
             setState(GameState.Lobby);
@@ -83,6 +84,7 @@ namespace Tournament.Server {
         public GameState getState() { return state; }
         public GameID getGameID() { return id; }
         public List<TournamentPlayer> getPlayers() { return players; }
+        public TournamentRoundDTO createDTO() {return new TournamentRoundDTO() { players = this.players.Select(p => p.info).ToArray(), state = this.state };}
         #endregion
 
         #region PossibleBotGames
@@ -103,9 +105,15 @@ namespace Tournament.Server {
             do{
                 game.hasPossibleBotGame = true;
                 game = game.nextRound;
-            }while (game.nextRound != null) ;
+            }while (game != null) ;
         }
         #endregion
+    }
+
+
+    public class TournamentRoundDTO {
+        public PlayerInfo[] players;
+        public GameState state;
     }
 
 

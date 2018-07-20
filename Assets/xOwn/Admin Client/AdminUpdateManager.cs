@@ -19,7 +19,6 @@ namespace AdminUI{
 
 		void Start () {
 			Msf.Connection.SetHandler ((short)CustomMasterServerMSG.spectateLogUpdate, handleUpdateMsg);
-			AdminUIManager.onAdminUIStateChanged += (state) => {if(state != ClientUI.ClientUIStates.PlayingGame) stopSpectating();};
 			singleton = this;
 		}
 

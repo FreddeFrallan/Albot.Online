@@ -19,7 +19,6 @@ namespace Connect4{
 
 		//Ingame Unity Components that we are going to talk to.
 		private Renderer localRenderer;
-        private Connect4APIRouter APIRouter = new Connect4APIRouter();
         private Connect4HumanControlls humanControlls;
 
         #region override from base clientController
@@ -27,10 +26,12 @@ namespace Connect4{
 		public override Game.GameType getGameType (){return Game.GameType.Connect4;}
 		protected CommProtocol protocol;
 		protected override void initHandlers (){
-			connectionToServer.RegisterHandler ((short)Connect4.CommProtocol.MsgType.boardUpdate, requestMove);
-			connectionToServer.RegisterHandler ((short)Connect4.CommProtocol.MsgType.playerInit, initSettings);
-			connectionToServer.RegisterHandler ((short)Connect4.CommProtocol.MsgType.RPCMove, handleRPCMove);
-			connectionToServer.RegisterHandler ((short)Connect4.CommProtocol.MsgType.gameInfo, handleGameStatus);
+            apiRouter = new Connect4APIRouter();
+
+            connectionToServer.RegisterHandler ((short)CommProtocol.MsgType.boardUpdate, requestMove);
+			connectionToServer.RegisterHandler ((short)CommProtocol.MsgType.playerInit, initSettings);
+			connectionToServer.RegisterHandler ((short)CommProtocol.MsgType.RPCMove, handleRPCMove);
+			connectionToServer.RegisterHandler ((short)CommProtocol.MsgType.gameInfo, handleGameStatus);
 			connectionToServer.RegisterHandler ((short)ServerCommProtocl.PlayerJoinedGameRoom, handlePlayerJoinedRoom);
 			connectionToServer.RegisterHandler ((short)ServerCommProtocl.PlayerLeftGameRoom, handlePlayerLeftRoom);
 			connectionToServer.RegisterHandler ((short)ServerCommProtocl.PlayerTimerInit, handlePlayerTimerInit);
@@ -55,28 +56,6 @@ namespace Connect4{
 			});
 		}
 		#endregion
-
-	
-
-		protected override void readTCPMsg (ReceivedLocalMessage inMsg){
-            if(inMsg.message == "RestartGame") {
-                print("RESTARTING DAS GAME");
-                MainThread.fireEventAtMainThread(() => ClientUI.CurrentGame.restartCurrentGame());
-                return;
-            }
-
-			if(ClientPlayersHandler.hasRequestedPlayerMoves() == false)
-				return;
-
-			APIMsgConclusion outMsg = APIRouter.handleIncomingMsg (inMsg.message);
-			if (outMsg.toServer)
-				onOutgoingLocalMsg (outMsg.msg, ClientPlayersHandler.sendFromCurrentPlayer ());
-			else
-				ClientPlayersHandler.getCurrentPlayer ().takeInput (outMsg.msg);
-		}
-
-
-
 
 		public override void onOutgoingLocalMsg (string msg, Game.PlayerColor color){
 			sendServerMsg(msg, color, (short)CommProtocol.MsgType.move);

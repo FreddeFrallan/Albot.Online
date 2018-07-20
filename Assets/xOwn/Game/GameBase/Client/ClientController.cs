@@ -8,10 +8,14 @@ using UnityEngine.Networking;
 using System;
 using Barebones.MasterServer;
 using AlbotServer;
+using TCP_API;
 
 namespace Game{
 
 	public abstract class ClientController : NetworkBehaviour{
+
+        protected APIMessageRouterBase apiRouter;
+
 		public abstract void initProtocol (CommProtocol protocol);
 		public abstract void onOutgoingLocalMsg (string msg, PlayerColor color);
 		public void onOutgoingLocalMsgObj (object msg, short type){
@@ -111,14 +115,16 @@ namespace Game{
 		}
 
 	
-		protected virtual void readTCPMsg (ReceivedLocalMessage msg){
-			string[] words = msg.message.Split (' ');
-			if (words.Length != 1)
-				return;
+		protected virtual void readTCPMsg (ReceivedLocalMessage inMsg){
+            if (ClientPlayersHandler.hasRequestedPlayerMoves() == false)
+                return;
 
-			try{Game.ClientPlayersHandler.onReceiveLocalTCPMsg(words[0]);
-			}catch{return;}
-		}
+            APIMsgConclusion outMsg = apiRouter.handleIncomingMsg(inMsg.message);
+            if (outMsg.target == MsgTarget.Server)
+                onOutgoingLocalMsg(outMsg.msg, ClientPlayersHandler.sendFromCurrentPlayer());
+            else if (outMsg.target == MsgTarget.Player)
+                ClientPlayersHandler.getCurrentPlayer().takeInput(outMsg.msg);
+        }
 		public static T Deserialize<T>(byte[] param){
 			using (MemoryStream ms = new MemoryStream(param)){
 				IFormatter br = new BinaryFormatter();

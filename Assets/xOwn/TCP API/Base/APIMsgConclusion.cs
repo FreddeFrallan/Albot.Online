@@ -11,8 +11,11 @@ namespace TCP_API{
     /// </summary>
 	public struct APIMsgConclusion{
 		public string msg;
-		public bool toServer;
+		public MsgTarget target;
 		public ResponseStatus status;
 	}
 
+    public enum MsgTarget {
+        Server, Player, None
+    }
 }

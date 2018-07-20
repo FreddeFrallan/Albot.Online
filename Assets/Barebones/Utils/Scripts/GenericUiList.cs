@@ -140,8 +140,7 @@ namespace Barebones.Utils
             return default(T2);
         }
 
-        public void Generate<T2>(IEnumerable<T> items, Action<T, T2> transformer) where T2 : class
-        {
+        public void Generate<T2>(IEnumerable<T> items, Action<T, T2> transformer) where T2 : class{
             var index = 0;
 
             foreach (var item in items)
@@ -170,8 +169,7 @@ namespace Barebones.Utils
                 index++;
             }
 
-            while (_items.Count > index)
-            {
+            while (_items.Count > index){
                 // Disable any unnecessary objects from pool
                 _items[index].gameObject.SetActive(false);
                 index++;

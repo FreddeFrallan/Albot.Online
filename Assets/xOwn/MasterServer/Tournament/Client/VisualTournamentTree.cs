@@ -17,6 +17,7 @@ namespace Tournament.Client {
         private float rowSpacing = 8;
         private int rowCounter = 0;
 
+        
         private void Update() {
             if (Input.GetKeyDown(KeyCode.Alpha1))
                 generateTree(13);
@@ -40,6 +41,7 @@ namespace Tournament.Client {
                 renderVisualTree(tournament);
             }
         }
+        
 
         private void generateTree(int amount) {
             List<TournamentPlayer> players = new List<TournamentPlayer>();

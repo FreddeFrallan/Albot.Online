@@ -24,6 +24,8 @@ public enum CustomMasterServerMSG{
     startTournament = 11,
     createTournament = 12,
     closeTournament = 13,
+    preTournamentUpdate = 14,
+    runningTournamentUpdate = 15,
 }
 
 public class AlbotAuthModule : ServerModuleBehaviour {
