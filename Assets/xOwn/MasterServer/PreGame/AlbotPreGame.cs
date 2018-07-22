@@ -142,6 +142,7 @@ namespace AlbotServer{
         private int getFreeSlotId(){return playerSlots.First (x => x.info.type == PreGameSlotType.Empty).info.slotID;}
         private int getAmountCurrentPlayers() { return playerSlots.Where(x => x.info.type != PreGameSlotType.Empty).Count(); }
 
+        public bool gameHasStarted() { return isRunning; }
 		public bool canGameStart(){return playerSlots.All (x => x.info.isReady);}
         public PreGameSlotInfo[] getPlayerSlots() { return playerSlots.Select(p => p.info).ToArray(); }
 		public bool containsPeer(IPeer peer){ return connectedPeers.Any(p => p.peer.Id == peer.Id); }
@@ -185,6 +186,7 @@ namespace AlbotServer{
 		public bool hasSpectators(){return spectators.Count > 0;}
 		public List<IPeer> getSpectators(){return spectators;}
 		#endregion
+
 
 	}
 

@@ -85,7 +85,7 @@ namespace Barebones.MasterServer{
 		}
 
 		private void subscribePreGame(SpectatorSubscriptionsMsg msg, IIncommingMessage originalMsg){
-			List<PreGame> preGames = preGameModule.getAllGames ();
+			List<PreGame> preGames = AlbotPreGameModule.getAllGames ();
 			PreGame game = preGames.Find (x => x.specs.roomID == msg.broadcastID);
 	
 			if (game == null) {
@@ -164,7 +164,7 @@ namespace Barebones.MasterServer{
 					removeSpectator (broadcastID, p);
 			}
 			else { //Pregame
-				List<PreGame> preGames = preGameModule.getAllGames ();
+				List<PreGame> preGames = AlbotPreGameModule.getAllGames ();
 				PreGame game = preGames.Find (x => x.specs.roomID == broadcastID);
 				if (game != null)
 					game.removeSpectator (peerID);

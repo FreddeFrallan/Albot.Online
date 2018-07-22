@@ -18,6 +18,7 @@ namespace AlbotServer{
         private List<Dictionary<string, PreGame>> allGameDicts = new List<Dictionary<string, PreGame>>();
         private List<PreGame> allGames = new List<PreGame>();
         private List<PreGame> allPreGames = new List<PreGame>();
+        private AlbotPreGameMaintence maintence = new AlbotPreGameMaintence();
 
         public override void Initialize (IServer server){
 			singleton = this;
@@ -32,6 +33,13 @@ namespace AlbotServer{
             
             allGameDicts.Add(currentPreGames);
             allGameDicts.Add(activeGames);
+        }
+
+        private IEnumerator removeOldgames() {
+            while (true) {
+                yield return new WaitForSeconds(15);
+                maintence.cleanupOldPreGames();
+            }
         }
 
 		private void handleCreatePreGame(IIncommingMessage message){
@@ -84,7 +92,6 @@ namespace AlbotServer{
 		private void handleStartPreGame(IIncommingMessage rawMsg) { 
             PreGame targetGame;
             string roomID = rawMsg.AsString();
-            Debug.LogError("Trying to start game: " + roomID);
             string errorMsg = "";
 
             if (findGame(roomID, out targetGame, rawMsg) == false)
@@ -126,17 +133,17 @@ namespace AlbotServer{
 		}
 
 		private void handleRestartGame(IIncommingMessage rawMsg){
-            PreGame targetGame;
-            Debug.LogError("Restart game: " + rawMsg.AsString());
-            if (findGame(rawMsg.AsString(), out targetGame, rawMsg) == false || targetGame.containsPeer(rawMsg.Peer) == false)
+            if(activeGames.ContainsKey(rawMsg.AsString()) == false) {
+                rawMsg.Respond("Could not find matching game", ResponseStatus.Error);
+                return;
+            }
+            PreGame targetGame = activeGames[rawMsg.AsString()];
+            if (targetGame.containsPeer(rawMsg.Peer) == false)
                 return;
 
             targetGame.updatePeerReady(rawMsg.Peer, true);
-            Debug.LogError("Peer ready for : " + targetGame.specs.roomID);
-            if (targetGame.canGameStart()) {
-                Debug.LogError("Restaring training game: " + rawMsg.AsString());
+            if (targetGame.canGameStart())
                 startGame(targetGame, rawMsg);
-            }
 		}
         #endregion
 
@@ -144,7 +151,7 @@ namespace AlbotServer{
 
         #region Getters
         public static List<PreGame> getCurrentPreGames() { return singleton.allPreGames; }
-        public List<PreGame> getAllGames() { return allGames; }
+        public static List<PreGame> getAllGames() { return singleton.allGames; }
         #endregion
 
 
@@ -155,10 +162,14 @@ namespace AlbotServer{
 
         #region Utils
         public static void removeGame(PreGame game, string roomID) {
-            Debug.LogError("Removing game: " + game.specs.roomID);
-            iterateAllDicts(d => { if (d.ContainsKey(roomID)) d.Remove(roomID); });
-            if (singleton.allGames.Contains(game))
-                singleton.allGames.Remove(game);
+            if (game.gameHasStarted())
+                singleton.activeGames.Remove(roomID);
+            else {
+                singleton.currentPreGames.Remove(roomID);
+                singleton.allPreGames.Remove(game);
+            }
+
+            singleton.allGames.Remove(game);
         }
         private static void iterateAllDicts(Action<Dictionary<string, PreGame>> a) {singleton.allGameDicts.ForEach(d => a(d));}
         private bool findGame(string key, out PreGame game, IIncommingMessage rawMsg = null) {
