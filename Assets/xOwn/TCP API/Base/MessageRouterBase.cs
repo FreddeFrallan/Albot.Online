@@ -25,7 +25,9 @@ namespace TCP_API{
         /// <param name="msg"></param>
         /// <returns>APIMsgConclusion</returns>
         public APIMsgConclusion handleIncomingMsg(string msg) {
-            if (msg == "RestartGame") {
+            msg = msg.Trim();
+            msg = msg.ToLower();
+            if (msg == "restartgame") {
                 MainThread.fireEventAtMainThread(() => ClientUI.CurrentGame.restartCurrentGame());
                 return restartReturnMsg();
             }
@@ -35,7 +37,7 @@ namespace TCP_API{
                 return new APIMsgConclusion() { msg = msg, target = MsgTarget.Server, status = ResponseStatus.Success };
 
             try{
-                JSONObject jObj = new JSONObject(msg.Trim());
+                JSONObject jObj = new JSONObject(msg);
                 Func<JSONObject, APIMsgConclusion> linkedFunc = APIFuncs[jObj.GetField(TCPFields.action).str];
                 return linkedFunc(jObj);
             }

@@ -103,14 +103,14 @@ namespace Snake{
 
 
 		protected override void readTCPMsg (ReceivedLocalMessage msg){
-            if (isGameOver)
-				return;
 			if (msg.message.Length == 0) {
 				RealtimeTCPController.requestBoard (convertColorToTeam(localPlayerColor), true);
 				return;
 			}
-
             APIMsgConclusion conclusion = APIRouter.handleIncomingMsg(msg.message);
+            if (isGameOver)
+				return;
+
             if (conclusion.target == MsgTarget.Server) {
                 int dir = -1;
                 if (parseCommandMsg(msg.message, out dir))

@@ -300,6 +300,7 @@ namespace Barebones.MasterServer
 				return "";
 			
 			task.Requester = peersInRoom[0];
+            Debug.LogError("Creating game: " + options[MsfDictKeys.GameType]);
 
 			task.StatusChanged += (status) =>{
 				// Send status update

@@ -179,6 +179,7 @@ namespace Barebones.MasterServer{
             var options = message.Deserialize(new RoomOptions());
             var room = RegisterRoom(message.Peer, options);
 
+            Debug.LogError("Room Created");
 			Debug.LogError("Registred room with: " + options.Properties[MsfDictKeys.GameType]);
             // Respond with a room id
             message.Respond(room.RoomId, ResponseStatus.Success);
