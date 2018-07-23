@@ -18,6 +18,7 @@ namespace Tournament.Server {
         public TournamentTree(List<TournamentPlayer> players) {
             this.players = players;
             layers = (int)Mathf.Ceil(Mathf.Log(players.Count, 2));
+            layers = layers <= 0 ? 1 : layers;
 
             treeStructure = TournamentTreeGenerator.generateTreeStructure(layers);
             TournamentTreeGenerator.addBots(treeStructure, players);

@@ -49,7 +49,7 @@ namespace Tournament.Server {
         }
 
         public bool startTournament(ref RunningTournamentGame game, IIncommingMessage rawMsg) {
-            if (gameInfo.players.Count == 0) {
+            if (gameInfo.connectedPeers.Count == 0) {
                 rawMsg.Respond("Tried to start tournament, but there was not enough players!", ResponseStatus.Failed);
                 return false;
             }

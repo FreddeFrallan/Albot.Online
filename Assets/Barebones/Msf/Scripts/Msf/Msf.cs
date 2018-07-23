@@ -366,6 +366,7 @@ namespace Barebones.MasterServer
             public Dictionary<string, string> generateGameSettings(PreGameSpecs specs, bool hasSpectators, PreGameSlotInfo[] players) {
                 GameSettings constants = InduvidualGameData.games[specs.type];
 
+
                 Dictionary<string, string> settings = new Dictionary<string, string>{
                     {MsfDictKeys.MaxPlayers, specs.maxPlayers.ToString()},
                     {MsfDictKeys.RoomName, specs.hostName},

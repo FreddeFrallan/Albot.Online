@@ -125,7 +125,7 @@ public class MsfQuickBuild{
 			BuildMasterAndSpawner(path, BuildTarget.StandaloneWindows);
 	}
 
-	[MenuItem("Tools/Msf/Build Client %&c", false, 11)]
+	[MenuItem("Tools/Msf/Build Client %&q", false, 11)]
 	public static void BuildClientMenu(){
 		var path = GetPath();
 		if (!string.IsNullOrEmpty(path))

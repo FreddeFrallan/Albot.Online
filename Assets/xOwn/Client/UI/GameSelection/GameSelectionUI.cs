@@ -28,6 +28,7 @@ namespace ClientUI{
         // Use this for initialization
         protected virtual void Awake(){
 			localSingleton = this;
+            print(gameObject);
 			_items = new GenericUIList<GameInfoPacket>(ItemPrefab.gameObject, LayoutGroup);
 			ClientUIOverlord.onUIStateChanged += (ClientUIStates newState) => {if (newState == ClientUIStates.GameLobby)resetSelection ();};
 			Connection.SetHandler ((short)ServerCommProtocl.LobbyGameStats, handleGameStatsUpdate);

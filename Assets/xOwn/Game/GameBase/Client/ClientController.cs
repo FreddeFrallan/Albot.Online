@@ -116,10 +116,10 @@ namespace Game{
 
 	
 		protected virtual void readTCPMsg (ReceivedLocalMessage inMsg){
+            APIMsgConclusion outMsg = apiRouter.handleIncomingMsg(inMsg.message);
             if (ClientPlayersHandler.hasRequestedPlayerMoves() == false)
                 return;
 
-            APIMsgConclusion outMsg = apiRouter.handleIncomingMsg(inMsg.message);
             if (outMsg.target == MsgTarget.Server)
                 onOutgoingLocalMsg(outMsg.msg, ClientPlayersHandler.sendFromCurrentPlayer());
             else if (outMsg.target == MsgTarget.Player)

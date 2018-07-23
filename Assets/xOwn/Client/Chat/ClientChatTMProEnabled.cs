@@ -45,15 +45,18 @@ namespace ClientUI {
             AlbotChatMsg msg = new AlbotChatMsg() { icon = int.Parse(currentAcountInfo.Properties["icon"]), username = currentAcountInfo.Username };
 
             if (enteredChat) {
-                for (int i = MessagesList.transform.childCount; i > 1; i--)
-                    Destroy(MessagesList.transform.GetChild(i - 1).gameObject);
-
+                clearMessageList();
                 Msf.Connection.SendMessage((short)ServerCommProtocl.LobbyPlayerEnter, msg);
             } else if (exitedChat) {
                 Msf.Connection.SendMessage((short)ServerCommProtocl.LobbyPlayerLeft, msg);
                 clearList();
             }
 
+        }
+
+        private void clearMessageList() {
+            for (int i = MessagesList.transform.childCount; i > 1; i--)
+                Destroy(MessagesList.transform.GetChild(i - 1).gameObject);
         }
 
         private void clearList() { usersList.clearList(); }
