@@ -22,7 +22,7 @@ namespace ClientUI{
         }
 
         private void handleCreatedGameResponse(ResponseStatus status, IIncommingMessage rawMsg) {
-            if (responseSuccess(status, rawMsg) == false)
+            if (Msf.Helper.serverResponseSuccess(status, rawMsg) == false)
                 return;
             joinPreGame(new GamesListUiItem() { roomType = GameInfoType.PreGame, GameId = rawMsg.AsString() });
         }
@@ -44,11 +44,11 @@ namespace ClientUI{
             if(game.roomType == GameInfoType.PreGame)
 			    Msf.Connection.SendMessage((short)ServerCommProtocl.RequestJoinPreGame, msg, handleJoinPreGameMsg);
             else if(game.roomType == GameInfoType.PreTournament)
-                Msf.Connection.SendMessage((short)CustomMasterServerMSG.joinTournament, msg, handleJoinPreTournament);
+                Msf.Connection.SendMessage((short)CustomMasterServerMSG.joinTournament, msg, CurrentTournament.handleJoinedTournament);
         }
 
 		private void handleJoinPreGameMsg(ResponseStatus status, IIncommingMessage rawMsg){
-            if (responseSuccess(status, rawMsg) == false)
+            if (Msf.Helper.serverResponseSuccess(status, rawMsg) == false)
                 return;
 
 			PreGameRoomMsg msg = rawMsg.Deserialize<PreGameRoomMsg> ();
@@ -63,26 +63,11 @@ namespace ClientUI{
 
 			preGameLobby.initPreGameLobby (currentMap.picture, msg);
 		}
-
-        private void handleJoinPreTournament(ResponseStatus status, IIncommingMessage rawMsg) {
-            if (responseSuccess(status, rawMsg) == false)
-                return;
-            print("Tournament Join: " + rawMsg.AsString());
-        }
         #endregion
 
 
 
         #region Deubbing
-        private bool responseSuccess(ResponseStatus status, IIncommingMessage rawMsg) {
-            if (status != ResponseStatus.Success) {
-                Msf.Events.Fire(Msf.EventNames.ShowDialogBox, DialogBoxData.CreateError(rawMsg.AsString()));
-                Debug.LogError(status + " - " + rawMsg.AsString());
-                return false;
-            }
-            return true;
-        }
-
         private void printPlayerSlots(PreGameSlotInfo[] slots) {
             foreach(PreGameSlotInfo slot in slots)
                 print(slot.type + " " + slot.playerInfo.username);

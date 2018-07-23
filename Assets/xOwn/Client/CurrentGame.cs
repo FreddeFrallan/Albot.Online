@@ -18,6 +18,7 @@ namespace ClientUI {
             gameConnector = connector;
             TCPLocalConnection.subscribeToTCPStatus(TCPStatusChanged);
             ClientUIOverlord.onUIStateChanged += UIStateChanged;
+            Msf.Server.SetHandler((short)ServerCommProtocl.GameRoomInvite, CurrentGame.handleStartGame);
         }
  
 

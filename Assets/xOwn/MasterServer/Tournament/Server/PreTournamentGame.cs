@@ -25,8 +25,9 @@ namespace Tournament.Server {
         }
 
         public bool addPlayer(IPeer peer, PlayerInfo info) {
-            if (gameInfo.players.Count >= gameInfo.specs.maxPlayers)
+            if (gameInfo.players.Count >= gameInfo.specs.maxPlayers || containsPeer(peer))
                 return false;
+
 
             peer.Disconnected += playerDissconnected;
             gameInfo.connectedPeers.Add(peer);
@@ -61,7 +62,8 @@ namespace Tournament.Server {
         }
 
         public void closeTournament() {
-            
+            Debug.LogError("Closing tournament: " + gameInfo.roomID);
+            gameInfo.connectedPeers.ForEach(p => p.SendMessage((short)CustomMasterServerMSG.closeTournament, gameInfo.roomID));
         }
 
         public void updateAdmin() {
@@ -77,8 +79,10 @@ namespace Tournament.Server {
         #endregion
 
         public string getRoomID() { return gameInfo.roomID; }
-        public int[] getPlayersID() { return gameInfo.connectedPeers.Select(p => p.Id).ToArray(); }
+        public int[] getPeerIDs() { return gameInfo.connectedPeers.Select(p => p.Id).ToArray(); }
         public IPeer getMachingPeer(int id) {return gameInfo.connectedPeers.First(p => p.Id == id); }
+        public bool containsPeer(IPeer peer) { return gameInfo.connectedPeers.Any(p => p.Id == peer.Id); }
+        public IPeer getAdmin() { return gameInfo.admin; }
     }
 
 }

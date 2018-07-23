@@ -34,17 +34,16 @@ namespace Barebones.MasterServer {
                 rawMsg.Respond("You don't have admin permission", ResponseStatus.Failed);
                 return;
             }
-            if (peerToTournaments.ContainsKey(peer.Id))
-                closeTournament(peerToTournaments[peer.Id]);
 
             TournamentSpecsMsg msg =  rawMsg.Deserialize<TournamentSpecsMsg>();
             string key = generateGameKey();
-            PreTournamentGame newGame = new PreTournamentGame(msg, peer, key);
+            PreTournamentGame newTournament = new PreTournamentGame(msg, peer, key);
 
-            currentPreTournaments.Add(key, newGame);
+            currentPreTournaments.Add(key, newTournament);
+            addPlayerToPeerToTournaments(rawMsg.Peer, newTournament);
             rawMsg.Respond(key, ResponseStatus.Success);
-            newGame.updateAdmin();
-            Debug.LogError("Created Tournament: " + key);
+            newTournament.updateAdmin();
+            Debug.LogError("Created Tournament: " + key + " With admin: " + rawMsg.Peer.Id);
         }
         #endregion
 
@@ -58,12 +57,37 @@ namespace Barebones.MasterServer {
                 return;
             }
 
-            if (currentPreTournaments[msg.roomID].addPlayer(rawMsg.Peer, msg.joiningPlayer))
+
+            PreTournamentGame tournament = currentPreTournaments[msg.roomID];
+            if (tournament.addPlayer(rawMsg.Peer, msg.joiningPlayer)) {
                 rawMsg.Respond(msg.roomID, ResponseStatus.Success);
+                addPlayerToPeerToTournaments(rawMsg.Peer, tournament);
+                Debug.LogError("Adding player: " + rawMsg.Peer.Id + " to tournament: " + tournament.getRoomID());
+            }
             else
                 rawMsg.Respond("Could not join game", ResponseStatus.Failed);
         }
 
+
+        private void addPlayerToPeerToTournaments(IPeer peer, PreTournamentGame newTournament) {
+            if (peerToTournaments.ContainsKey(peer.Id) == false) {
+                peerToTournaments.Add(peer.Id, newTournament);
+                return;
+            }
+
+            PreTournamentGame oldTournament = peerToTournaments[peer.Id];
+            if (SpectatorAuthModule.existsAdmin(peer)) { //Admin
+                closeTournament(oldTournament);
+                peerToTournaments.Remove(peer.Id);
+            } else {//User
+                if (oldTournament.getRoomID() != newTournament.getRoomID()) 
+                    removePlayerFromGame(peer, oldTournament);
+                else
+                    return;
+            }
+
+            peerToTournaments.Add(peer.Id, newTournament);
+        }
         #endregion
 
         #region Start
@@ -100,7 +124,8 @@ namespace Barebones.MasterServer {
             game.closeTournament();
 
             currentPreTournaments.Remove(key);
-            foreach (int id in game.getPlayersID())
+            peerToTournaments.Remove(game.getAdmin().Id);
+            foreach (int id in game.getPeerIDs())
                 peerToTournaments.Remove(id);
         }
         #endregion
@@ -111,7 +136,11 @@ namespace Barebones.MasterServer {
                 Debug.LogError(p.Id + " tried to leave tournament, but no such player registred");
                 return;
             }
-            peerToTournaments[p.Id].removePlayer(p.Id);
+            removePlayerFromGame(p, peerToTournaments[p.Id]);
+        }
+
+        private void removePlayerFromGame(IPeer p, PreTournamentGame tournament) {
+            tournament.removePlayer(p.Id);
             peerToTournaments.Remove(p.Id);
         }
 

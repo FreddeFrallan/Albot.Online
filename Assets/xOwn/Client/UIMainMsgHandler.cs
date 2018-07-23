@@ -18,10 +18,14 @@ namespace ClientUI{
 
 
             CurrentGame.init(gameConnector);
-            Msf.Server.SetHandler((short)ServerCommProtocl.GameRoomInvite, CurrentGame.handleStartGame);
-			Game.ClientPlayersHandler.addUIStateListner ();
+            CurrentTournament.init();
+            Game.ClientPlayersHandler.addUIStateListner ();
 		}
 
-	}
+        private void Update() {
+            if (Input.GetKeyDown(KeyCode.P))
+                CurrentTournament.leaveCurrentTournament();
+        }
+    }
 
 }

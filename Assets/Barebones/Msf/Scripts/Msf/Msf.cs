@@ -398,19 +398,28 @@ namespace Barebones.MasterServer
             /// Retrieves current public IP
             /// </summary>
             /// <param name="callback"></param>
-            public void GetPublicIp(Action<string> callback)
-            {
+            public void GetPublicIp(Action<string> callback){
                 BTimer.Instance.StartCoroutine(GetPublicIPCoroutine(callback));
             }
 
-            private IEnumerator GetPublicIPCoroutine(Action<string> callback)
-            {
+            private IEnumerator GetPublicIPCoroutine(Action<string> callback){
                 var req = new WWW("http://checkip.dyndns.org");
                 yield return req;
                 var ip = req.text;
                 ip = ip.Substring(ip.IndexOf(":") + 1);
                 ip = ip.Substring(0, ip.IndexOf("<"));
                 callback.Invoke(ip);
+            }
+
+
+
+            public bool serverResponseSuccess(ResponseStatus status, IIncommingMessage rawMsg) {
+                if (status != ResponseStatus.Success) {
+                    Events.Fire(EventNames.ShowDialogBox, DialogBoxData.CreateError(rawMsg.AsString()));
+                    Debug.LogError(status + " - " + rawMsg.AsString());
+                    return false;
+                }
+                return true;
             }
         }
     }
