@@ -347,7 +347,7 @@ namespace Barebones.MasterServer
 
             public GameInfoPacket createGameInfoPacket(GameInfoType infoType, string roomID, string hostName, int maxPlayers, int playerAmount, Game.GameType type) {
                 return new GameInfoPacket() {
-                    Type = GameInfoType.PreTournament,
+                    infoType = infoType,
                     Name = hostName,
                     OnlinePlayers = playerAmount,
                     MaxPlayers = maxPlayers,

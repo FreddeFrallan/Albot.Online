@@ -439,7 +439,7 @@ namespace Barebones.MasterServer
                 Name = lobby.Name,
                 OnlinePlayers = lobby.PlayerCount,
                 Properties = GetPublicLobbyProperties(peer, lobby, filters),
-                Type = GameInfoType.Lobby
+                infoType = GameInfoType.Lobby
             });
         }
 

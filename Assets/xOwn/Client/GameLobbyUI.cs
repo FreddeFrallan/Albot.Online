@@ -2,26 +2,49 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameLobbyUI : MonoBehaviour {
+namespace ClientUI {
 
-	public GameObject preGameLobby, preTrainingLobby, lobbyBrowser, noGameSelectedView;
+    public class GameLobbyUI : MonoBehaviour {
 
-	public void closeLobby(){
-		preGameLobby.SetActive (false);
-		preTrainingLobby.SetActive (false);
-        lobbyBrowser.SetActive(false);
-        noGameSelectedView.SetActive(true);
-    }
+        public GameObject preGameLobby, preTrainingLobby, lobbyBrowser, noGameSelectedView;
+        public AutoRefresh refresher;
 
-    public void openLobbyBrowser() {
-        preGameLobby.SetActive(false);
-        preTrainingLobby.SetActive(false);
-        noGameSelectedView.SetActive(false);
-        lobbyBrowser.SetActive(true);
-    }
+        private bool isOpen = false;
 
-    public void closeLobbyBrowser() {
-        lobbyBrowser.SetActive(false);
-        noGameSelectedView.SetActive(true);
+        public void closeLobby() {
+            preGameLobby.SetActive(false);
+            preTrainingLobby.SetActive(false);
+            lobbyBrowser.SetActive(false);
+            noGameSelectedView.SetActive(true);
+        }
+
+
+        #region Buttons
+        public void gotoLobbyBrowserButton() {ClientUIStateManager.requestGotoLobbyBrowser();}
+        public void gotoGameLobbyButton() {ClientUIStateManager.requestGotoGameLobby();}
+        #endregion
+
+
+        private void openLobbyBrowser() {
+            lobbyBrowser.SetActive(true);
+            refresher.activateRefresh();
+
+            isOpen = true;
+        }
+
+        private void closeLobbyBrowser() {
+            lobbyBrowser.SetActive(false);
+            refresher.deActivateRefresh();
+
+            isOpen = false;
+        }
+
+        public void setLobbyBrowserState(bool active) {
+            if (active && isOpen == false)
+                openLobbyBrowser();
+            else if (active == false && isOpen)
+                closeLobbyBrowser();
+        }
+
     }
 }

@@ -18,7 +18,7 @@ namespace ClientUI{
 
 		public List<Button> buttonsBoundToHavingBot;
 		public static ClientUIOverlord singleton;
-		public GameObject loginMenu, loginWindow, gameLobby, gameListWindow, preGameWindow;
+		public GameObject loginMenu, loginWindow, gameLobby, gameListWindow, preGameWindow, lobbyBrowser;
 		public GameLobbyUI lobbyUI;
 		public MenuBar menuBar;
 		public ClientUserPanelUI userPanel;
@@ -73,22 +73,26 @@ namespace ClientUI{
 
 		public static void setUIState(ClientUIStates state){
 			switch (state) {
-			case ClientUIStates.GameLobby:
+            case ClientUIStates.LobbyBrowser:
+                setMenuPanels(false, true, false);
+                setLobbyPanels(false, false, true);
+                break;
+            case ClientUIStates.GameLobby:
 				setMenuPanels (false, true, false);
 				setLobbyPanels (true, false);
 				currentAcountInfo = Msf.Client.Auth.AccountInfo;
 				break;
 			case ClientUIStates.PreGame:
 				setMenuPanels (false, true, false);
-				setLobbyPanels (false, false);
+				setLobbyPanels (false, false, false);
 				break;
 			case ClientUIStates.LoginMenu:
 				setMenuPanels (true, false, false);
-				setLobbyPanels (false, false);
+				setLobbyPanels (false, false, false);
 				break;
 			case ClientUIStates.PlayingGame:
 				setMenuPanels (false, false, false);
-				setLobbyPanels (false, false);
+				setLobbyPanels (false, false, false);
 				break;
 			}
 
@@ -117,11 +121,12 @@ namespace ClientUI{
 			if (lobby == false)
 				singleton.lobbyUI.closeLobby ();
 		}
+
 		//Pre game lobby has been moved to PreGameBaseLobby
-		private static void setLobbyPanels(bool gameList, bool preGame){
+		private static void setLobbyPanels(bool gameList, bool preGame, bool lobbyBrowser = false){
 			singleton.gameListWindow.SetActive (gameList);
-		//	singleton.preGameWindow.SetActive (preGame);
-		}
+            singleton.lobbyUI.setLobbyBrowserState(lobbyBrowser);
+        }
 
 		private void onLoggedIn(){setUIState (ClientUIStates.GameLobby);}
 		private void onLoggedOut(){setUIState (ClientUIStates.LoginMenu);}
@@ -135,7 +140,8 @@ namespace ClientUI{
 	public enum ClientUIStates{
 		LoginMenu,
 		GameLobby,
-		PreGame,
+        LobbyBrowser,
+        PreGame,
 		PlayingGame,
 	}
 }

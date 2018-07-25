@@ -52,6 +52,16 @@ namespace ClientUI{
 			} else
 				singelton.onEnterGameLobby ();
 		}
+
+        public static void requestGotoLobbyBrowser() {
+            singelton.winPanel.SetActive(false);
+            if (isInGameScene()) {
+                singelton.enteringGameLobby = true;
+                loadNewScene(singelton.lobbyScene.SceneName);
+            } else
+                singelton.onEnterLobbyBrowser();
+        }
+
 		private static void loadNewScene(string newScene){			
 			AlbotDialogBox.setIgnoreConnectionLostMsg (1);
 			SceneManager.LoadScene (newScene);
@@ -87,9 +97,13 @@ namespace ClientUI{
 			enteringPreGame = false;
 			ClientUIOverlord.setUIState (ClientUIStates.PreGame);
 		}
-		private void logout(){
+        private void onEnterLobbyBrowser() {
+            enteringGameLobby = false;
+            ClientUIOverlord.setUIState(ClientUIStates.LobbyBrowser);
+        }
+        private void logout(){
 			ClientUIOverlord.setUIState (ClientUIStates.LoginMenu);
-			Barebones.MasterServer.Msf.Client.Auth.LogOut ();
+			Msf.Client.Auth.LogOut ();
 		}
 		#endregion
 

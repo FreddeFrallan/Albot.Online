@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Text;
+using Barebones.MasterServer;
 
 namespace Barebones.Networking
 {
@@ -23,6 +24,10 @@ namespace Barebones.Networking
                 disposed = true;
                 ((IDisposable) BaseStream).Dispose();
             }
+        }
+
+        internal void Write(GameInfoType type) {
+            throw new NotImplementedException();
         }
 
         #endregion

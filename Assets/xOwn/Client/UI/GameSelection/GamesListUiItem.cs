@@ -43,8 +43,8 @@ namespace Barebones.MasterServer{
 
         public void Setup(GameInfoPacket data){
             RawData = data;
-            IsLobby = data.Type == GameInfoType.Lobby;
-            roomType = data.Type;
+            IsLobby = data.infoType == GameInfoType.Lobby;
+            roomType = data.infoType;
             SetIsSelected(false);
             Name.text = data.Name;
             GameId = data.Id;

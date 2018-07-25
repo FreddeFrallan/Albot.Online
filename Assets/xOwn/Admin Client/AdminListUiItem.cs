@@ -44,7 +44,7 @@ namespace AdminUI{
 
 		public void Setup(GameInfoPacket data){
 			RawData = data;
-			IsLobby = data.Type == GameInfoType.Lobby;
+			IsLobby = data.infoType == GameInfoType.Lobby;
 			SetIsSelected(false);
 			Name.text = data.Name;
 			GameId = data.Id;
