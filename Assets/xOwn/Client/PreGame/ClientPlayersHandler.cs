@@ -16,6 +16,12 @@ namespace Game{
 		private static List<PlayerColor> currentPlayerQ = new List<PlayerColor>();
 		private static List<TrainingBot> currentBots = new List<TrainingBot> ();
 
+        public static void printQueue()
+        {
+            Debug.Log("Q size: " + currentPlayerQ.Count);
+            foreach (PlayerColor c in currentPlayerQ)
+                Debug.Log(c);
+        }
 
 
 		private static ClientController theClientController;
@@ -42,7 +48,7 @@ namespace Game{
 
 		public static void onReceiveServerMsg(string msg, PlayerColor color){
 			LocalPlayer p = players.Find (x => x.info.color == color);
-			if (p == null) {
+            if (p == null) {
 				Debug.LogError ("Got a msg for: " + color + "   But got no stored players matching that color");
 				return;
 			}
@@ -105,7 +111,7 @@ namespace Game{
         public static LocalPlayer getLocalHumanPlayer() { return players.FirstOrDefault(p => p.Human); }
         public static bool hasLocalPlayerOfColor(PlayerColor color){return players.Find (x => x.info.color == color) != null;}
 		public static LocalPlayer getPlayerFromColor(PlayerColor color){return players.Find (x => x.info.color == color);}
-		public static LocalPlayer getCurrentPlayer(){return getPlayerFromColor (getCurrentPlayerColor ());}
+		public static LocalPlayer getCurrentPlayer(){return getPlayerFromColor(getCurrentPlayerColor());}
 		public static bool hasRequestedPlayerMoves(){return currentPlayerQ.Count > 0;}
 		public static PlayerColor getCurrentPlayerColor(){return currentPlayerQ [0];}
 		public static PlayerColor sendFromCurrentPlayer(){
@@ -136,7 +142,10 @@ namespace Game{
 
 		public void takeInput(string msg){
             if (isMainPlayer())
+            {
+                Debug.Log("Player input" + msg);
                 TCPLocalConnection.sendMessage(msg);
+            }
             else if (NPC)
                 bot.onReceiveInput(msg);
             else if (Human)

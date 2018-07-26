@@ -17,7 +17,7 @@ public class TCPMessageQueue{
 		hasUnread = true;
 
 		if (readMsgInstant != null)
-			readMsgInstant (newMsg);
+	        readMsgInstant (newMsg);
 	}
 
 	public static ReceivedLocalMessage popMessage(){

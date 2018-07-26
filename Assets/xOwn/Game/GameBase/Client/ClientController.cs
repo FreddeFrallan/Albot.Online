@@ -116,12 +116,21 @@ namespace Game{
 
 	
 		protected virtual void readTCPMsg (ReceivedLocalMessage inMsg){
-            APIMsgConclusion outMsg = apiRouter.handleIncomingMsg(inMsg.message);
-            if (ClientPlayersHandler.hasRequestedPlayerMoves() == false)
-                return;
+            print("TCP msg: " + inMsg.message);
 
-            if (outMsg.target == MsgTarget.Server)
+            APIMsgConclusion outMsg = apiRouter.handleIncomingMsg(inMsg.message);
+            print("Status" + outMsg.status);
+            print(outMsg.msg);
+            print("Target" + outMsg.target);
+
+            ClientPlayersHandler.printQueue();
+            bool temp = ClientPlayersHandler.getCurrentPlayer().isMainPlayer();
+            print("Temp: " + temp);
+
+            if (outMsg.target == MsgTarget.Server){
                 onOutgoingLocalMsg(outMsg.msg, ClientPlayersHandler.sendFromCurrentPlayer());
+                isListeningForTCP = false;
+            }
             else if (outMsg.target == MsgTarget.Player)
                 ClientPlayersHandler.getCurrentPlayer().takeInput(outMsg.msg);
         }

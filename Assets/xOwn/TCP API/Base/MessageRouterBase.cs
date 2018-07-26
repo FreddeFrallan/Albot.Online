@@ -26,19 +26,18 @@ namespace TCP_API{
         /// <returns>APIMsgConclusion</returns>
         public APIMsgConclusion handleIncomingMsg(string msg) {
             msg = msg.Trim();
-            msg = msg.ToLower();
-            if (msg == "restartgame") {
+            if (msg.ToLower() == "restartgame") {
                 MainThread.fireEventAtMainThread(() => ClientUI.CurrentGame.restartCurrentGame());
                 return restartReturnMsg();
             }
-
-
+            
             if (isJsonMsg(msg) == false)
                 return new APIMsgConclusion() { msg = msg, target = MsgTarget.Server, status = ResponseStatus.Success };
 
             try{
                 JSONObject jObj = new JSONObject(msg);
                 Func<JSONObject, APIMsgConclusion> linkedFunc = APIFuncs[jObj.GetField(TCPFields.action).str];
+                Debug.LogError(linkedFunc);
                 return linkedFunc(jObj);
             }
             catch(Exception e) {

@@ -78,15 +78,16 @@ namespace Connect4{
 			byte[] bytes = boardMsg.reader.ReadBytesAndSize ();
 			Game.CommProtocol.StringMessage msg = Game.ClientController.Deserialize<Game.CommProtocol.StringMessage> (bytes);
 
+            print("Server Msg: " + msg.msg);
 			string formattedBoard = formatBoard (msg.msg, msg.color);
 			Game.ClientPlayersHandler.onReceiveServerMsg (formattedBoard, msg.color);
 		}
 		public void initSettings(NetworkMessage initMsg){
 			byte[] bytes = initMsg.reader.ReadBytesAndSize ();
-			Connect4.GameInfo msg = Game.ClientController.Deserialize<GameInfo> (bytes);
+			GameInfo msg = ClientController.Deserialize<GameInfo> (bytes);
 
-			Game.ClientPlayersHandler.initPlayerColor (msg.username, msg.myColor);
-			isListeningForTCP = true;
+			ClientPlayersHandler.initPlayerColor (msg.username, msg.myColor);
+            isListeningForTCP = true;
 		}
 		public void handleRPCMove(NetworkMessage RPCMsg){
 			byte[] bytes = RPCMsg.reader.ReadBytesAndSize ();
