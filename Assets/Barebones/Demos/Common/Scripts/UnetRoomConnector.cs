@@ -157,6 +157,6 @@ public class UnetRoomConnector : RoomConnector
 	public static void shutdownCurrentConnection(){
 		singleton.showDissconnectMsg = false;
 		try{singleton.NetworkManager.client.Disconnect ();}
-		catch{}
+		catch{ Debug.LogError("Could not dissconnect"); }
 	}
 }

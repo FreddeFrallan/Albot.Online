@@ -39,7 +39,7 @@ namespace ClientUI{
 					iconNumber = int.Parse(ac.Properties["icon"])
 				}
 			};
-            print("Joining Game: " + game.GameId);
+            print("Joining Pre Game: " + game.GameId);
 
             if(game.roomType == GameInfoType.PreGame)
 			    Msf.Connection.SendMessage((short)ServerCommProtocl.RequestJoinPreGame, msg, handleJoinPreGameMsg);

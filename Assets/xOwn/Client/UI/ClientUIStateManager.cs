@@ -45,14 +45,16 @@ namespace ClientUI{
             requestGotoState(newState, stateToScenes[newState], onCompleteAction);
         }
         public static void requestGotoState(ClientUIStates newState, string targetScene, Action onCompleteAction = null) {
-            if (ClientUIOverlord.currentState == newState)
+            if (ClientUIOverlord.currentState == newState && ClientUIOverlord.currentState != ClientUIStates.PlayingGame) {
+                onCompleteAction();
                 return;
+            }
 
             targetState = newState;
             targetLogicAction = onCompleteAction;
 
             singelton.winPanel.SetActive(false);
-            if (currentScene() != targetScene)
+            if (currentScene() != targetScene || newState == ClientUIStates.PlayingGame)
                 loadNewScene(targetScene);
             else
                 onEnterNewState();

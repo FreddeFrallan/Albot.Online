@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 using System.Linq;
 using AlbotServer;
 using Game;
+using ClientUI;
 
 namespace AdminUI{
 
@@ -25,9 +26,13 @@ namespace AdminUI{
             print(gameObject);
 			Msf.Connection.SetHandler ((short)CustomMasterServerMSG.spectateLogUpdate, handleUpdateMsg);
             Msf.Connection.SetHandler((short)CustomMasterServerMSG.spectateGameStarted, handleSpectateStartMsg);
+            AdminUIManager.onAdminUIStateChanged += onUiStateChangeds;
             singleton = this;
 		}
 
+        private static void onUiStateChanged() {
+
+        }
 
 
 		public static void handleUpdateMsg(IIncommingMessage msg){
@@ -47,8 +52,10 @@ namespace AdminUI{
         public static void handleLogInit(RunningGameInfoMsg initMsg) {
             currentPlayers = initMsg.players;
             localRenderer = null;
+            logQueue.Clear();
             singleton.startInitQueue();
-		}
+            isSpectating = true;
+        }
 
 		public static void onGameSceneLoaded(){
             localRenderer = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameRenderer>();
@@ -61,13 +68,6 @@ namespace AdminUI{
                 Debug.LogError("Could not find renderer");
 		}
 
-		public static void stopSpectating(){
-			print ("Stop spectatiing " + isSpectating);
-			if (isSpectating)
-				Msf.Connection.SendMessage ((short)CustomMasterServerMSG.stopSpectate);
-			isSpectating = false;
-		}
-
         public static void requestSpecificLogMessages(int[] missingUpdates) {
             print("Missing Updates " + missingUpdates.Length + ", Requesting...");
             Msf.Connection.SendMessage((short)CustomMasterServerMSG.requestSpecificGameLog, 
@@ -78,6 +78,19 @@ namespace AdminUI{
                         localRenderer.addMissingUpdates(m.Deserialize<SpectatorGameLog>().gameLog); } 
             );
         }
+
+        #region Stop Spectating
+        private static void onUiStateChangeds(ClientUIStates newState) {
+            if (isSpectating && newState != ClientUIStates.PlayingGame)
+                stopSpectating();
+        }
+        public static void stopSpectating(){
+			print ("Stop spectatiing " + isSpectating);
+			if (isSpectating)
+				Msf.Connection.SendMessage ((short)CustomMasterServerMSG.stopSpectate, (s, r) =>{ print(s); });
+			isSpectating = false;
+		}
+        #endregion
 
         #region LogQueue
         private static void addToLogQueue(SpectatorGameLog log){logQueue.AddRange (log.gameLog);}

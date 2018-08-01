@@ -127,8 +127,6 @@ namespace AlbotDB{
 					updateLoginInfo (savedUser);
 				}
 			}
-			else
-				Debug.LogError("Player dissconnected but was not loged in");
 		}
 
 

@@ -45,7 +45,7 @@ namespace AlbotServer {
             PreGameSpecs msg = message.Deserialize<PreGameSpecs>();
             msg.roomID = generatePreGameID();
 
-            PreGame newGame = new PreGame(message.Peer, msg);
+            PreGame newGame = new PreGame(message.Peer, msg, spectatorModule);
             currentPreGames.Add(msg.roomID, newGame);
             allGamesDict.Add(msg.roomID, newGame);
             allGames.Add(newGame);
@@ -114,12 +114,13 @@ namespace AlbotServer {
         }
 
         private void startGame(PreGame game, IIncommingMessage rawMsg) {
-            string newGameRoomId = SpawnersModule.singleton.createNewRoomFromPreGame(game.getPeers(), game.generateGameSettings(), game.specs.roomID);
-            if (string.IsNullOrEmpty(newGameRoomId)) { // We encountered some kind of error when spawning a new gameRoom
+            string spawnCode = SpawnersModule.singleton.createNewRoomFromPreGame(game.getPeers(), game.generateGameSettings(), game.specs.roomID);
+            if (string.IsNullOrEmpty(spawnCode)) { // We encountered some kind of error when spawning a new gameRoom
                 rawMsg.Respond("Server error during game startup", ResponseStatus.Error);
                 return;
             }
 
+            game.specs.spawnCode = spawnCode;
             PreGameStartedMsg msg = new PreGameStartedMsg() { specs = game.specs, slots = game.getPlayerSlots() };
             Debug.LogError("Starting game: " + game.specs.roomID + " with: " + game.getPeers().Count + " peers.");
 
@@ -151,7 +152,7 @@ namespace AlbotServer {
             if (activeGames.ContainsKey(infoMsg.gameID) == false)
                 Debug.LogError("Game " + infoMsg.gameID + " started, but no such game was located in ActiveGames");
             else
-                activeGames[infoMsg.gameID].onGameStarted(infoMsg, spectatorModule, rawMsg);
+                activeGames[infoMsg.gameID].onGameStarted(infoMsg, rawMsg);
         }
         #endregion
 
@@ -171,6 +172,7 @@ namespace AlbotServer {
 
         #region Utils
         public static void removeGame(PreGame game, string roomID) {
+            Debug.LogError("Removing Game: " + roomID);
             if (game.state == PreGameState.Lobby) {
                 singleton.currentPreGames.Remove(roomID);
                 singleton.allPreGamesList.Remove(game);
@@ -180,6 +182,7 @@ namespace AlbotServer {
 
             singleton.allGames.Remove(game);
             singleton.allGamesDict.Remove(roomID);
+            game.onRemoved();
         }
         private bool findGame(string key, out PreGame game, IIncommingMessage rawMsg = null) {
             if (allGamesDict.TryGetValue(key, out game))

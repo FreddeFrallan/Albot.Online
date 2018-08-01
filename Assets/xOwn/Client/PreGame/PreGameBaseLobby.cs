@@ -85,10 +85,15 @@ namespace ClientUI{
 
 
 		protected void updatePreGameLobby(IIncommingMessage rawMsg){
-            PreGameRoomMsg msg = rawMsg.Deserialize<PreGameRoomMsg> ();
-			currentPlayers = msg.players;
-			setPlayerSlots (msg.players);
-			setAdminStartButton();
+            try {
+                PreGameRoomMsg msg = rawMsg.Deserialize<PreGameRoomMsg> ();
+			    currentPlayers = msg.players;
+			    setPlayerSlots (msg.players);
+			    setAdminStartButton();
+            } catch {
+                Debug.LogError("Could not deserialize msg");
+                return;
+            }
 		}
 		protected void resetPanel(){
 			isAdmin = false;

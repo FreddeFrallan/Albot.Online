@@ -415,8 +415,8 @@ namespace Barebones.MasterServer
 
             public bool serverResponseSuccess(ResponseStatus status, IIncommingMessage rawMsg) {
                 if (status != ResponseStatus.Success) {
-                    Events.Fire(EventNames.ShowDialogBox, DialogBoxData.CreateError(rawMsg.AsString()));
-                    Debug.LogError(status + " - " + rawMsg.AsString());
+                    Events.Fire(EventNames.ShowDialogBox, DialogBoxData.CreateError(rawMsg.AsString("Unkown error")));
+                    Debug.LogError(status + " - " + rawMsg.AsString("Unkown error"));
                     return false;
                 }
                 return true;

@@ -53,13 +53,9 @@ namespace AdminUI{
 
 		public static void requestGotoGame(GameType type, Action onLoad){
 			singleton.setUIState (ClientUIStates.PlayingGame);
-			if (SceneManager.GetActiveScene ().name == getAdminGameSceneName (type))
-				onLoad ();
-			else {
-				onLoadActions.Clear ();
-				onLoadActions.Add (onLoad);
-				SceneManager.LoadScene (getAdminGameSceneName (type));
-			}
+		    onLoadActions.Clear ();
+			onLoadActions.Add (onLoad);
+			SceneManager.LoadScene (getAdminGameSceneName (type));
 		}
 		#endregion
 

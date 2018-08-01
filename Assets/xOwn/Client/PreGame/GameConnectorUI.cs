@@ -20,7 +20,7 @@ namespace ClientUI{
 
         public void onJoinStartedGame(PreGameStartedMsg gameInfo) { 
 			preLobby.removeHandlers ();
-			SpawnRequestController controller = new SpawnRequestController(gameInfo.specs.roomID, Msf.Connection);
+			SpawnRequestController controller = new SpawnRequestController(gameInfo.specs.roomID, Msf.Connection, gameInfo.specs.spawnCode);
 			MsfSpawnersClient._localSpawnRequests[controller.SpawnId] = controller;
 			ProgressUi.Display(controller);
 		}

@@ -42,7 +42,7 @@ namespace Barebones.MasterServer{
                 broadcastGameUpdate(logMsg);
         }
         private void broadcastGameUpdate(SpectatorGameLog logMsg) {
-            foreach (IPeer p in activeGames[logMsg.broadcastID].getSpectators()) {
+            foreach (IPeer p in activeGames[logMsg.broadcastID].getSpectatorsClone()) {
                 try { p.SendMessage((short)(CustomMasterServerMSG.spectateLogUpdate), logMsg); } 
                 catch { removeSpectator(logMsg.broadcastID, p); }
             }
@@ -60,14 +60,17 @@ namespace Barebones.MasterServer{
         }
         #endregion
 
-        #region Start Messages
+        #region PreGame handeling
         public void preGameStarted(PreGame game, RunningGameInfoMsg initMsg) {
 			if (game.hasSpectators () == false)
 				return;
 
-            foreach(IPeer p in game.getSpectators())
+            foreach(IPeer p in game.getSpectatorsClone())
                 p.SendMessage((short)CustomMasterServerMSG.spectateGameStarted, initMsg);
 		}
+        public void preGameRemoved(PreGame game) {
+            game.getSpectatorsClone().ForEach(p => removeSpectator(game, p));
+        }
         #endregion
 
         #region Start spectate game
@@ -98,6 +101,7 @@ namespace Barebones.MasterServer{
             if (isValidAdmin(rawMsg) == false)
                 return;
             removeSpectator (adminToRooms[rawMsg.Peer.Id], rawMsg.Peer);
+            rawMsg.Respond(ResponseStatus.Success);
 		}
 
         private void removeSpectator(String broadcastID, IPeer peer) {
@@ -105,7 +109,7 @@ namespace Barebones.MasterServer{
                 removeSpectator(allGames[broadcastID], peer);
         }
 		private void removeSpectator(PreGame game, IPeer peer){
-            if (adminToRooms.ContainsKey(peer.Id) == false)
+            if (adminToRooms.ContainsKey(peer.Id) != false)
                 adminToRooms.Remove(peer.Id);
             if(game == null) 
                 return;

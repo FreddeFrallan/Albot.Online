@@ -18,7 +18,7 @@ namespace ClientUI {
             gameConnector = connector;
             TCPLocalConnection.subscribeToTCPStatus(TCPStatusChanged);
             ClientUIOverlord.onUIStateChanged += UIStateChanged;
-            Msf.Server.SetHandler((short)ServerCommProtocl.GameRoomInvite, CurrentGame.handleStartGame);
+            Msf.Server.SetHandler((short)ServerCommProtocl.GameRoomInvite, handleStartGame);
         }
  
 
@@ -28,6 +28,7 @@ namespace ClientUI {
                 Debug.LogError("Got non-matching start msg to: " + msg.specs.roomID +  " Type: " + msg.specs.type);
                 return;
             }
+            Debug.Log("Got starting game msg: " + msg.specs.roomID);
             currentlyPlayingGame = true;
             setupLocalPlayers(msg.slots);
             gameConnector.onJoinStartedGame(msg);
@@ -55,8 +56,10 @@ namespace ClientUI {
         }
 
         private static void UIStateChanged(ClientUIStates state) {
-            if(currentlyPlayingGame && state != ClientUIStates.PlayingGame)
+            if(currentlyPlayingGame && state != ClientUIStates.PlayingGame) {
                 Msf.Connection.SendMessage((short)ServerCommProtocl.PlayerLeftPreGame, gameSpecs.roomID);
+                currentlyPlayingGame = false;
+            }
         }
 
         private static void TCPStatusChanged(ConnectionStatus status) {

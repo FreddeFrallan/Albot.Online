@@ -77,11 +77,13 @@ namespace AdminUI{
 			Msf.Connection.SendMessage ((short)CustomMasterServerMSG.startSpectate, outMsg, ((s, m) => {
                 Debug.LogError("Sub status: " + s);
 
-                if(s == ResponseStatus.Success) {
+                if (s == ResponseStatus.Success) {
                     RunningGameInfoMsg infoMsg = m.Deserialize<RunningGameInfoMsg>();
                     if (infoMsg.status == PreGameState.Running)
                         updateManager.startNewSpectateGame(infoMsg);
                 }
+                else
+                    Debug.Log("Error:" + m.AsString());
 			}));
 		}
 

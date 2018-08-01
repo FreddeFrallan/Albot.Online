@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Barebones.Networking;
+using UnityEngine;
 
 namespace Barebones.MasterServer
 {
@@ -79,6 +80,7 @@ namespace Barebones.MasterServer
             });
         }
 
+        /*
         /// <summary>
         /// This method should be called, when spawn process is finalized (finished spawning).
         /// For example, when spawned game server fully starts
@@ -98,7 +100,7 @@ namespace Barebones.MasterServer
         {
             FinalizeSpawnedProcess(spawnId, finalizationData, callback, Connection);
         }
-
+        */
         /// <summary>
         /// This method should be called, when spawn process is finalized (finished spawning).
         /// For example, when spawned game server fully starts
@@ -158,6 +160,7 @@ namespace Barebones.MasterServer
                 return;
             }
 
+            Debug.LogError("SPWn code: " + spawnCode); 
             var packet = new RegisterSpawnedProcessPacket()
             {
                 SpawnCode = spawnCode,
@@ -174,7 +177,7 @@ namespace Barebones.MasterServer
 
                 var properties = new Dictionary<string, string>().FromBytes(response.AsBytes());
 
-                var process = new SpawnTaskController(spawnId, properties, connection);
+                var process = new SpawnTaskController(spawnId, properties, connection, spawnCode);
 
                 callback.Invoke(process, null);
             });
@@ -276,9 +279,11 @@ namespace Barebones.MasterServer
         private readonly IClientSocket _connection;
         public string SpawnId { get; private set; }
         public Dictionary<string, string> Properties { get; private set; }
+        public string spawnCode { get; private set; }
 
-        public SpawnTaskController(string spawnId, Dictionary<string, string> properties, IClientSocket connection)
+        public SpawnTaskController(string spawnId, Dictionary<string, string> properties, IClientSocket connection, string spawnCode)
         {
+            this.spawnCode = spawnCode;
             _connection = connection;
             SpawnId = spawnId;
             Properties = properties;
@@ -295,7 +300,7 @@ namespace Barebones.MasterServer
 
         public void FinalizeTask(Dictionary<string, string> finalizationData, Action callback)
         {
-            Msf.Server.Spawners.FinalizeSpawnedProcess(SpawnId, finalizationData, (successful, error) =>
+            Msf.Server.Spawners.FinalizeSpawnedProcess(spawnCode, finalizationData, (successful, error) =>
             {
                 if (error != null)
                     Logs.Error("Error while completing the spawn task: " + error);

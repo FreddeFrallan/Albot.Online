@@ -5,7 +5,7 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
+  - enabled: 1
     path: Assets/xOwn/Admin Client/Admin Client.unity
     guid: ed61a98dfd8f05f47b1bcea526d970fa
   - enabled: 0
@@ -74,9 +74,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/xOwn/Game/Games/Snake/GameServer/SnakeGameServer.unity
     guid: bf58248d636a2fd4588515ba031200f0
-  - enabled: 1
-    path: Assets/xOwn/Game/Games/Snake/Admin/SnakeAdmin.unity
-    guid: e3bd636d24b9b4b48b27f4d603d77565
+  - enabled: 0
+    path: 
+    guid: 00000000000000000000000000000000
   - enabled: 1
     path: Assets/xOwn/Game/SinglePlayer/HeapManager/HeapManager.unity
     guid: e440184d50e7dc447a1c0a2f8b6d73a5

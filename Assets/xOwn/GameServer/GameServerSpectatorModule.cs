@@ -68,7 +68,7 @@ namespace AlbotServer {
 
         private void sendUpdate(GameLogState update) {
             try {Msf.Connection.SendMessage((short)CustomMasterServerMSG.spectateLogUpdate, generateLogMsg(update), handleBroadcastResponse);
-            } catch { Debug.LogError("Failed to send msg");}
+            } catch { Debug.LogError("Failed to send update msg");}
         }
 
         private SpectatorGameLog generateLogMsg(GameLogState update) {

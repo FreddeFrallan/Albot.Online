@@ -50,7 +50,7 @@ namespace Barebones.MasterServer
                 }
 					
                 var spawnId = response.AsString();
-                var controller = new SpawnRequestController(spawnId, connection);
+                var controller = new SpawnRequestController(spawnId, connection, "none");
 
                 _localSpawnRequests[controller.SpawnId] = controller;
                 callback.Invoke(controller, null);

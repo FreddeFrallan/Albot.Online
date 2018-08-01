@@ -25,7 +25,6 @@ namespace AdminUI{
 		}
 
 		public void onGameLobbyPressed(){
-			print ("Game lobby pressed");
 			AdminUIManager.requestGotoGameLobby ();
 			setActive (false);
 		}

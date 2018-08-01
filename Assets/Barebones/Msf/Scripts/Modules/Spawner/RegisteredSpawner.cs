@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Barebones.Networking;
+using UnityEngine;
 
 namespace Barebones.MasterServer{
     public class RegisteredSpawner{
@@ -46,6 +47,7 @@ namespace Barebones.MasterServer{
         }
 
         public void AddTaskToQueue(SpawnTask task){
+            Debug.LogError("Task Q: " + _queue.Count);
             _queue.Enqueue(task);
         }
 

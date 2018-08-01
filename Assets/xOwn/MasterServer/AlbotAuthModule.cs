@@ -66,7 +66,6 @@ public class AlbotAuthModule : ServerModuleBehaviour {
 		
 	private void handleLoginMsg(IIncommingMessage msg){
         //Validate incoming message to make sure connection is safe
-        Debug.LogError("Validation msg: " + msg.Peer.Id);
 		Dictionary<string, string> data = new Dictionary<string, string> ();
 		if (validateDecryptMsg (msg, out data) == false) {
 			msg.Respond("Insecure request".ToBytes(), ResponseStatus.Unauthorized);

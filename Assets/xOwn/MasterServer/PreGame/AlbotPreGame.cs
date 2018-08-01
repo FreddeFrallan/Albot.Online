@@ -19,14 +19,15 @@ namespace AlbotServer{
         public IPeer runningGameConnection { get; private set; }
         private List<Action> onGameStartedFuncs = new List<Action>();
 
+        private AlbotSpectatorModule specModule;
         private IPeer admin;
         private List<PreGamePeer> connectedPeers = new List<PreGamePeer>();
         private List<IPeer> spectators = new List<IPeer> ();
 
 
         #region Init
-        public PreGame(IPeer admin, PreGameSpecs specs){
-            this.specs = specs; this.admin = admin;
+        public PreGame(IPeer admin, PreGameSpecs specs, AlbotSpectatorModule specModule){
+            this.specs = specs; this.admin = admin; this.specModule = specModule;
             initPlayerslots(specs.maxPlayers);
             storedInfoMsg = new RunningGameInfoMsg() { status = PreGameState.Lobby };
 		}
@@ -172,7 +173,7 @@ namespace AlbotServer{
         private void resetPlayerReady() {connectedPeers.ForEach(p => updatePeerReady(p.peer, false));}
         public void onpreGameStarted() { updateState(PreGameState.Starting); }
 
-        public void onGameStarted(RunningGameInfoMsg infoMsg, AlbotSpectatorModule specModule, IIncommingMessage rawMsg) {
+        public void onGameStarted(RunningGameInfoMsg infoMsg, IIncommingMessage rawMsg) {
             updateState(PreGameState.Running);
             currentRound++;
             addIconNumbersToInfoMsg(infoMsg);
@@ -194,6 +195,13 @@ namespace AlbotServer{
         }
         #endregion
 
+        #region remove Game
+        public void onRemoved() {
+            connectedPeers.Clear();
+            spectators.Clear();
+            specModule.preGameRemoved(this);
+        }
+        #endregion
 
         private void updateState(PreGameState newState) {
             state = newState;
@@ -229,7 +237,7 @@ namespace AlbotServer{
 		}
 
 		public bool hasSpectators(){return spectators.Count > 0;}
-		public List<IPeer> getSpectators(){return spectators;}
+		public List<IPeer> getSpectatorsClone(){return spectators.ToList();}
         public void sendSpectateBroadcastStatus(bool status) { runningGameConnection.SendMessage((short)CustomMasterServerMSG.RunningGameInfo, status.ToString());}
         #endregion
     }
@@ -238,7 +246,7 @@ namespace AlbotServer{
 
     public class PreGameSpecs : MessageBase { 
         public Game.GameType type;
-        public string roomID;
+        public string roomID, spawnCode;
         public int maxPlayers;
         public string hostName;
     }

@@ -180,8 +180,15 @@ namespace Barebones.MasterServer
         /// <returns></returns>
         public virtual SpawnTask Spawn(Dictionary<string, string> properties, string customArgs, RegisteredSpawner spawner, string spawnID){
             var task = new SpawnTask(spawnID, spawner, properties, customArgs);
-            SpawnTasks[task.SpawnId] = task;
+
+            if (SpawnTasks.ContainsKey(task.UniqueCode)) {
+                Debug.LogError("Already have Spawner: " + task.UniqueCode);
+                SpawnTasks.Remove(task.UniqueCode);
+            }
+
+            SpawnTasks.Add(task.UniqueCode, task);
             spawner.AddTaskToQueue(task);
+
             return task;
         }
 
@@ -244,6 +251,7 @@ namespace Barebones.MasterServer
         #region Message Handlers
 
         protected virtual void HandleClientsSpawnRequest(IIncommingMessage message){
+            /*
             var data = message.Deserialize(new ClientsSpawnRequestPacket());
             var peer = message.Peer;
 
@@ -281,35 +289,30 @@ namespace Barebones.MasterServer
             };
 
             message.Respond(task.SpawnId, ResponseStatus.Success);
-        }
+            */
+         }
 
 
 
-		//			The Current function used in Albot
-		// Here we pass some command line Args to the new Game Server, such as GameType, Realtime & hasSpectators
-		// This is done in the "DefaultSpawnRequestHandler" located in "SpawnerController"
-		// New Data can be sent by adding it to the Dict "Options" and then later adding it to the Command line arg
-		// These values will automaticlly be read by the Msf.Args module, and be available after startup
-		/************************************************/
+        //			The Current function used in Albot
+        // Here we pass some command line Args to the new Game Server, such as GameType, Realtime & hasSpectators
+        // This is done in the "DefaultSpawnRequestHandler" located in "SpawnerController"
+        // New Data can be sent by adding it to the Dict "Options" and then later adding it to the Command line arg
+        // These values will automaticlly be read by the Msf.Args module, and be available after startup
+        /************************************************/
+        
 		public string createNewRoomFromPreGame(List<IPeer> peersInRoom, Dictionary<string, string> options, string spawnID){
 			var task = Spawn(options, "", "", spawnID);
-            Debug.LogError("Task: " + task.SpawnId);
 			if (task == null) //All the servers are busy. Try again later"
 				return "";
 			
+            Debug.LogError("Task: " + task.SpawnId);
 			task.Requester = peersInRoom[0];
             Debug.LogError("Creating game: " + options[MsfDictKeys.GameType]);
+            task.albotHack(peersInRoom);
 
-			task.StatusChanged += (status) =>{
-				// Send status update
-				var msg = Msf.Create.Message((short) MsfOpCodes.SpawnRequestStatusChange, new SpawnStatusUpdatePacket(){
-					SpawnId = task.SpawnId,
-					Status = status
-				});
-				foreach(IPeer p in peersInRoom)
-					p.SendMessage(msg);
-			};
-            return task.SpawnId;
+
+            return task.UniqueCode;
 		}
 
         private void HandleAbortSpawnRequest(IIncommingMessage message){
@@ -384,7 +387,9 @@ namespace Barebones.MasterServer
             var data = message.Deserialize(new RegisterSpawnedProcessPacket());
 
             SpawnTask task;
-            SpawnTasks.TryGetValue(data.SpawnId, out task);
+            Debug.LogError("Register");
+            Debug.LogError("Register spawncode: " + data.SpawnCode);
+            SpawnTasks.TryGetValue(data.SpawnCode, out task);
 
             if (task == null){
                 message.Respond("Invalid spawn task", ResponseStatus.Failed);

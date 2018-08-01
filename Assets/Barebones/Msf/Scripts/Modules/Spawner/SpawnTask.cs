@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Barebones.Networking;
 using UnityEngine;
+using System.Linq;
 
 namespace Barebones.MasterServer{
     /// <summary>
@@ -17,6 +18,7 @@ namespace Barebones.MasterServer{
         public event Action<SpawnStatus> StatusChanged;
 
         private SpawnStatus _status;
+        private List<IPeer> peersInRoom = new List<IPeer>();
 
         public string UniqueCode { get; private set; }
 
@@ -30,7 +32,6 @@ namespace Barebones.MasterServer{
             Spawner = spawner;
             CustomArgs = customArgs;
 			Properties = properties;
-			Debug.LogError(Properties[MsfDictKeys.GameType]);
 
             UniqueCode = Msf.Helper.CreateRandomString(6);
             WhenDoneCallbacks = new List<Action<SpawnTask>>();
@@ -53,6 +54,25 @@ namespace Barebones.MasterServer{
                 if (_status >= SpawnStatus.Finalized || _status < SpawnStatus.None)
                     NotifyDoneListeners();
             }
+        }
+
+
+        //Hardcode tryFix
+        public void onStatusChangedHardcoded(SpawnStatus s) {
+            // Send status update
+            var msg = Msf.Create.Message((short)MsfOpCodes.SpawnRequestStatusChange, new SpawnStatusUpdatePacket() {
+                SpawnId = this.SpawnId,
+                Status = _status
+            });
+            foreach (IPeer p in peersInRoom)
+                p.SendMessage(msg);
+
+            if (_status == SpawnStatus.Finalized)
+                peersInRoom.Clear();
+        }
+        public void albotHack(List<IPeer> peersInRoom) {
+            this.peersInRoom = peersInRoom.ToList();
+            StatusChanged += onStatusChangedHardcoded;
         }
 
         /// <summary>
