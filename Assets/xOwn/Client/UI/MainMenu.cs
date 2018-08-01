@@ -24,7 +24,7 @@ namespace ClientUI{
 		}
 
 		public void onGameLobbyPressed(){
-			ClientUIStateManager.requestGotoGameLobby ();
+            ClientUIStateManager.requestGotoState(ClientUIStates.GameLobby);
 			setActive (false);
 		}
 		#endregion

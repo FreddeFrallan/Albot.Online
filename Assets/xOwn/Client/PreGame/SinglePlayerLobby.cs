@@ -46,7 +46,8 @@ namespace ClientUI{
 			Msf.Connection.SendMessage((short)ServerCommProtocl.StartSinglePlayerGame);
 			ClientPlayersHandler.resetLocalPLayers ();
 			gameObject.SetActive (false);
-			SceneManager.LoadScene (scene.SceneName);
+            ClientUIStateManager.requestGotoState(ClientUIStates.PlayingGame, scene.SceneName);
+			//SceneManager.LoadScene (scene.SceneName);
 		}
 
 		private void initUserPanel(){
@@ -69,7 +70,7 @@ namespace ClientUI{
 		}	
 
 		public void onExitClick(){
-			ClientUIStateManager.requestGotoGameLobby ();
+            ClientUIStateManager.requestGotoState(ClientUIStates.GameLobby);
 			gameObject.SetActive (false);
 		}
 

@@ -84,7 +84,7 @@ namespace AdminUI{
 				onAdminUIStateChanged.Invoke (state);
 		}
 
-		private static string getAdminGameSceneName(GameType type){return type.ToString () + "Admin";}
+		private static string getAdminGameSceneName(GameType type){return type.ToString () + "Game";}
 	}
 
 }

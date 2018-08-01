@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Game;
 using UnityEngine.Networking;
-using AlbotServer;
+using ClientUI;
 using System;
 using TCP_API;
 using TCP_API.Snake;
@@ -34,8 +34,7 @@ namespace Snake{
 		}
 		public override GameType getGameType (){return GameType.Snake;}
 
-
-		protected override void initHandlers (){
+        protected override void initHandlers (){
             base.initHandlers();
 			connectionToServer.RegisterHandler ((short)SnakeProtocol.MsgType.playerInit, handleInitSettings);
 			connectionToServer.RegisterHandler ((short)SnakeProtocol.MsgType.boardUpdate, handleBoardUpdate);
@@ -46,7 +45,8 @@ namespace Snake{
 			RealtimeTCPController.resetController ();
 
             TCPMessageQueue.readMsgInstant = readTCPMsg;
-		}
+            localRenderer.init(localGameUI);
+        }
 
 
 		public void handleInitSettings(NetworkMessage initMsg){
@@ -146,8 +146,8 @@ namespace Snake{
 			foreach (int[] crash in infoMsg.crashPos)
 				localRenderer.displayCrash (new Vector2(crash[0], crash[1]));
 
-			ClientUI.AlbotDialogBox.setGameOver ();
-			ClientUI.AlbotDialogBox.activateButton (ClientUI.ClientUIStateManager.requestGotoGameLobby, ClientUI.DialogBoxType.GameState, gameOverMsg, "Return to lobby", 70, 25);
+			AlbotDialogBox.setGameOver ();
+			AlbotDialogBox.activateButton (() => { ClientUIStateManager.requestGotoState(ClientUIStates.GameLobby); }, DialogBoxType.GameState, gameOverMsg, "Return to lobby", 70, 25);
 		}
 
 		public void handleBoardUpdate(NetworkMessage msg){
@@ -188,6 +188,8 @@ namespace Snake{
 		}
 
 		public static int convertColorToTeam(PlayerColor color){return color == PlayerColor.Blue ? 0 : 1;}
-		#endregion
-	}
+
+        
+        #endregion
+    }
 }

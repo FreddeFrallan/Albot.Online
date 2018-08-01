@@ -12,7 +12,6 @@ namespace Snake{
 
         private System.Random rand = new System.Random();
 		private static SnakeGameLogic singleton;
-		public SnakeRenderer renderer;
 		public SnakeGameStateUpdater updater;
 		public SnakeGameMaster master;
 
@@ -30,7 +29,9 @@ namespace Snake{
 			singleton = this;
 			initGameGrid ();
 			updater.sendBoardUpdate (gameGrid, playerPos, dir);
-			StartCoroutine (gameLoop ());
+
+            submitToGameLog();
+            StartCoroutine (gameLoop ());
 		}
 
 		private void initGameGrid(){
@@ -57,9 +58,7 @@ namespace Snake{
 			if (rand.Next (0, 100) >= 50)
 				dir = new int[]{ 0, 2 };
 			else
-				dir = new int[]{ 1, 3};
-			
-			submitToGameLog ();
+				dir = new int[]{ 3, 1};
 		}
 
 		#endregion
@@ -69,7 +68,8 @@ namespace Snake{
 			while (gameRunning) {
 				yield return new WaitForSeconds (refreshRate);
 				gameTick ();
-				if (gameRunning)
+                submitToGameLog();
+                if (gameRunning)
 					updater.sendBoardUpdate (gameGrid, playerPos, dir);
 			}
 		}
@@ -97,7 +97,6 @@ namespace Snake{
 
             submitPlayerBody (playerPos[0], 0);
 			submitPlayerBody (playerPos[1], 1);
-			submitToGameLog ();
 		}
 
 		private bool movePlayer(int playerIndex, ref Vector2 targetPos){
@@ -125,16 +124,13 @@ namespace Snake{
 		private void setPlayerCrash(bool p1, bool p2){
 			List<int[]> newCrash = new List<int[]> ();
 			PlayerColor winColor;
-			string crashMsg = "";
 
 			if (p1 && p2) {
 				winColor = PlayerColor.None;
-				crashMsg += "B Crash " + getCrashPosInString (0) + "#" + "R Crash " + getCrashPosInString (1);
 				newCrash.Add (new int[]{(int)crashPos[0].x, (int)crashPos[0].y});
 				newCrash.Add (new int[]{(int)crashPos[1].x, (int)crashPos[1].y});
 			} else {
 				int crashPlayerIndex = p1 ? 0 : 1;
-				crashMsg += (p1 ? "B" : "R") + " Crash " + getCrashPosInString (crashPlayerIndex) + "#";
 				winColor = master.getIndexColor (p1 ? 1 : 0);
 				newCrash.Add (new int[]{(int)crashPos[crashPlayerIndex].x, (int)crashPos[crashPlayerIndex].y});
 			}
@@ -144,12 +140,10 @@ namespace Snake{
 				crashes [i] = newCrash [i];
 
 			updater.setGameOver (winColor, crashes);
-			master.submitToGameLog (crashMsg);
+			master.submitToGameLog (SnakeGameLogProtocol.generateCrash(p1, p2, crashPos));
 			gameRunning = false;
 		}
 
-
-		private string getCrashPosInString(int playerIndex){return (int)crashPos[playerIndex].x + " " + (int)crashPos[playerIndex].y;}
 		public void gameOver(){	gameRunning = false;}
 		#endregion
 
@@ -179,15 +173,9 @@ namespace Snake{
 
 		#region Util
 		private bool compPos(Vector2 v1, Vector2 v2){return v1.x == v2.x && v1.y == v2.y;}
-		public static int convertColorToTeam(Game.PlayerColor color){	return color == Game.PlayerColor.Blue ? 0 : 1;}
+		public static int convertColorToTeam(PlayerColor color){	return color == PlayerColor.Blue ? 0 : 1;}
 		private void submitPlayerBody(Position2D pos, int playerIndex){updater.addNewPlayerBody (pos, playerIndex);}
-
-		private void submitToGameLog(){
-			string updateMsg = ("B " + (int)playerPos [0].x + " " + (int)playerPos [0].y + " " + dir[0]);
-			updateMsg += "#";
-			updateMsg +=  ("R " + (int)playerPos [1].x + " " + (int)playerPos [1].y + " " + dir[1]);
-			master.submitToGameLog(updateMsg);
-		}
+		private void submitToGameLog(){master.submitToGameLog(SnakeGameLogProtocol.generateState(playerPos, dir));}
 		#endregion
 	}
 

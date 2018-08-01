@@ -5,13 +5,19 @@ using Barebones.MasterServer;
 using Barebones.Networking;
 using System.Linq;
 using UnityEngine.Networking;
+using System;
 
 namespace AlbotServer{
 
 	public class PreGame{
         public PreGamePlayerSlot[] playerSlots;
         public PreGameSpecs specs;
-        private bool isRunning = false;
+        public PreGameState state { get; private set; }
+
+        public RunningGameInfoMsg storedInfoMsg { get; private set; }
+        private int currentRound = -1;
+        public IPeer runningGameConnection { get; private set; }
+        private List<Action> onGameStartedFuncs = new List<Action>();
 
         private IPeer admin;
         private List<PreGamePeer> connectedPeers = new List<PreGamePeer>();
@@ -22,6 +28,7 @@ namespace AlbotServer{
         public PreGame(IPeer admin, PreGameSpecs specs){
             this.specs = specs; this.admin = admin;
             initPlayerslots(specs.maxPlayers);
+            storedInfoMsg = new RunningGameInfoMsg() { status = PreGameState.Lobby };
 		}
 
         private void initPlayerslots(int maxPlayers) {
@@ -39,7 +46,7 @@ namespace AlbotServer{
                 rawMsg.Respond("Game is already full", ResponseStatus.Failed);
                 return false;
             }
-            if (isRunning) {
+            if (state != PreGameState.Lobby) {
                 rawMsg.Respond("Game has already started", ResponseStatus.Failed);
                 return false;
             }
@@ -142,7 +149,6 @@ namespace AlbotServer{
         private int getFreeSlotId(){return playerSlots.First (x => x.info.type == PreGameSlotType.Empty).info.slotID;}
         private int getAmountCurrentPlayers() { return playerSlots.Where(x => x.info.type != PreGameSlotType.Empty).Count(); }
 
-        public bool gameHasStarted() { return isRunning; }
 		public bool canGameStart(){return playerSlots.All (x => x.info.isReady);}
         public PreGameSlotInfo[] getPlayerSlots() { return playerSlots.Select(p => p.info).ToArray(); }
 		public bool containsPeer(IPeer peer){ return connectedPeers.Any(p => p.peer.Id == peer.Id); }
@@ -163,32 +169,70 @@ namespace AlbotServer{
         }
 
         #region Start Game
-        public void gameStarted() {
-            isRunning = true;
+        private void resetPlayerReady() {connectedPeers.ForEach(p => updatePeerReady(p.peer, false));}
+        public void onpreGameStarted() { updateState(PreGameState.Starting); }
+
+        public void onGameStarted(RunningGameInfoMsg infoMsg, AlbotSpectatorModule specModule, IIncommingMessage rawMsg) {
+            updateState(PreGameState.Running);
+            currentRound++;
+            addIconNumbersToInfoMsg(infoMsg);
+            specModule.preGameStarted(this, storedInfoMsg);
+            runningGameConnection = rawMsg.Peer;
             resetPlayerReady();
+            runOnGameStartedFuncs();
+        }
+        private void runOnGameStartedFuncs() {
+            onGameStartedFuncs.ForEach(f => f.Invoke());
+            onGameStartedFuncs.Clear();
         }
 
-        private void resetPlayerReady() {connectedPeers.ForEach(p => updatePeerReady(p.peer, false));}
+        private void addIconNumbersToInfoMsg(RunningGameInfoMsg infoMsg) {
+            for(int i = 0; i < infoMsg.players.Length; i++)
+                infoMsg.players[i].iconNumber = playerSlots.First(p => p.info.playerInfo.username == infoMsg.players[i].username).info.playerInfo.iconNumber;
+            storedInfoMsg = infoMsg;
+            storedInfoMsg.status = state;
+        }
         #endregion
 
 
+        private void updateState(PreGameState newState) {
+            state = newState;
+            if(storedInfoMsg != null)
+                storedInfoMsg.status = state;
+        }
+
         #region Spectators
-        public void addSpectator(IPeer newP){spectators.Add (newP);}
+        public void addSpectator(IPeer newP){
+            if(hasSpectators() == false) {
+                if (state == PreGameState.Running)
+                    sendSpectateBroadcastStatus(true);
+                else if (state == PreGameState.Starting)
+                    onGameStartedFuncs.Add(() => { sendSpectateBroadcastStatus(true); });
+            }
+
+            spectators.Add (newP);
+        }
 		public bool containsSpectator(IPeer newP){return spectators.Find(x => x.Id == newP.Id) != null;}
 		public bool removeSpectator(IPeer p){return removeSpectator (p.Id);}
 		public bool removeSpectator(int peerID){
 			IPeer oldP = spectators.Find(x => x.Id == peerID);
 			if (oldP != null)
 				spectators.Remove (oldP);
+
+            if(hasSpectators() == false) {
+                if (state == PreGameState.Running)
+                    sendSpectateBroadcastStatus(false);
+                else if (state == PreGameState.Starting)
+                    onGameStartedFuncs.Add(() => { sendSpectateBroadcastStatus(false); });
+            }
 			return oldP != null;
 		}
 
 		public bool hasSpectators(){return spectators.Count > 0;}
 		public List<IPeer> getSpectators(){return spectators;}
-		#endregion
-
-
-	}
+        public void sendSpectateBroadcastStatus(bool status) { runningGameConnection.SendMessage((short)CustomMasterServerMSG.RunningGameInfo, status.ToString());}
+        #endregion
+    }
 
 
 
@@ -213,4 +257,10 @@ namespace AlbotServer{
     }
 
 
+    public enum PreGameState{
+        Lobby,
+        Starting,
+        Running,
+        GameOver,
+    }
 }

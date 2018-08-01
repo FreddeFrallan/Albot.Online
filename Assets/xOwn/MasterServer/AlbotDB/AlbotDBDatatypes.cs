@@ -32,7 +32,7 @@ namespace AlbotDB{
 	}
 	public class ActiveUser{
 		[BsonId] // the unique identifier
-		public int peerId { get; set; }
+		public string peerId { get; set; }
 		[BsonId] // the unique identifier
 		public string username { get; set; }
 	}

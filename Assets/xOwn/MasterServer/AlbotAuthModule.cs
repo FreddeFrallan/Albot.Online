@@ -9,23 +9,29 @@ using AlbotDB;
 //Framework starts from 32000, so we can use anything from 0 - 32000 ^^
 public enum CustomMasterServerMSG{
 	login = 0,
-	spectateStatus = 1,
+
+	RunningGameInfo = 1,
 	requestSpectatorGames = 2,
-	requestFullGameLog = 3,
+	spectateInfo = 3,
+
 	spectateLogUpdate = 4,
-	startSpectate = 5,
-	stopSpectate = 6,
-	adminLogin = 7,
-	adminLogout = 8,
+    requestSpecificGameLog = 5,
+    spectateGameStarted = 6,
+
+
+    startSpectate = 7,
+	stopSpectate = 8,
+	adminLogin = 9,
+	adminLogout = 10,
 
     //Tournament
-    joinTournament = 9,
-    leaveTournament = 10,
-    startTournament = 11,
-    createTournament = 12,
-    closeTournament = 13,
-    preTournamentUpdate = 14,
-    runningTournamentUpdate = 15,
+    joinTournament = 11,
+    leaveTournament = 12,
+    startTournament = 13,
+    createTournament = 14,
+    closeTournament = 15,
+    preTournamentUpdate = 16,
+    runningTournamentUpdate = 17,
 }
 
 public class AlbotAuthModule : ServerModuleBehaviour {
@@ -59,7 +65,8 @@ public class AlbotAuthModule : ServerModuleBehaviour {
 	}
 		
 	private void handleLoginMsg(IIncommingMessage msg){
-		//Validate incoming message to make sure connection is safe
+        //Validate incoming message to make sure connection is safe
+        Debug.LogError("Validation msg: " + msg.Peer.Id);
 		Dictionary<string, string> data = new Dictionary<string, string> ();
 		if (validateDecryptMsg (msg, out data) == false) {
 			msg.Respond("Insecure request".ToBytes(), ResponseStatus.Unauthorized);

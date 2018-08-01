@@ -58,7 +58,6 @@ namespace AlbotServer{
 	}
     public class PreGameStartedMsg : MessageBase {
         public PreGameSpecs specs;
-        public string gameRoomID;
         public PreGameSlotInfo[] slots;
     }
 	public class PreGameReadyUpdate : MessageBase{
@@ -80,9 +79,16 @@ namespace AlbotServer{
         public int maxPlayers;
 		public bool isTraining;
 	}
-	#endregion
 
-	public class GameRoomInitMsg : MessageBase{
+    public class RunningGameInfoMsg : MessageBase {
+        public PlayerInfo[] players;
+        public Game.GameType gameType;
+        public PreGameState status;
+        public string gameID;
+    }
+    #endregion
+
+    public class GameRoomInitMsg : MessageBase{
 		public Game.GameType type;
 	}
 

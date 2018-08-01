@@ -25,7 +25,7 @@ namespace Barebones.MasterServer{
         protected List<Action<SpawnTask>> WhenDoneCallbacks;
 
         public SpawnTask(string spawnId, RegisteredSpawner spawner, Dictionary<string, string> properties, string customArgs) {
-            SpawnId = spawnId;
+            this.SpawnId = spawnId;
 
             Spawner = spawner;
             CustomArgs = customArgs;

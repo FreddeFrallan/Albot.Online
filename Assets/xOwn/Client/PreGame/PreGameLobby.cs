@@ -64,7 +64,7 @@ namespace ClientUI{
             sendChangeSlot();
         }
 
-        private void handlePreGameKickMsg(IIncommingMessage message) { ClientUIStateManager.requestGotoGameLobby(); }
+        private void handlePreGameKickMsg(IIncommingMessage message) { ClientUIStateManager.requestGotoState(ClientUIStates.GameLobby); }
         private void sendChangeSlot() {
             Msf.Connection.SendMessage((short)ServerCommProtocl.SlotTypeChanged, new PreGameSlotSTypeMsg() { roomID = roomId, slot = p2Slot });
         }

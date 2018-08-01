@@ -8,7 +8,7 @@
 public class MsfQuickBuild{
 	/// <summary>
 	/// Have in mind that if you change it, it might take "a while" 
-	/// for the editor to pick up changes 
+	/// for the editor to pick up changes  
 	/// </summary>
 	public static string QuickSetupRoot = "Assets/xOwn/";
 	public static BuildTarget TargetPlatform = BuildTarget.StandaloneWindows;
@@ -85,7 +85,7 @@ public class MsfQuickBuild{
 			QuickSetupRoot+ "/Admin Client/Admin Client.unity",
 			QuickSetupRoot+ "/Client/EmptyScene.unity",
 			QuickSetupRoot+"/Game/Games/Brakethrough/Admin/BreakthroughAdmin.unity",
-			QuickSetupRoot+"/Game/Games/Snake/Admin/SnakeAdmin.unity"
+			QuickSetupRoot+"/Game/Games/Snake/SnakeGame.unity"
 		};
 		BuildPipeline.BuildPlayer(gameServerScenes, path + "/AlbotAdmin" + fileExtension, target, options);
 	}

@@ -29,30 +29,30 @@ namespace ClientUI {
             ClientUIOverlord.onUIStateChanged += onUiStateChanged;
         }
 
-        private void onUiStateChanged(ClientUIStates state) {
-            bool exitedChat = false, enteredChat = false;
-            if (state == ClientUIStates.GameLobby || state == ClientUIStates.PreGame) {
-                if (isCurrentlyInChat == false) {
-                    enteredChat = true;
-                    isCurrentlyInChat = true;
-                }
-            } else if (isCurrentlyInChat) {
-                exitedChat = true;
-                isCurrentlyInChat = false;
-            }
-
-            AccountInfoPacket currentAcountInfo = ClientUIOverlord.getCurrentAcountInfo();
-            AlbotChatMsg msg = new AlbotChatMsg() { icon = int.Parse(currentAcountInfo.Properties["icon"]), username = currentAcountInfo.Username };
-
-            if (enteredChat) {
-                clearMessageList();
-                Msf.Connection.SendMessage((short)ServerCommProtocl.LobbyPlayerEnter, msg);
-            } else if (exitedChat) {
-                Msf.Connection.SendMessage((short)ServerCommProtocl.LobbyPlayerLeft, msg);
-                clearList();
-            }
-
+        private void onUiStateChanged(ClientUIStates newState) {
+            if (isCurrentlyInChat && isInLobby(newState) == false)
+                exitChat();
+            else if (isCurrentlyInChat == false && isInLobby(newState))
+                enterChat();
+                
+            isCurrentlyInChat = isInLobby(newState);
         }
+
+        #region Chat Init & Exit
+        private void exitChat() {
+            Msf.Connection.SendMessage((short)ServerCommProtocl.LobbyPlayerLeft, getChatSpecsMsg());
+            clearList();
+        }
+        private void enterChat() {
+            clearMessageList();
+            Msf.Connection.SendMessage((short)ServerCommProtocl.LobbyPlayerEnter, getChatSpecsMsg());
+        }
+
+        private AlbotChatMsg getChatSpecsMsg() {
+            AccountInfoPacket currentAcountInfo = ClientUIOverlord.getCurrentAcountInfo();
+            return new AlbotChatMsg() { icon = int.Parse(currentAcountInfo.Properties["icon"]), username = currentAcountInfo.Username };
+        }
+        #endregion
 
         private void clearMessageList() {
             for (int i = MessagesList.transform.childCount; i > 1; i--)
@@ -60,6 +60,9 @@ namespace ClientUI {
         }
 
         private void clearList() { usersList.clearList(); }
+        private bool isInLobby(ClientUIStates state) {
+            return state == ClientUIStates.GameLobby || state == ClientUIStates.LobbyBrowser || state == ClientUIStates.PreGame;
+        }
 
         #region incoming msg from server
         private void onIncominChatgMsg(IIncommingMessage msg) {

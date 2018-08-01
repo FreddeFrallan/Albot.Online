@@ -4,6 +4,7 @@ using UnityEngine;
 using Game;
 using UnityEngine.Networking;
 using AlbotServer;
+using ClientUI;
 
 
 namespace Bomberman{
@@ -20,8 +21,7 @@ namespace Bomberman{
 		public override void initProtocol (CommProtocol protocol){this.protocol = (BombermanProtocol)protocol;}
 		public override void onOutgoingLocalMsg (string msg, PlayerColor color){}
 		public override GameType getGameType (){return GameType.Bomberman;}
-
-		protected override void initHandlers (){
+        protected override void initHandlers (){
 			connectionToServer.RegisterHandler ((short)ServerCommProtocl.PlayerJoinedGameRoom, handlePlayerJoinedRoom);
 			connectionToServer.RegisterHandler ((short)ServerCommProtocl.PlayerLeftGameRoom, handlePlayerLeftRoom);
 			connectionToServer.RegisterHandler ((short)BombermanProtocol.MsgType.playerInit, handleInitSettings);
@@ -128,9 +128,10 @@ namespace Bomberman{
 					TCPLocalConnection.sendMessage ("GameOver: " + (msg.winnerColor == PlayerColor.Blue ? "1" : "-1"));
 				}
 
-				ClientUI.AlbotDialogBox.setGameOver ();
-				ClientUI.AlbotDialogBox.activateButton (ClientUI.ClientUIStateManager.requestGotoGameLobby, ClientUI.DialogBoxType.GameState, gameOverMsg, "Return to lobby", 70, 25);
-			}
+
+                AlbotDialogBox.setGameOver();
+                AlbotDialogBox.activateButton(() => { ClientUIStateManager.requestGotoState(ClientUIStates.GameLobby); }, DialogBoxType.GameState, gameOverMsg, "Return to lobby", 70, 25);
+            }
 		}
 
 

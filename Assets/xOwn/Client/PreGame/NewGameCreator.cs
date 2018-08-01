@@ -52,14 +52,10 @@ namespace ClientUI{
                 return;
 
 			PreGameRoomMsg msg = rawMsg.Deserialize<PreGameRoomMsg> ();
-            print("Room id: " + msg.specs.roomID + "  " + msg.specs.type);
-            printPlayerSlots(msg.players);
-
-
             currentMap = GameSelectionUI.getMatchingMapSelection (msg.specs.type);
 			AccountInfoPacket playerInfo = ClientUIOverlord.getCurrentAcountInfo ();
 			bool isAdmin = playerInfo.Username == msg.players [0].playerInfo.username;
-			ClientUIStateManager.requesGotoPreGame ();
+            ClientUIStateManager.requestGotoState(ClientUIStates.PreGame);
 
 			preGameLobby.initPreGameLobby (currentMap.picture, msg);
 		}

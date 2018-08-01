@@ -204,7 +204,6 @@ public class TcpRemoteClient{
 	}
 
 	public void sendMessage(string message){
-        Debug.Log("TCP MSG: " + message);
 		if (clientConnected == false)
 			return;
 

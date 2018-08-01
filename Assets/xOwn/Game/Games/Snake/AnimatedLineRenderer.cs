@@ -82,6 +82,10 @@ namespace DigitalRuby.AnimatedLineRenderer
             float lerp = current.TotalSecondsInverse * current.ElapsedSeconds;
             EndPoint = Vector3.Lerp(prev.Position, current.Position, lerp);
             lineRenderer.SetPosition(index, EndPoint);
+
+            //Albot Hack
+            if (SecondsPerLine == 0 && queue.Count > 0)
+                ProcessCurrent();
         }
 
         private void Start(){

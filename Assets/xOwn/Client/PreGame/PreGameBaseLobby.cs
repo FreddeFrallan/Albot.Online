@@ -100,7 +100,7 @@ namespace ClientUI{
 		public void onExitClick(){
 			Msf.Connection.SendMessage((short)ServerCommProtocl.PlayerLeftPreGame, roomId);
 			removeHandlers ();
-			ClientUIStateManager.requestGotoGameLobby ();
+            ClientUIStateManager.requestGotoState(ClientUIStates.GameLobby);
 			gameObject.SetActive (false);
 		}
 

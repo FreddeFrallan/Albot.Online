@@ -20,8 +20,8 @@ namespace ClientUI {
 
 
         #region Buttons
-        public void gotoLobbyBrowserButton() {ClientUIStateManager.requestGotoLobbyBrowser();}
-        public void gotoGameLobbyButton() {ClientUIStateManager.requestGotoGameLobby();}
+        public void gotoLobbyBrowserButton() {ClientUIStateManager.requestGotoState(ClientUIStates.LobbyBrowser);}
+        public void gotoGameLobbyButton() { ClientUIStateManager.requestGotoState(ClientUIStates.GameLobby); }
         #endregion
 
 

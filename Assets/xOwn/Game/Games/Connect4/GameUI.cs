@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using ClientUI;
 using Barebones.MasterServer;
 using System.Linq;
+using AlbotServer;
 
 public class GameUI : MonoBehaviour {
 	
@@ -19,8 +20,8 @@ public class GameUI : MonoBehaviour {
 			playerColorToUserPanel.Add (panelOrder [i], panels [i]);
 	}
 
-
-	public void initPlayerSlot(Game.PlayerColor color, string username, int iconNumber)
+    public void initPlayerSlot(PlayerInfo info) { initPlayerSlot(info.color, info.username, info.iconNumber); }
+    public void initPlayerSlot(Game.PlayerColor color, string username, int iconNumber)
 		{playerColorToUserPanel [color].setUserPanel (iconNumber, username);
 	}
 	public void removeConnectedPlayer (Game.PlayerColor color, string username, int iconNumber){

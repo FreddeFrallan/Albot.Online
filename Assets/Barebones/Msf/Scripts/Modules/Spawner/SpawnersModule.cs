@@ -141,7 +141,7 @@ namespace Barebones.MasterServer
             return Msf.Helper.CreateRandomStringMatch(MasterServerConstants.KEY_LENGTH, (key) => { return SpawnTasks.ContainsKey(key); });
         }
 
-        public SpawnTask Spawn(Dictionary<string, string> properties){
+        public SpawnTask Spawn(Dictionary<string, string> properties) {
             return Spawn(properties, "", "");
         }
 
@@ -149,7 +149,7 @@ namespace Barebones.MasterServer
             return Spawn(properties, region, "");
         }
 
-        public virtual SpawnTask Spawn(Dictionary<string, string> properties, string region, string customArgs){
+        public virtual SpawnTask Spawn(Dictionary<string, string> properties, string region, string customArgs, string spawnID = "") {
             var spawners = GetFilteredSpawners(properties, region);
 
             if (spawners.Count <= 0){
@@ -160,7 +160,6 @@ namespace Barebones.MasterServer
 
             // Order from least busy server
 			List<RegisteredSpawner> orderedSpawners = spawners.OrderByDescending(s => s.CalculateFreeSlotsCount()).ToList();
-			Debug.LogError ("Amount found spawners: " + orderedSpawners.Count);
 
             var availableSpawner = orderedSpawners.FirstOrDefault(s => s.CanSpawnAnotherProcess());
 
@@ -169,8 +168,7 @@ namespace Barebones.MasterServer
 				Debug.LogError ("No available spawners");
 				return null;
 			}
-
-            return Spawn(properties, customArgs, availableSpawner);
+            return Spawn(properties, customArgs, availableSpawner, spawnID);
         }
 
         /// <summary>
@@ -180,11 +178,10 @@ namespace Barebones.MasterServer
         /// <param name="customArgs"></param>
         /// <param name="spawner"></param>
         /// <returns></returns>
-        public virtual SpawnTask Spawn(Dictionary<string, string> properties, string customArgs, RegisteredSpawner spawner){
-            var task = new SpawnTask(GenerateSpawnTaskId(), spawner, properties, customArgs);
+        public virtual SpawnTask Spawn(Dictionary<string, string> properties, string customArgs, RegisteredSpawner spawner, string spawnID){
+            var task = new SpawnTask(spawnID, spawner, properties, customArgs);
             SpawnTasks[task.SpawnId] = task;
             spawner.AddTaskToQueue(task);
-            Logger.Debug("Spawner was found, and spawn task created: " + task);
             return task;
         }
 
@@ -294,8 +291,9 @@ namespace Barebones.MasterServer
 		// New Data can be sent by adding it to the Dict "Options" and then later adding it to the Command line arg
 		// These values will automaticlly be read by the Msf.Args module, and be available after startup
 		/************************************************/
-		public string createNewRoomFromPreGame(List<IPeer> peersInRoom, Dictionary<string, string> options){
-			var task = Spawn(options, "", "");
+		public string createNewRoomFromPreGame(List<IPeer> peersInRoom, Dictionary<string, string> options, string spawnID){
+			var task = Spawn(options, "", "", spawnID);
+            Debug.LogError("Task: " + task.SpawnId);
 			if (task == null) //All the servers are busy. Try again later"
 				return "";
 			

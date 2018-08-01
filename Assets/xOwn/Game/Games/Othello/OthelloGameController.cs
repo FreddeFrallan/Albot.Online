@@ -6,6 +6,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System;
 using UnityEngine.Networking;
 using AlbotServer;
+using ClientUI;
 
 namespace Othello{
 
@@ -16,7 +17,7 @@ namespace Othello{
 
 		#region implemented abstract members of ClientController
 		public override void initProtocol (Game.CommProtocol protocol){this.protocol = (Othello.CommProtocol)protocol;}
-		protected override void initHandlers (){
+        protected override void initHandlers (){
 			connectionToServer.RegisterHandler ((short)CommProtocol.MsgType.playerInit, handleInitSettings);
 			connectionToServer.RegisterHandler ((short)CommProtocol.MsgType.gameInfo, handleGameStatus);
 			connectionToServer.RegisterHandler ((short)CommProtocol.MsgType.boardUpdate, requestMove);
@@ -88,9 +89,9 @@ namespace Othello{
 				else
 					gameOverMsg = msg.winnerColor + " won";
 
-				ClientUI.AlbotDialogBox.setGameOver ();
-				ClientUI.AlbotDialogBox.activateButton (ClientUI.ClientUIStateManager.requestGotoGameLobby,  ClientUI.DialogBoxType.GameState, gameOverMsg, "Return to lobby", 70, 25);
-			}
+				AlbotDialogBox.setGameOver ();
+                AlbotDialogBox.activateButton(() => { ClientUIStateManager.requestGotoState(ClientUIStates.GameLobby); }, DialogBoxType.GameState, gameOverMsg, "Return to lobby", 70, 25);
+            }
 		}
 		#endregion
 

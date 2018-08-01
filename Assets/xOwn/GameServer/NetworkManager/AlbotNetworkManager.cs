@@ -112,7 +112,7 @@ namespace AlbotServer{
 			Action<string> printFunc = DllManager.printMsg;
 			Action<object, int, short> networkMsg = wrapper.sendMsg;
 			gameController.init (printFunc, networkMsg, shutdownGameServer, wrapper, preGamePlayers);
-			AlbotNetworkManager.onClientLeft += wrapper.clientLeft;
+			onClientLeft += wrapper.clientLeft;
 			initManagers ();
 		}
 		#endregion

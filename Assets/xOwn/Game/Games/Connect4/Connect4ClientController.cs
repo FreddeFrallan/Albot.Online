@@ -11,11 +11,11 @@ using AlbotServer;
 using Game;
 using TCP_API;
 using TCP_API.Connect4;
+using ClientUI;
 
 namespace Connect4{
 
 	public class Connect4ClientController : Game.ClientController {
-
 
 		//Ingame Unity Components that we are going to talk to.
 		private Renderer localRenderer;
@@ -25,7 +25,7 @@ namespace Connect4{
         public override void initProtocol (Game.CommProtocol protocol){this.protocol = (Connect4.CommProtocol)protocol;}
 		public override Game.GameType getGameType (){return Game.GameType.Connect4;}
 		protected CommProtocol protocol;
-		protected override void initHandlers (){
+        protected override void initHandlers (){
             apiRouter = new Connect4APIRouter();
 
             connectionToServer.RegisterHandler ((short)CommProtocol.MsgType.boardUpdate, requestMove);
@@ -76,22 +76,21 @@ namespace Connect4{
 		#region Bunch of GameLogic communication handlers
 		public void requestMove(NetworkMessage boardMsg){
 			byte[] bytes = boardMsg.reader.ReadBytesAndSize ();
-			Game.CommProtocol.StringMessage msg = Game.ClientController.Deserialize<Game.CommProtocol.StringMessage> (bytes);
+			CommProtocol.StringMessage msg = Deserialize<Game.CommProtocol.StringMessage> (bytes);
 
-            print("Server Msg: " + msg.msg);
 			string formattedBoard = formatBoard (msg.msg, msg.color);
-			Game.ClientPlayersHandler.onReceiveServerMsg (formattedBoard, msg.color);
+			ClientPlayersHandler.onReceiveServerMsg (formattedBoard, msg.color);
 		}
 		public void initSettings(NetworkMessage initMsg){
 			byte[] bytes = initMsg.reader.ReadBytesAndSize ();
-			GameInfo msg = ClientController.Deserialize<GameInfo> (bytes);
+			GameInfo msg = Deserialize<GameInfo> (bytes);
 
 			ClientPlayersHandler.initPlayerColor (msg.username, msg.myColor);
             isListeningForTCP = true;
 		}
 		public void handleRPCMove(NetworkMessage RPCMsg){
 			byte[] bytes = RPCMsg.reader.ReadBytesAndSize ();
-			RPCMove msg = Game.ClientController.Deserialize<RPCMove> (bytes);
+			RPCMove msg = Deserialize<RPCMove> (bytes);
 			Game.PlayerColor color = msg.color;
 			int move = msg.move;
 
@@ -99,7 +98,7 @@ namespace Connect4{
 		}
 		public void handleGameStatus(NetworkMessage gameStatusMsg){
 			byte[] bytes = gameStatusMsg.reader.ReadBytesAndSize ();
-			GameInfo msg = ClientController.Deserialize<GameInfo> (bytes);
+			GameInfo msg = Deserialize<GameInfo> (bytes);
 			
 			if (msg.gameOver) {
                 string winner = "0";
@@ -118,9 +117,10 @@ namespace Connect4{
 					//gameOverMsg = msg.winnerColor == myColor ? "You won!" : "You lost!";
 					gameOverMsg = msg.winnerColor + " won";
 
-				//ClientUI.AlbotDialogBox.setGameOver ();
-				ClientUI.AlbotDialogBox.activateButton (ClientUI.ClientUIStateManager.requestGotoGameLobby,  ClientUI.DialogBoxType.GameState, gameOverMsg, "Return to lobby", 70, 25);
-			}
+
+                //AlbotDialogBox.setGameOver();
+                AlbotDialogBox.activateButton(() => { ClientUIStateManager.requestGotoState(ClientUIStates.GameLobby); }, DialogBoxType.GameState, gameOverMsg, "Return to lobby", 70, 25);
+            }
 		}
 		#endregion
 		// In my old variation the server only sent the board as 0 = empty, 1 = yellow, 2 = red

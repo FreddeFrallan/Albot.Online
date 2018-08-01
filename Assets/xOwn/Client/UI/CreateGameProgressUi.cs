@@ -143,7 +143,8 @@ namespace Barebones.MasterServer
 
         public void OnRoomAccessReceived(RoomAccessPacket access){
 			gameObject.SetActive (false);
-			SceneManager.LoadScene(access.SceneName);
+            ClientUI.ClientUIStateManager.requestGotoState(ClientUI.ClientUIStates.PlayingGame, access.SceneName);
+            //SceneManager.LoadScene(access.SceneName);
             // We're hoping that something will handle the Msf.Client.Rooms.AccessReceived event
             // (for example, SimpleAccessHandler)
         }

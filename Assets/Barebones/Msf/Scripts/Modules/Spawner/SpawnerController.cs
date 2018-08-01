@@ -192,7 +192,7 @@ namespace Barebones.MasterServer{
 			string spectatorsValue = packet.Properties[MsfDictKeys.Spectators];
 
 			string realtimeInfo = string.Format("{0} {1} ", Msf.Args.Names.Realtime, realTimeValue);
-			string gameTypeInfo = string.Format("{0} {1} ", Msf.Args.Names.GaameType, gameTypeValue);
+			string gameTypeInfo = string.Format("{0} {1} ", Msf.Args.Names.GameType, gameTypeValue);
 			string SpectatorsInfo = string.Format("{0} {1} ", Msf.Args.Names.Spectators, spectatorsValue);
 			#endregion
 

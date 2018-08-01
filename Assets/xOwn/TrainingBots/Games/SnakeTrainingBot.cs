@@ -6,7 +6,7 @@ using SnakeBot;
 namespace Snake{
 
 	public class SnakeTrainingBot : Game.TrainingBot {
-		private SnakeBot.Board snakeBoard;
+		private Board snakeBoard;
 
 		public override int defaultSettings (){return 0;}
 		public override List<Dictionary<string, string>> botSettings (){
@@ -17,13 +17,13 @@ namespace Snake{
 
 
 		public override void initBot (Dictionary<string, string> settings){
-            SnakeBot.MainClass.setPrintFunction(Debug.Log);
-            snakeBoard = SnakeBot.MainClass.init ();
+            MainClass.setPrintFunction(Debug.Log);
+            snakeBoard = MainClass.init ();
 		}
 
 
 		protected override void playMove (string input){
-			theClientController.onOutgoingLocalMsg (SnakeBot.MainClass.makeMove (input, snakeBoard), botColor);
+			theClientController.onOutgoingLocalMsg (MainClass.makeMove (input, snakeBoard), botColor);
 		}
 			
 

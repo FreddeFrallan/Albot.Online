@@ -2,8 +2,7 @@ using System.Collections.Generic;
 using System.Collections;
 using System;
 using System.Linq;
-using System.Text;
-using UnityEngine;
+using AlbotServer;
 
 namespace Game {
 
@@ -19,9 +18,10 @@ namespace Game {
 		protected Action<string> print;
 		protected Action shutdownGameServer;
 		protected List<string> preGamePlayers;
-		protected List<Game.PlayerColor> colorOrder;
+		protected List<PlayerColor> colorOrder;
 		protected List<string> gameHistory = new List<string>();
 		protected GameHistory gameLog = new GameHistory ();
+        protected GameServerSpectatorModule spectatorModule = new GameServerSpectatorModule();
 
 		public abstract GameType getGameType ();
 		public GameHistory getGameHistory(){return gameLog;}
@@ -31,12 +31,15 @@ namespace Game {
 		protected abstract void initProtocol( Action<object, int, short> sendMsgFunc);
 		public int nbrPlayers() { return players.Count; }
 
-		public void init(Action<string> printFunc, Action<object, int, short> sendMsgFunc, Action shutdownGameServer,GameWrapper wrapper, List<string> preGamePlayers){
+		public void init(Action<string> printFunc, Action<object, int, short> sendMsgFunc, Action shutdownGameServer,GameWrapper wrapper, List<string> preGamePlayers) {
 			print = printFunc;
 			initProtocol(sendMsgFunc);
 			this.wrapper = wrapper;
 			this.shutdownGameServer = shutdownGameServer;
 			this.preGamePlayers = preGamePlayers;
+
+            gameLog.init(spectatorModule);
+            spectatorModule.init(gameLog);
 
 			print("Amount of Players : " + preGamePlayers.Count);
 			foreach (string s in preGamePlayers)
@@ -48,9 +51,6 @@ namespace Game {
             foreach (ConnectedPlayer p in getClientPlayers(c))
                 getProtocol().sendPingMsg(c.peerID, p.color);
         }
-
-
-
 
 		//Currently we have no way of knowing if the same player is registred twice...
 		public void addNewPlayerAndClient(ConnectedPlayer p){
@@ -86,21 +86,9 @@ namespace Game {
 		}
 		public abstract void onPlayerLeft(ConnectedPlayer newPlayer);
 	    public abstract int maxNbrPlayers();
-		public ConnectedPlayer getMatchingPlayer(Game.PlayerColor color){return players.Find (x => x.color == color);}
+		public ConnectedPlayer getMatchingPlayer(PlayerColor color){return players.Find (x => x.color == color);}
 		public List<ConnectedPlayer> getClientPlayers(ConnectedClient c){return players.FindAll (x => x.client.peerID == c.peerID);}
 
-
-
-		#region Spectator mode
-		public byte[] getCurrentLog(){
-			return gameLog.getCurrentLog ();
-		}
-		#endregion
 	}   
 
-	public enum PlayerColor{
-		Red, Green, Blue, Yellow, Black, White, None 
-	}
-
-
-} // namespace Game
+}

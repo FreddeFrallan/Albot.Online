@@ -25,7 +25,7 @@ namespace ClientUI {
         public static void handleStartGame(IIncommingMessage rawMsg) {
             PreGameStartedMsg msg = rawMsg.Deserialize<PreGameStartedMsg>();
             if(matchingSpecs(msg.specs, gameSpecs) == false) {
-                Debug.LogError("Got non-matching start msg to: " + msg.specs.roomID + " with new ID: " + msg.gameRoomID + " Type: " + msg.specs.type);
+                Debug.LogError("Got non-matching start msg to: " + msg.specs.roomID +  " Type: " + msg.specs.type);
                 return;
             }
             currentlyPlayingGame = true;

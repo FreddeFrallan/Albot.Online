@@ -22013,7 +22013,6 @@ Transform:
   m_LocalPosition: {x: 443.15268, y: 270.13318, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 903965711}
   - {fileID: 2126789397}
   m_Father: {fileID: 0}
   m_RootOrder: 7
@@ -22469,46 +22468,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: -0.5}
   m_SizeDelta: {x: -20, y: -13}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!1 &903965709
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 903965711}
-  - component: {fileID: 903965710}
-  m_Layer: 0
-  m_Name: TrainingModeInit
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &903965710
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 903965709}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 356baab8d50bb984d89f990161070000, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!4 &903965711
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 903965709}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 886336451}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &907971801
 GameObject:
   m_ObjectHideFlags: 0
@@ -31643,6 +31602,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc5630583546dd24caf32d115ef11f27, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  updateManager: {fileID: 2143486165}
   GameJoinButton: {fileID: 223014562}
   ItemPrefab: {fileID: 1755012440}
   LayoutGroup: {fileID: 1988116423}
@@ -51668,7 +51628,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 886336451}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2127955186
 GameObject:
@@ -51922,7 +51882,6 @@ GameObject:
   - component: {fileID: 2143486161}
   - component: {fileID: 2143486163}
   - component: {fileID: 2143486162}
-  - component: {fileID: 2143486164}
   - component: {fileID: 2143486165}
   m_Layer: 5
   m_Name: Admin Mode
@@ -51989,17 +51948,6 @@ CanvasRenderer:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 2143486160}
   m_CullTransparentMesh: 0
---- !u!114 &2143486164
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 2143486160}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c89059a8b0d6eb4485d48c00dcc2eda, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &2143486165
 MonoBehaviour:
   m_ObjectHideFlags: 0

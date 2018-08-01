@@ -4,23 +4,19 @@ using UnityEngine.Networking;
 using UnityEngine;
 using Game;
 using System;
-using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
-using Barebones.MasterServer;
-using Barebones.Networking;
 
 public class GameWrapper{
 
-	protected CommProtocol currentProtocol;
-	protected Game.GameMaster currentController;
+    protected CommProtocol currentProtocol;
+	protected GameMaster currentController;
 	private List<CommProtocol.AlbotHandler> currentHandlers = new List<CommProtocol.AlbotHandler> ();
 	protected Action<object, ConnectedClient> trainingMoveFunc;
 
-	public void init(CommProtocol prot, Game.GameMaster controller){
+	public void init(CommProtocol prot, GameMaster controller){
 		currentProtocol = prot;
 		this.currentController = controller;
-		controller.getGameHistory ().initHandlers();
 	}
 
 	

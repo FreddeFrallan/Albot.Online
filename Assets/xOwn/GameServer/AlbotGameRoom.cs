@@ -98,7 +98,7 @@ public class AlbotGameRoom : NetworkBehaviour{
             if (prop.ContainsKey(MsfDictKeys.MapName))
                 MapName = prop[MsfDictKeys.MapName];
 
-			gameType = GameUtil.stringToGameType (Msf.Args.GaameType);
+			gameType = Msf.Args.GameType;
         }
 
         // Override the public address

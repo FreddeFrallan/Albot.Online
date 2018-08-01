@@ -141,6 +141,8 @@ namespace ClientUI{
 		LoginMenu,
 		GameLobby,
         LobbyBrowser,
+        PreTournament,
+        PlayingTournament,
         PreGame,
 		PlayingGame,
 	}

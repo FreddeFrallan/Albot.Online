@@ -19,7 +19,6 @@ namespace SpeedRunner {
             sendServerMsg(msg, (short)SpeedRunnerProtocol.MsgType.playerMove);
         }
 
-
         protected override void initHandlers() {
             base.initHandlers();
 

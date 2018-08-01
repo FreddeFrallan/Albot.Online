@@ -53,12 +53,9 @@ namespace Snake{
 			return newPlayer;
 		}
 
-
-
-
 		public override void startGame (){
-			gameLog.addInitLogMsg (players);
 			updater.startGame (players);
+            spectatorModule.onGameStarted(players);
 		}
 
 		public override void onPlayerLeft (ConnectedPlayer oldPlayer){
@@ -71,10 +68,6 @@ namespace Snake{
 
 		public Game.PlayerColor getIndexColor(int index){return colorOrder [index];}
 		public void startShutdownServer(){base.shutdownServer ();}
-
-
-		public void submitToGameLog(string logMsg){
-			gameLog.pushToRawLog (logMsg);
-		}
+        public void submitToGameLog(string logMsg) { gameLog.pushToRawLog(logMsg); } 
 	}
 }

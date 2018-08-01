@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Game;
+using Barebones.MasterServer;
 
 namespace Snake{
 
-	public class SnakeRenderer : MonoBehaviour {
+	public class SnakeRenderer : GameRenderer {
 
 		public SnakeSmoothRenderer smoothRenderer;
 		public GameObject bgBrick, collisionBlock;
@@ -45,7 +46,6 @@ namespace Snake{
             Position2D extraPos = new Position2D() { x = 0, y = 0 };
             Position2D pos = setBlockCoords(crashPos, ref extraPos);
 
-
             SnakeBlock block = getBlockFromPos(pos);
             Vector3 spawnPos = block.transform.position + new Vector3 (extraPos.x, 2, extraPos.y);
 			Instantiate (collisionBlock, spawnPos, Quaternion.identity);
@@ -61,7 +61,6 @@ namespace Snake{
             if (coord.y >= gridSize)
                 extraCoord.y = -1;
 
-
             return new Position2D() {x = (int)Mathf.Clamp(coord.x, 0, gridSize-1), y = (int)Mathf.Clamp(coord.y, 0, gridSize - 1) };
 		}
 
@@ -72,6 +71,29 @@ namespace Snake{
 			int y = gridSize - (coord / gridSize);
 			return blocks [x, y];
 		}
-	}
+
+        protected override void displayNewUpdate(GameLogState update) {
+            if (gameOver)
+                return;
+
+            BoardUpdate state = SnakeGameLogProtocol.parseGameState(update.log[0]);
+            if (state.gameOver)
+                handleAdminGameOver(state);
+            else
+                handleBoardUpdate(state);
+        }
+
+        private void handleAdminGameOver(BoardUpdate state) {
+            gameOver = true;
+            if(state.winnerColor == PlayerColor.None) {
+                displayCrash(GameUtils.pos2DToVec2(state.blueCoords[0]));
+                displayCrash(GameUtils.pos2DToVec2(state.redCoords[0]));
+            }
+            else if(state.winnerColor == PlayerColor.Red)
+                displayCrash(GameUtils.pos2DToVec2(state.blueCoords[0]));
+            else
+                displayCrash(GameUtils.pos2DToVec2(state.redCoords[0]));
+        }
+    }
 
 }

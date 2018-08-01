@@ -15,7 +15,6 @@ namespace AdminUI{
 		public void init(){
 			AdminUIManager.onAdminUIStateChanged += UIStateChanged;
 			UIStateChanged (ClientUIStates.LoginMenu);
-			print ("Menu inited");
 		}
 
 

@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using AlbotServer;
 using Game;
+using ClientUI;
 
 namespace Breakthrough{
 
@@ -20,7 +21,7 @@ namespace Breakthrough{
 		private int currentUpdate = -1;
 		private BoardMsg lastBoardMsg;
 
-		protected override void initHandlers (){
+        protected override void initHandlers (){
 			connectionToServer.RegisterHandler ((short)BrakethroughProtocol.MsgType.playerInit, handleInitSettings);
 			connectionToServer.RegisterHandler ((short)ServerCommProtocl.PlayerJoinedGameRoom, handlePlayerJoinedRoom);
 			connectionToServer.RegisterHandler ((short)BrakethroughProtocol.MsgType.boardUpdate, handleBoardUpdate);
@@ -101,9 +102,9 @@ namespace Breakthrough{
 				else
 					gameOverMsg = msg.winnerColor + " won";
 
-				ClientUI.AlbotDialogBox.setGameOver ();
-				ClientUI.AlbotDialogBox.activateButton (ClientUI.ClientUIStateManager.requestGotoGameLobby,  ClientUI.DialogBoxType.GameState, gameOverMsg, "Return to lobby", 70, 25);
-			}
+				AlbotDialogBox.setGameOver ();
+                AlbotDialogBox.activateButton(() => { ClientUIStateManager.requestGotoState(ClientUIStates.GameLobby); }, DialogBoxType.GameState, gameOverMsg, "Return to lobby", 70, 25);
+            }
 		}
 
 
