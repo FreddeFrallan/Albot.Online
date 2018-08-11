@@ -84,7 +84,8 @@ namespace Battleship{
 			GameInfo msg = Game.ClientController.Deserialize<GameInfo> (bytes);
 
 			if (msg.gameOver) {
-				TCPLocalConnection.sendMessage ("GameOver");
+                string gameOverString = TCP_API.APIStandardConstants.Fields.gameOver;
+                TCPLocalConnection.sendMessage (gameOverString);
 				gameOver ();
 
 				string gameOverMsg;

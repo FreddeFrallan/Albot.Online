@@ -8,22 +8,24 @@ namespace TCP_API {
     public class APIStandardConstants {
 
         public static class Fields {
-            public const string board = "Board";
-            public const string evaluate = "Evaluate";
-            public const string possibleMoves = "PossMoves";
-            public const string winner = "Winner";
-            public const string move = "Move";
-            public const string player = "Player";
-            public const string enemy = "Enemy";
-            public const string action = "Action";
+            public const string board = "board";
+            public const string evaluate = "evaluate";
+            public const string possibleMoves = "possMoves";
+            public const string winner = "winner";
+            public const string move = "move";
+            public const string player = "player";
+            public const string enemy = "enemy";
+            public const string action = "action";
             public const string boardState = "boardState";
+            public const string gameOver = "gameOver";
         }
 
         public static class Actions {
-            public const string makeMove = "MakeMove";
-            public const string simMove = "SimulateMove";
-            public const string evalBoard = "EvaluateBoard";
-            public const string getPossMoves = "GetPossibleMoves";
+            public const string restartGame = "restartGame";
+            public const string makeMove = "makeMove";
+            public const string simMove = "simulateMove";
+            public const string evalBoard = "evaluateBoard";
+            public const string getPossMoves = "getPossibleMoves";
         }
     }
 

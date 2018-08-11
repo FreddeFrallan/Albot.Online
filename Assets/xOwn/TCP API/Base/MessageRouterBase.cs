@@ -26,7 +26,8 @@ namespace TCP_API{
         /// <returns>APIMsgConclusion</returns>
         public APIMsgConclusion handleIncomingMsg(string msg) {
             msg = msg.Trim();
-            if (msg.ToLower() == "restartgame") {
+            //if (msg.ToLower() == "restartgame") {
+            if(msg == APIStandardConstants.Actions.restartGame) {
                 MainThread.fireEventAtMainThread(() => ClientUI.CurrentGame.restartCurrentGame());
                 return restartReturnMsg();
             }

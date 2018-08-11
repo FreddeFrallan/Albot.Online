@@ -47,7 +47,8 @@ namespace Soldiers{
 		}
 
 		public override void onReceiveInput (string input){
-			if (input == "GameOver")
+            string gameOverString = TCP_API.APIStandardConstants.Fields.gameOver;
+            if (input == gameOverString)
 				isPlaying = false;
 
 			hasNewInput = true;

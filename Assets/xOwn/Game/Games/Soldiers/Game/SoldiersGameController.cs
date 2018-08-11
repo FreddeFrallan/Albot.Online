@@ -111,7 +111,8 @@ namespace Soldiers{
 			GameInfo infoMsg = Game.ClientController.Deserialize<GameInfo> (bytes);;
 
 			if (infoMsg.gameOver) {
-				TCPLocalConnection.sendMessage ("GameOver");
+                string gameOverString = TCP_API.APIStandardConstants.Fields.gameOver;
+                TCPLocalConnection.sendMessage (gameOverString);
 				isGameOver = true;
 				UnetRoomConnector.shutdownCurrentConnection ();
 

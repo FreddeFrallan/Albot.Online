@@ -117,15 +117,16 @@ namespace Bomberman{
 
 				UnetRoomConnector.shutdownCurrentConnection ();
 
+                string gameOverString = TCP_API.APIStandardConstants.Fields.gameOver;
 				string gameOverMsg;
-				Debug.LogError ("WInner: " + msg.winnerColor);
+				Debug.LogError ("Winner: " + msg.winnerColor);
 				if (msg.winnerColor == Game.PlayerColor.None) {
 					gameOverMsg = "It's a draw!";
-					TCPLocalConnection.sendMessage ("GameOver: 0");
+					TCPLocalConnection.sendMessage (gameOverString + ": 0");
 				}
 				else {
 					gameOverMsg = msg.winnerColor + " won";
-					TCPLocalConnection.sendMessage ("GameOver: " + (msg.winnerColor == PlayerColor.Blue ? "1" : "-1"));
+					TCPLocalConnection.sendMessage (gameOverString + ": " + (msg.winnerColor == PlayerColor.Blue ? "1" : "-1"));
 				}
 
 

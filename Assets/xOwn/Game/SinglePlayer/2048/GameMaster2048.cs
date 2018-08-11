@@ -74,7 +74,8 @@ public class GameMaster2048 : MonoBehaviour {
 	public void gameOver(){
 		moveQ.Clear ();
 		playing = false;
-		TCPLocalConnection.sendMessage ("GameOver " + logic.getCurrentScore ());
+        string gameOverString = TCP_API.APIStandardConstants.Fields.gameOver;
+        TCPLocalConnection.sendMessage (gameOverString + ": " + logic.getCurrentScore ());
 		//restartGame ();
 	}
 

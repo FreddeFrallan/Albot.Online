@@ -55,8 +55,8 @@ namespace SpeedRunner {
             }
             
             jObj.AddField("Msg", "Empty");
-            jObj.AddField("Board", new JSONObject(jRows.ToArray()));
-            //jObj.AddField("Board", jRows);
+            jObj.AddField("board", new JSONObject(jRows.ToArray()));
+            //jObj.AddField("board", jRows);
             return jObj.Print();
         }
     }

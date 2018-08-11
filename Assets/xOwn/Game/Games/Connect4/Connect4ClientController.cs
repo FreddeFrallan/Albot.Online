@@ -101,12 +101,13 @@ namespace Connect4{
 			GameInfo msg = Deserialize<GameInfo> (bytes);
 			
 			if (msg.gameOver) {
+                string gameOverString = TCP_API.APIStandardConstants.Fields.gameOver;
                 string winner = "0";
                 if (msg.winnerColor == PlayerColor.Yellow)
                     winner = "1";
                 else if (msg.winnerColor == PlayerColor.Red)
                     winner = "-1";
-				TCPLocalConnection.sendMessage ("GameOver: " + winner);
+				TCPLocalConnection.sendMessage (gameOverString + ": " + winner);
                 localRenderer.onGameOver (msg.winnerColor == PlayerColor.Yellow ? Piece.Yellow : Piece.Red);
 				//gameOver ();
 
@@ -137,7 +138,7 @@ namespace Connect4{
 
 			string rotatedBoard = rotateBoard(tempBoard);
 			JSONObject board = new JSONObject ();
-			board.AddField ("Board", rotatedBoard);
+			board.AddField ("board", rotatedBoard);
 			return board.Print ();
 		}
 

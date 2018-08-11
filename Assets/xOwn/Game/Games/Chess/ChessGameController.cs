@@ -80,7 +80,8 @@ namespace Chess{
 			GameInfo msg = Game.ClientController.Deserialize<GameInfo> (bytes);
 
 			if (msg.gameOver) {
-				TCPLocalConnection.sendMessage ("GameOver");
+                string gameOverString = TCP_API.APIStandardConstants.Fields.gameOver;
+                TCPLocalConnection.sendMessage (gameOverString);
 
 				string gameOverMsg;
 				if (msg.winnerColor == Game.PlayerColor.None)
