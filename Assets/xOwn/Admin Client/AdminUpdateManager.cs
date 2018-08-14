@@ -105,7 +105,6 @@ namespace AdminUI{
 		}
 
         public static void requestSpecificLogMessages(int[] missingUpdates) {
-            print("Missing Updates " + missingUpdates.Length + ", Requesting...");
             Msf.Connection.SendMessage((short)CustomMasterServerMSG.requestSpecificGameLog, 
                 new SpectatorSpecificLogRequestMsg() {broadcastID = currentRoomID, IDs = missingUpdates},
                 (s, m) => {

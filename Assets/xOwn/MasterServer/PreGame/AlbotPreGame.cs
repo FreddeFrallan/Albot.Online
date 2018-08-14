@@ -181,9 +181,11 @@ namespace AlbotServer{
 
 
         private void broadcastUpdate(int skipPeerID = -1) {
+            if (state != PreGameState.Lobby)
+                return;
             PreGameRoomMsg msg = newUpdate();
-            foreach (IPeer p in connectedPeers.Select(p => p.peer)) 
-                if(p.Id != skipPeerID)
+            foreach (IPeer p in connectedPeers.Select(p => p.peer))
+                if (p.Id != skipPeerID)
                     p.SendMessage((short)ServerCommProtocl.UpdatePreGame, msg);
 
             if (specs.isInTournament)
@@ -218,8 +220,7 @@ namespace AlbotServer{
 
         #region remove Game
         public void onRemoved() {
-            lock (playerLock)
-                connectedPeers.Clear();
+            connectedPeers.Clear();
             spectators.Clear();
             specModule.preGameRemoved(this);
         }

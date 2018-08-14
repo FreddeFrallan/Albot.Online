@@ -28,7 +28,6 @@ namespace AdminUI {
             if (runningTournament == false)
                 return;
 
-            print("Starting lobby: " + id.col + "." + id.row);
             Msf.Connection.SendMessage((short)CustomMasterServerMSG.tournamentRoundPreStarted, new TournamentPreGameInfo() {
                 tournamentID = tournamentInfo.tournamentID, roundID = id
             });
@@ -38,7 +37,6 @@ namespace AdminUI {
             if (runningTournament == false)
                 return;
 
-            print("Starting Game: " + id.col + "." + id.row);
             Msf.Connection.SendMessage((short)CustomMasterServerMSG.tournamentRoundStarted, new TournamentPreGameInfo() {
                 tournamentID = tournamentInfo.tournamentID, roundID = id
             });

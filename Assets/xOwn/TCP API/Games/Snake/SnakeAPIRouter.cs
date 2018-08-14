@@ -65,15 +65,7 @@ namespace TCP_API.Snake {
                 hasPlayerMove = jObj.HasField(Constants.JProtocol.playerMove),
                 hasEnemyMove = jObj.HasField(Constants.JProtocol.enemyMove),
             };
-            /*
-            if (m.hasPlayerMove == false)
-                return m;
-            m.playerMove = jObj.GetField(Constants.JProtocol.playerMove).str;
 
-            if (m.hasEnemyMove == false)
-                return m;
-            m.enemyMove = jObj.GetField(Constants.JProtocol.enemyMove).str;
-            */
             if (m.hasPlayerMove)
                 m.playerMove = jObj.GetField(Constants.JProtocol.playerMove).str;
             

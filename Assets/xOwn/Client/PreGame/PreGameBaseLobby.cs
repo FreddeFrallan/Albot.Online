@@ -85,6 +85,7 @@ namespace ClientUI{
 
 
 		protected void updatePreGameLobby(IIncommingMessage rawMsg){
+            Debug.LogError("Input msg Lenght: " + rawMsg.AsBytes().Length);
             try {
                 PreGameRoomMsg msg = rawMsg.Deserialize<PreGameRoomMsg> ();
 			    currentPlayers = msg.players;
@@ -94,6 +95,7 @@ namespace ClientUI{
                 Debug.LogError("Could not deserialize msg");
                 return;
             }
+            
 		}
 		protected void resetPanel(){
 			isAdmin = false;
@@ -115,6 +117,7 @@ namespace ClientUI{
 
             bool isReady = status == ConnectionStatus.Connected;
             Msf.Connection.SendMessage((short)ServerCommProtocl.UpdatePreGame, new PreGameReadyUpdate(){isReady = isReady, roomID = roomId});
+            Debug.LogError("Sending Bot update " + roomId);
 		}
 
 		public void removeHandlers(){

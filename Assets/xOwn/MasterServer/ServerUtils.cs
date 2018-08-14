@@ -7,18 +7,18 @@ namespace AlbotServer {
     public class ServerUtils{
 
         public static PreGameSpecs tournamentInfoToGameSpecs(TournamentInfoMsg info) {
-            PreGameSpecs specs = generateGameSpecs(info.type);
+            PreGameSpecs specs = generateGameSpecs(info.type, "Admin", false, false);
             specs.isInTournament = true;
             specs.tournamentID = info.tournamentID;
             return specs;
         }
-        public static PreGameSpecs generateGameSpecs(GameType type) {
+        public static PreGameSpecs generateGameSpecs(GameType type, string hostName, bool canRestart, bool showInLobby) {
             return new PreGameSpecs() { 
                 type = type,
                 maxPlayers = 2,
-                showInLobby = false,
-                canRestart = false,
-                hostName = "Admin",
+                showInLobby = showInLobby,
+                canRestart = canRestart,
+                hostName = hostName,
             };
         }
 

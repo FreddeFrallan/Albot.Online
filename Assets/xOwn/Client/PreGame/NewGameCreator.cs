@@ -22,7 +22,7 @@ namespace ClientUI{
         public void createNewGame(MapSelection selectedMap){
 			currentMap = selectedMap;
 			AccountInfoPacket currentUser = ClientUIOverlord.getCurrentAcountInfo();
-            PreGameSpecs msg = Msf.Helper.createGameSpecs(selectedMap.type, selectedMap.maxPlayers, currentUser.Username);
+            PreGameSpecs msg = ServerUtils.generateGameSpecs(selectedMap.type, currentUser.Username, true, true);
             Msf.Connection.SendMessage((short)ServerCommProtocl.CreatePreGame, msg, handleCreatedGameResponse);
         }
 

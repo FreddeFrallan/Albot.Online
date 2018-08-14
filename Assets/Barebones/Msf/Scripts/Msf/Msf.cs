@@ -382,10 +382,6 @@ namespace Barebones.MasterServer
                 return settings;
             }
 
-            public PreGameSpecs createGameSpecs(Game.GameType type, int maxPlayers, string hostName, string roomID = "") {
-                return new PreGameSpecs() { type = type, roomID = roomID, hostName = hostName, maxPlayers = maxPlayers};
-            }
-
             public void handleErrorResponse(ResponseStatus status, IIncommingMessage rawMsg) {
                 if (status != ResponseStatus.Success) {
                     Debug.LogError(rawMsg.AsString());

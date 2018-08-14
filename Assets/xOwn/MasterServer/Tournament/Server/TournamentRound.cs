@@ -80,6 +80,7 @@ namespace Tournament.Server {
             return players.FindIndex(p => p.info.username == winOrder[0]);
         }
         public void reportResult(GameOverMsg result) {
+            AlbotPreGameModule.removeGame(thePregame, thePregame.specs.roomID);
             if (result.score.winState == GameOverState.draw)
                 score.draws++;
             else

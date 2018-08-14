@@ -33,6 +33,7 @@ namespace AlbotServer {
             server.SetHandler((short)CustomMasterServerMSG.RunningGameInfo, handleRunningGamesInfoMsg);
             server.SetHandler((short)CustomMasterServerMSG.gameOverResult, handleGameOverMsg);
             spectatorModule.initPreGames(activeGames, allGamesDict, allGames);
+            StartCoroutine(removeOldgames());
         }
 
         private IEnumerator removeOldgames() {
@@ -49,14 +50,20 @@ namespace AlbotServer {
 
         private PreGame createGame(PreGameSpecs specs, IPeer gameHost) {
             specs.roomID = generatePreGameID();
-
             PreGame newGame = new PreGame(gameHost, specs, spectatorModule);
-            currentPreGames.Add(specs.roomID, newGame);
-            allGamesDict.Add(specs.roomID, newGame);
-            allGames.Add(newGame);
-            allPreGamesList.Add(newGame);
+            addGameToPreGameDicts(newGame, specs.roomID);
 
             return newGame;
+        }
+        private void addGameToPreGameDicts(PreGame game, string roomID) {
+            if(currentPreGames.ContainsKey(roomID) == false)
+                currentPreGames.Add(roomID, game);
+            if (allGamesDict.ContainsKey(roomID) == false)
+                allGamesDict.Add(roomID, game);
+            if(allGames.Contains(game) == false)
+                allGames.Add(game);
+            if(allPreGamesList.Contains(game))
+                allPreGamesList.Add(game);
         }
 
         private void handleRequestJoinPreGame(IIncommingMessage rawMsg) {
@@ -115,17 +122,20 @@ namespace AlbotServer {
         }
 
         public static void startTournamentgame(PreGame game) {singleton.startGame(game);}
-        private void startGame(PreGame game, IIncommingMessage rawMsg = null) {
+        private void moveGameToActiveGames(PreGame game) {
             allPreGamesList.Remove(game);
             currentPreGames.Remove(game.specs.roomID);
             activeGames.Add(game.specs.roomID, game); //Adding the game to the active pool, so it can be re-started easily.
-
+            Debug.LogError(game.specs.roomID + " was added to active games");
+        }
+        private void startGame(PreGame game, IIncommingMessage rawMsg = null) {
             string spawnCode = SpawnersModule.singleton.createNewRoomFromPreGame(game.getPeers(), game.generateGameSettings(), game.specs.roomID);
             if (string.IsNullOrEmpty(spawnCode)) { // We encountered some kind of error when spawning a new gameRoom
                 if(rawMsg != null)
                     rawMsg.Respond("Server error during game startup", ResponseStatus.Error);
                 return;
             }
+            moveGameToActiveGames(game);
 
             game.specs.spawnCode = spawnCode;
             PreGameStartedMsg msg = new PreGameStartedMsg() { specs = game.specs, slots = game.getPlayerSlots() };
@@ -188,7 +198,6 @@ namespace AlbotServer {
 
         #region Utils
         public static void removeGame(PreGame game, string roomID) {
-            Debug.LogError("Removing Game: " + roomID);
             if (game.state == PreGameState.Lobby) {
                 singleton.currentPreGames.Remove(roomID);
                 singleton.allPreGamesList.Remove(game);

@@ -73,8 +73,12 @@ namespace ClientUI {
         #endregion
 
         private static void handleRoundStarted(IIncommingMessage rawMsg) {
-            Debug.LogError("Got invite to started preGame: " + rawMsg.AsString());
-            NewGameCreator.handleJoinPreGame(GameInfoType.PreGame, rawMsg.AsString());
+            if (ClientUIOverlord.currentState == ClientUIStates.PlayingGame && isInTournament)
+                ClientUIStateManager.requestGotoState(ClientUIStates.GameLobby, () => {
+                    NewGameCreator.handleJoinPreGame(GameInfoType.PreGame, rawMsg.AsString());
+                });
+            else
+                NewGameCreator.handleJoinPreGame(GameInfoType.PreGame, rawMsg.AsString());
         }
 
         private static void handleTreeUpdate(IIncommingMessage rawMsg) {addNewUpdate(rawMsg.Deserialize<TournamentTreeUpdate>());}
