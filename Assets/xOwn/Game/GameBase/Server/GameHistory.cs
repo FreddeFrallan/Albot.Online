@@ -33,6 +33,8 @@ public class GameHistory{
     #endregion
 
 
+
+
     #region getters & setters
     public GameLogState[] getFullLog(){return rawGameLog.ToArray ();}
 

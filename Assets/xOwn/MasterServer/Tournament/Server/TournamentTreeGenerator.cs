@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using AlbotServer;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -8,26 +9,25 @@ namespace Tournament.Server {
     public class TournamentTreeGenerator {
 
 
-        public static List<List<TournamentRound>> generateTreeStructure(int layers) {
+        public static List<List<TournamentRound>> generateTreeStructure(int layers, PreGameSpecs gameSpecs) {
             List<List<TournamentRound>> treeStructure = new List<List<TournamentRound>>();
 
-            for (int i = 0; i < layers; i++) {
-                List<TournamentRound> col = new List<TournamentRound>();
-                for (int j = 0; j < Mathf.Pow(2, layers - i - 1); j++)  //Create new game Row
-                    col.Add(new TournamentRound(i, j));
+            for (int col = 0; col < layers; col++) {
+                List<TournamentRound> layer = new List<TournamentRound>();
+                for (int row = 0; row < Mathf.Pow(2, layers - col - 1); row++)  //Create new game Row
+                    layer.Add(new TournamentRound(col, row, gameSpecs));
 
-                treeStructure.Add(col);
-                if (i == 0) 
+                treeStructure.Add(layer);
+                if (col == 0) 
                     continue;
 
                 //Link previous layer
-                List<TournamentRound> prevRow = treeStructure[treeStructure.Count - 2];
-                for (int j = 0; j < col.Count; j++) {
-                    prevRow[j * 2].setNextGame(col[j]);
-                    prevRow[j * 2 + 1].setNextGame(col[j]);
+                List<TournamentRound> prevCol = treeStructure[col - 1];
+                for (int j = 0; j < layer.Count; j++) {
+                    prevCol[j * 2].setNextGame(layer[j]);
+                    prevCol[j * 2 + 1].setNextGame(layer[j]);
                 }
             }
-
             return treeStructure;
         }
 
@@ -55,6 +55,11 @@ namespace Tournament.Server {
                 TournamentRound game = firstRow.OrderBy(g => g.getPlayers().Count).ToList()[0];
                 game.addPlayer(p);
             }
+        }
+
+        public static void insertPlayersLinear(List<List<TournamentRound>> tree, List<TournamentPlayer> players) {
+            for (int i = 0; i < players.Count; i++) 
+                tree[0][i / 2].addPlayer(players[i]);
         }
     }
 }

@@ -118,9 +118,7 @@ namespace Connect4{
 					//gameOverMsg = msg.winnerColor == myColor ? "You won!" : "You lost!";
 					gameOverMsg = msg.winnerColor + " won";
 
-
-                //AlbotDialogBox.setGameOver();
-                AlbotDialogBox.activateButton(() => { ClientUIStateManager.requestGotoState(ClientUIStates.GameLobby); }, DialogBoxType.GameState, gameOverMsg, "Return to lobby", 70, 25);
+                CurrentGame.gameOver(gameOverMsg);
             }
 		}
 		#endregion

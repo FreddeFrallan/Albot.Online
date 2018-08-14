@@ -14,7 +14,7 @@ namespace Tournament.Server {
         private TournamentGameInfo gameInfo;
   
 
-        public PreTournamentGame(TournamentSpecsMsg specs, IPeer admin, string roomID) {
+        public PreTournamentGame(TournamentInfoMsg specs, IPeer admin, string roomID) {
             specs.tournamentID = roomID;
             gameInfo = new TournamentGameInfo() {
                 admin = admin, roomID = roomID, specs = specs,
@@ -27,7 +27,6 @@ namespace Tournament.Server {
         public bool addPlayer(IPeer peer, PlayerInfo info) {
             if (gameInfo.players.Count >= gameInfo.specs.maxPlayers || containsPeer(peer))
                 return false;
-
 
             peer.Disconnected += playerDissconnected;
             gameInfo.connectedPeers.Add(peer);
@@ -55,7 +54,8 @@ namespace Tournament.Server {
                 return false;
             }
 
-            game = new RunningTournamentGame(gameInfo);
+            gameInfo.connectedPeers.ForEach(p => p.Disconnected -= playerDissconnected);
+            game = new RunningTournamentGame(gameInfo, ServerUtils.tournamentInfoToGameSpecs(gameInfo.specs));
             gameInfo.connectedPeers.ForEach(p => p.SendMessage((short)CustomMasterServerMSG.startTournament, gameInfo.specs));
             rawMsg.Respond(gameInfo.specs, ResponseStatus.Success);
             return true;
@@ -67,7 +67,7 @@ namespace Tournament.Server {
         }
 
         public void updateAdmin() {
-            PreTournamentInfo infoMsg = new PreTournamentInfo() {players = gameInfo.players.Select(p => p.info).ToArray()};
+            TournamentInfoMsg infoMsg = new TournamentInfoMsg() {players = gameInfo.players.Select(p => p.info).ToArray()};
             gameInfo.admin.SendMessage((short)CustomMasterServerMSG.preTournamentUpdate, infoMsg);
         }
 

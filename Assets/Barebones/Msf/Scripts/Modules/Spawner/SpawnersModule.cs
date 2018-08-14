@@ -300,17 +300,13 @@ namespace Barebones.MasterServer
         // New Data can be sent by adding it to the Dict "Options" and then later adding it to the Command line arg
         // These values will automaticlly be read by the Msf.Args module, and be available after startup
         /************************************************/
-        
 		public string createNewRoomFromPreGame(List<IPeer> peersInRoom, Dictionary<string, string> options, string spawnID){
 			var task = Spawn(options, "", "", spawnID);
 			if (task == null) //All the servers are busy. Try again later"
 				return "";
 			
-            Debug.LogError("Task: " + task.SpawnId);
 			task.Requester = peersInRoom[0];
-            Debug.LogError("Creating game: " + options[MsfDictKeys.GameType]);
             task.albotHack(peersInRoom);
-
 
             return task.UniqueCode;
 		}

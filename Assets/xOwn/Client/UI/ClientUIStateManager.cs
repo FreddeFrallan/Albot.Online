@@ -11,7 +11,7 @@ namespace ClientUI{
 	public class ClientUIStateManager : MonoBehaviour {
 
 		public GameObject winPanel;
-		public SceneField lobbyScene;
+		public SceneField lobbyScene, tournamentScene;
 		private bool logingOut = false;
 		private bool enteringGameLobby = false, enteringPreGame = false;
 		private static ClientUIStateManager singelton;
@@ -34,9 +34,9 @@ namespace ClientUI{
             stateToScenes.Add(ClientUIStates.GameLobby, singelton.lobbyScene.SceneName);
             stateToScenes.Add(ClientUIStates.LobbyBrowser, singelton.lobbyScene.SceneName);
             stateToScenes.Add(ClientUIStates.LoginMenu, singelton.lobbyScene.SceneName);
-            stateToScenes.Add(ClientUIStates.PlayingTournament, singelton.lobbyScene.SceneName);
             stateToScenes.Add(ClientUIStates.PreGame, singelton.lobbyScene.SceneName);
             stateToScenes.Add(ClientUIStates.PreTournament, singelton.lobbyScene.SceneName);
+            stateToScenes.Add(ClientUIStates.PlayingTournament, tournamentScene);
         }
 
 		#region State Changes

@@ -48,6 +48,15 @@ namespace AlbotServer {
 
         #endregion
 
+        #region GameOver
+        public void reportGameOver(GameOverState winState, string[] winOrder) {
+            GameOverScore score = new GameOverScore() {winOrder = winOrder, winState = winState};
+            Msf.Connection.SendMessage((short)CustomMasterServerMSG.gameOverResult, new GameOverMsg() {
+                fullGameHistory = historyController.getFullLog(), score = score , roomID = broadcastID
+            });
+        }
+        #endregion
+
 
         #region OnGameStarted
         public void onGameStarted(List<ConnectedPlayer> players) { sendStartInitMsg(players); }

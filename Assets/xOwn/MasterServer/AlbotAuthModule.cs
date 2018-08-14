@@ -7,32 +7,6 @@ using AlbotDB;
 
 
 //Framework starts from 32000, so we can use anything from 0 - 32000 ^^
-public enum CustomMasterServerMSG{
-	login = 0,
-
-	RunningGameInfo = 1,
-	requestSpectatorGames = 2,
-	spectateInfo = 3,
-
-	spectateLogUpdate = 4,
-    requestSpecificGameLog = 5,
-    spectateGameStarted = 6,
-
-
-    startSpectate = 7,
-	stopSpectate = 8,
-	adminLogin = 9,
-	adminLogout = 10,
-
-    //Tournament
-    joinTournament = 11,
-    leaveTournament = 12,
-    startTournament = 13,
-    createTournament = 14,
-    closeTournament = 15,
-    preTournamentUpdate = 16,
-    runningTournamentUpdate = 17,
-}
 
 public class AlbotAuthModule : ServerModuleBehaviour {
 	

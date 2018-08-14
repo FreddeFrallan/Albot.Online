@@ -47,7 +47,6 @@ namespace Barebones.MasterServer{
         }
 
         public void AddTaskToQueue(SpawnTask task){
-            Debug.LogError("Task Q: " + _queue.Count);
             _queue.Enqueue(task);
         }
 

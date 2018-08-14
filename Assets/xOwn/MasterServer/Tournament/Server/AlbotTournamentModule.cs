@@ -8,6 +8,7 @@ using UnityEngine.Networking;
 using System.Linq;
 using AlbotServer;
 using System;
+using Tournament;
 
 namespace Barebones.MasterServer {
 
@@ -15,7 +16,6 @@ namespace Barebones.MasterServer {
 
         private static AlbotTournamentModule singleton;
         private Dictionary<string, PreTournamentGame> currentPreTournaments = new Dictionary<string, PreTournamentGame>();
-        private Dictionary<string, RunningTournamentGame> currentRunningTournaments = new Dictionary<string, RunningTournamentGame>();
         private Dictionary<int, PreTournamentGame> peerToTournaments = new Dictionary<int, PreTournamentGame>();
 
         public override void Initialize(IServer server) {
@@ -35,7 +35,7 @@ namespace Barebones.MasterServer {
                 return;
             }
 
-            TournamentSpecsMsg msg =  rawMsg.Deserialize<TournamentSpecsMsg>();
+            TournamentInfoMsg msg =  rawMsg.Deserialize<TournamentInfoMsg>();
             string key = generateGameKey();
             PreTournamentGame newTournament = new PreTournamentGame(msg, peer, key);
 
@@ -105,16 +105,21 @@ namespace Barebones.MasterServer {
                 return;
 
             currentPreTournaments.Remove(roomID);
-            currentRunningTournaments.Add(roomID, runningGame);
+            AlbotRunningTournamentModule.addNewRunningGame(roomID, runningGame);
         }
 
         #endregion
 
         #region Close
+        public void adminLeft(IPeer peer) {
+            Debug.LogError("Admin tournament" + peer.Id);
+            if (peerToTournaments.ContainsKey(peer.Id))
+                handleCloseTournament(peer, peerToTournaments[peer.Id].getRoomID());
+        }
         public void handleCloseTournament(IIncommingMessage rawMsg) {handleCloseTournament(rawMsg.Peer, rawMsg.AsString());}
         public void handleCloseTournament(IPeer peer, string key) {
             if(currentPreTournaments.ContainsKey(key) == false) {
-                Debug.LogError("Tried to remove tournament " + key + ", but no such tournament exist");
+                AlbotRunningTournamentModule.handleCloseTournament(key);
                 return;
             }
             closeTournament(currentPreTournaments[key], key);
@@ -122,6 +127,7 @@ namespace Barebones.MasterServer {
         public void closeTournament(PreTournamentGame game) { closeTournament(game, getGameKey(game)); }
         public void closeTournament(PreTournamentGame game, string key) {
             game.closeTournament();
+            Debug.LogError("Closing tournament: " + key);
 
             currentPreTournaments.Remove(key);
             peerToTournaments.Remove(game.getAdmin().Id);
@@ -147,7 +153,7 @@ namespace Barebones.MasterServer {
         #region Helpers
         private string getGameKey(PreTournamentGame game) { return game.getRoomID(); }
         private string generateGameKey() {
-            return Msf.Helper.CreateRandomStringMatch(MasterServerConstants.KEY_LENGTH, (key) => { return currentPreTournaments.ContainsKey(key) || currentRunningTournaments.ContainsKey(key); });
+            return Msf.Helper.CreateRandomStringMatch(MasterServerConstants.KEY_LENGTH, (key) => { return currentPreTournaments.ContainsKey(key) || AlbotRunningTournamentModule.containsKey(key); });
         }
         #endregion
 
@@ -157,14 +163,6 @@ namespace Barebones.MasterServer {
 
 
 
-    public class TournamentSpecsMsg : MessageBase {
-        public GameType type;
-        public string tournamentID;
-        public int maxPlayers;
-    }
 
-    public class PreTournamentInfo : MessageBase {
-        public PlayerInfo[] players;
-    }
 
 }

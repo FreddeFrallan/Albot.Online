@@ -8,10 +8,15 @@ using AlbotServer;
 namespace ClientUI{
 	
 	public class NewGameCreator : MonoBehaviour{
-		
+
+        private static NewGameCreator singleton;
 		public PreGameLobby preGameLobby;
 		public PreTrainingLobby preTrainingLobby;
 		private MapSelection currentMap;
+
+        private void Start() {
+            singleton = this;
+        }
 
         #region Create new Game
         public void createNewGame(MapSelection selectedMap){
@@ -24,28 +29,26 @@ namespace ClientUI{
         private void handleCreatedGameResponse(ResponseStatus status, IIncommingMessage rawMsg) {
             if (Msf.Helper.serverResponseSuccess(status, rawMsg) == false)
                 return;
-            joinPreGame(new GamesListUiItem() { roomType = GameInfoType.PreGame, GameId = rawMsg.AsString() });
+            joineLobbyGame(new GamesListUiItem() { roomType = GameInfoType.PreGame, GameId = rawMsg.AsString() });
         }
         #endregion
 
 
         #region Joining
-        public void joinPreGame(GamesListUiItem game){
-			AccountInfoPacket ac = ClientUIOverlord.getCurrentAcountInfo();
-			PreGameJoinRequest msg = new PreGameJoinRequest () {
-				roomID = game.GameId,
-				joiningPlayer = new PlayerInfo {
-					username = ac.Username,
-					iconNumber = int.Parse(ac.Properties["icon"])
-				}
-			};
-            print("Joining Pre Game: " + game.GameId);
+        public static void handleJoinPreGame(GameInfoType roomType, string roomID) { singleton.joinPreGame(roomType, roomID); }
+        public void joineLobbyGame(GamesListUiItem game) { joinPreGame(game.roomType, game.GameId); }
+        public void joinPreGame(GameInfoType roomType, string roomID){
+            PreGameJoinRequest joinRequest = getJoinRequest(roomType, roomID);
+            print("Joining PreGame: " + roomID);
 
-            if(game.roomType == GameInfoType.PreGame)
-			    Msf.Connection.SendMessage((short)ServerCommProtocl.RequestJoinPreGame, msg, handleJoinPreGameMsg);
-            else if(game.roomType == GameInfoType.PreTournament)
-                Msf.Connection.SendMessage((short)CustomMasterServerMSG.joinTournament, msg, CurrentTournament.handleJoinedTournament);
+            if(roomType == GameInfoType.PreGame)
+			    Msf.Connection.SendMessage((short)ServerCommProtocl.RequestJoinPreGame, joinRequest, handleJoinPreGameMsg);
+            else if(roomType == GameInfoType.PreTournament)
+                Msf.Connection.SendMessage((short)CustomMasterServerMSG.joinTournament, joinRequest, CurrentTournament.handleJoinedTournament);
         }
+
+
+
 
 		private void handleJoinPreGameMsg(ResponseStatus status, IIncommingMessage rawMsg){
             if (Msf.Helper.serverResponseSuccess(status, rawMsg) == false)
@@ -61,7 +64,16 @@ namespace ClientUI{
 		}
         #endregion
 
-
+        private PreGameJoinRequest getJoinRequest(GameInfoType roomType, string roomID) {
+            AccountInfoPacket ac = ClientUIOverlord.getCurrentAcountInfo();
+            return new PreGameJoinRequest() {
+                roomID = roomID,
+                joiningPlayer = new PlayerInfo {
+                    username = ac.Username,
+                    iconNumber = int.Parse(ac.Properties["icon"])
+                }
+            };
+        }
 
         #region Deubbing
         private void printPlayerSlots(PreGameSlotInfo[] slots) {

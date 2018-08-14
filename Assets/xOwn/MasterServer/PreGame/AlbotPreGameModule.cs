@@ -31,6 +31,7 @@ namespace AlbotServer {
             server.SetHandler((short)ServerCommProtocl.StartSinglePlayerGame, handleStartSingleplayerGame);
             server.SetHandler((short)ServerCommProtocl.PlayerLeftPreGame, handlePlayerLeft);
             server.SetHandler((short)CustomMasterServerMSG.RunningGameInfo, handleRunningGamesInfoMsg);
+            server.SetHandler((short)CustomMasterServerMSG.gameOverResult, handleGameOverMsg);
             spectatorModule.initPreGames(activeGames, allGamesDict, allGames);
         }
 
@@ -41,18 +42,22 @@ namespace AlbotServer {
             }
         }
 
-        private void handleCreatePreGame(IIncommingMessage message) {
-            PreGameSpecs msg = message.Deserialize<PreGameSpecs>();
-            msg.roomID = generatePreGameID();
-
-            PreGame newGame = new PreGame(message.Peer, msg, spectatorModule);
-            currentPreGames.Add(msg.roomID, newGame);
-            allGamesDict.Add(msg.roomID, newGame);
-            allGames.Add(newGame);
-            allPreGamesList.Add(newGame);
-            message.Respond(msg.roomID, ResponseStatus.Success);
+        public static PreGame createTournamentGame(PreGameSpecs specs, IPeer gameHost) { return singleton.createGame(specs, gameHost); }
+        private void handleCreatePreGame(IIncommingMessage rawMsg) {
+            rawMsg.Respond(createGame(rawMsg.Deserialize<PreGameSpecs>(), rawMsg.Peer).specs.roomID, ResponseStatus.Success);
         }
 
+        private PreGame createGame(PreGameSpecs specs, IPeer gameHost) {
+            specs.roomID = generatePreGameID();
+
+            PreGame newGame = new PreGame(gameHost, specs, spectatorModule);
+            currentPreGames.Add(specs.roomID, newGame);
+            allGamesDict.Add(specs.roomID, newGame);
+            allGames.Add(newGame);
+            allPreGamesList.Add(newGame);
+
+            return newGame;
+        }
 
         private void handleRequestJoinPreGame(IIncommingMessage rawMsg) {
             PreGameJoinRequest msg = rawMsg.Deserialize<PreGameJoinRequest>();
@@ -106,29 +111,32 @@ namespace AlbotServer {
                 return;
             }
 
-
-            allPreGamesList.Remove(targetGame);
-            currentPreGames.Remove(roomID);
-            activeGames.Add(targetGame.specs.roomID, targetGame); //Adding the game to the active pool, so it can be re-started easily.
             startGame(targetGame, rawMsg);
         }
 
-        private void startGame(PreGame game, IIncommingMessage rawMsg) {
+        public static void startTournamentgame(PreGame game) {singleton.startGame(game);}
+        private void startGame(PreGame game, IIncommingMessage rawMsg = null) {
+            allPreGamesList.Remove(game);
+            currentPreGames.Remove(game.specs.roomID);
+            activeGames.Add(game.specs.roomID, game); //Adding the game to the active pool, so it can be re-started easily.
+
             string spawnCode = SpawnersModule.singleton.createNewRoomFromPreGame(game.getPeers(), game.generateGameSettings(), game.specs.roomID);
             if (string.IsNullOrEmpty(spawnCode)) { // We encountered some kind of error when spawning a new gameRoom
-                rawMsg.Respond("Server error during game startup", ResponseStatus.Error);
+                if(rawMsg != null)
+                    rawMsg.Respond("Server error during game startup", ResponseStatus.Error);
                 return;
             }
 
             game.specs.spawnCode = spawnCode;
             PreGameStartedMsg msg = new PreGameStartedMsg() { specs = game.specs, slots = game.getPlayerSlots() };
-            Debug.LogError("Starting game: " + game.specs.roomID + " with: " + game.getPeers().Count + " peers.");
+            Debug.LogError("Starting game: " + game.specs.roomID + " with: " + game.getPeers().Count + " peers." + "  Tournament: " + game.specs.tournamentRoundID.col + "." + game.specs.tournamentRoundID.row);
 
             GamesData.totallGamesPlayed++;
             game.onpreGameStarted();
             game.getPeers().ForEach(p => { p.SendMessage((short)ServerCommProtocl.GameRoomInvite, msg); });
 
-            rawMsg.Respond(ResponseStatus.Success);
+            if(rawMsg != null)
+                rawMsg.Respond(ResponseStatus.Success);
         }
 
         private void handleRestartGame(IIncommingMessage rawMsg) {
@@ -137,7 +145,7 @@ namespace AlbotServer {
                 return;
             }
             PreGame targetGame = activeGames[rawMsg.AsString()];
-            if (targetGame.containsPeer(rawMsg.Peer) == false)
+            if (targetGame.containsPeer(rawMsg.Peer) == false || targetGame.specs.canRestart == false)
                 return;
 
             targetGame.updatePeerReady(rawMsg.Peer, true);
@@ -154,11 +162,19 @@ namespace AlbotServer {
             else
                 activeGames[infoMsg.gameID].onGameStarted(infoMsg, rawMsg);
         }
+
+        private void handleGameOverMsg(IIncommingMessage rawMsg) {
+            GameOverMsg result = rawMsg.Deserialize<GameOverMsg>();
+            PreGame game;
+            if (findGame(result.roomID, out game))
+                game.getGameOverMsg(result);
+        }
         #endregion
 
 
 
         #region Getters
+        public static List<PreGame> getCurrentJoinableGames() { return singleton.allPreGamesList.Where(p => p.specs.showInLobby).ToList(); }
         public static List<PreGame> getCurrentPreGames() { return singleton.allPreGamesList; }
         public static List<PreGame> getAllGames() { return singleton.allGames; }
         public static Dictionary<string, PreGame> getActiveGames() { return singleton.activeGames; }

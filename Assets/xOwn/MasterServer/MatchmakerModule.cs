@@ -49,7 +49,7 @@ namespace Barebones.MasterServer{
         public List<GameInfoPacket> getCurrentGameInfos() {
 			List<GameInfoPacket> gameList = new List<GameInfoPacket>();
 
-            foreach (PreGame p in AlbotPreGameModule.getCurrentPreGames())
+            foreach (PreGame p in AlbotPreGameModule.getCurrentJoinableGames())
                 gameList.Add(p.convertToGameInfoPacket());
             foreach (PreTournamentGame t in AlbotTournamentModule.getCurrentTournaments())
                 gameList.Add(t.convertToGameInfoPacket());

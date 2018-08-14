@@ -53,7 +53,7 @@ namespace Snake{
 		}
 			
 
-		public void setGameOver(Game.PlayerColor winColor, int[][] crashPos){
+		public void setGameOver(PlayerColor winColor, int[][] crashPos){
 			foreach (ConnectedPlayer p in players) {
 				GameInfo infoMsg = new GameInfo (p.username, p.color, crashPos, true, winColor);
 				try{protocol.sendGameInfo (gameMaster.getMatchingPlayer(p.color).client.peerID, infoMsg);}

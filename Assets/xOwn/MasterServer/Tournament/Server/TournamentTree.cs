@@ -5,25 +5,30 @@ using System.Linq;
 using AlbotServer;
 using Barebones.Networking;
 using UnityEngine.Networking;
+using AlbotServer;
+using System;
+using Game;
 
 namespace Tournament.Server {
 
     public class TournamentTree{
         private List<TournamentRound> currentGames = new List<TournamentRound>();
         private List<List<TournamentRound>> treeStructure = new List<List<TournamentRound>>();
-        private List<TournamentPlayer> players;
-        private TournamentRoundDTO[][] treeDTO;
+        public List<TournamentPlayer> players { get; private set; }
         public int layers { get; private set; }
 
-        public TournamentTree(List<TournamentPlayer> players) {
+        public TournamentTree(List<TournamentPlayer> players, PreGameSpecs gameSpecs, bool insertRandomly = true) {
             this.players = players;
             layers = (int)Mathf.Ceil(Mathf.Log(players.Count, 2));
             layers = layers <= 0 ? 1 : layers;
 
-            treeStructure = TournamentTreeGenerator.generateTreeStructure(layers);
-            TournamentTreeGenerator.addBots(treeStructure, players);
-            TournamentTreeGenerator.insertPlayersRandomly(treeStructure, players);
-            createTreeDTOBlueprint();
+            treeStructure = TournamentTreeGenerator.generateTreeStructure(layers, gameSpecs);
+            TournamentTreeGenerator.addBots(treeStructure, this.players);
+
+            if(insertRandomly)
+                TournamentTreeGenerator.insertPlayersRandomly(treeStructure, this.players);
+            else
+                TournamentTreeGenerator.insertPlayersLinear(treeStructure, this.players);
         }
 
         public void playGame(int col, int row) {treeStructure[col][row].startGame();}
@@ -33,48 +38,53 @@ namespace Tournament.Server {
         }
 
 
-        public TournamentTreeRow[] getFullTreeDTO() {return Enumerable.Range(0, treeDTO.Length).Select(l => createRowDTO(l)).ToArray();}
-        public TournamentTreeRow createRowDTO(int row) {
-            for (int game = 0; game < treeStructure[row].Count; game++)
-                treeDTO[row][game] = treeStructure[row][game].createDTO();
-
-            return new TournamentTreeRow() { treeRow = treeDTO[row]};
-        }
-
-        public void createTreeDTOBlueprint() {
-            treeDTO = new TournamentRoundDTO[layers][];
-            for (int i = 0; i < treeStructure.Count; i++)
-                treeDTO[i] = new TournamentRoundDTO[treeStructure[i].Count];
-        }
-
+        public TournamentRoundDTO getRoundDTO(RoundID id) {return getRound(id).createDTO();}
+        public TournamentRound getRound(RoundID ID) { return getRound(ID.col, ID.row); }
+        public TournamentRound getRound(int col, int row) { return treeStructure[col][row]; }
         public List<List<TournamentRound>> getTree() { return treeStructure; }
+        public PlayerInfo[] getPlayerOrder() {
+            List<PlayerInfo> players = new List<PlayerInfo>();
+            foreach (TournamentRound r in treeStructure[0])
+                players.AddRange(r.getPlayers().Select(p => p.info));
+            return players.ToArray();
+        }
+
+
+        public void traverseRounds(Action<TournamentRound> a) {
+            foreach (List<TournamentRound> col in treeStructure)
+                foreach (TournamentRound round in col)
+                    a(round);
+        }
     }
 
 
-    public class TournamentTreeRow : MessageBase {
-        public TournamentRoundDTO[] treeRow;
-        public int rowIndex;
-    }
+
 
 
 
     public class TournamentPlayer {
         public IPeer peer;
         public PlayerInfo info;
-        private bool isNPC = false;
+        public bool isReady;
 
         public TournamentPlayer(bool isNPC = false, int botNumber = 0) {
-            this.isNPC = isNPC;
-            if (isNPC)
-                info = new PlayerInfo() { username = "Bot: " + botNumber.ToString() };
+            if (isNPC) {
+                info = new PlayerInfo() {
+                    username = LocalTrainingBots.botName,
+                    iconNumber = LocalTrainingBots.botIconNumber,
+                    isNPC = true
+                };
+                isReady = true;
+            }
         }
 
-        public bool getIsNPC() { return isNPC; }
+        public bool getIsNPC() { return info.isNPC; }
     }
 
-    public enum GameState {
+    public enum RoundState {
         Playing,
         Lobby,
+        Idle,
         Empty,
         Over,
     }

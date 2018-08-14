@@ -14,10 +14,15 @@ namespace Tournament {
     }
 
     public struct TournamentRoundDTO {
-        public PlayerInfo[] players;
+        public TournamentPlayerDTO[] players;
         public RoundState state;
         public GameScore score;
         public RoundID ID;
+        public string preGameID;
+    }
+    public struct TournamentPlayerDTO {
+        public PlayerInfo info;
+        public bool isReady;
     }
 
     public class TournamentInfoMsg : MessageBase {

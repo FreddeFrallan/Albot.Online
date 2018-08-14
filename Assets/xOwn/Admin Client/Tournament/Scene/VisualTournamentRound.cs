@@ -3,55 +3,72 @@ using System.Collections.Generic;
 using UnityEngine;
 using AlbotServer;
 using Tournament.Server;
+using AdminUI;
+using System;
 
 namespace Tournament.Client {
 
-    public class VisualTournamentRound : MonoBehaviour {
+    public class VisualTournamentRound : MonoBehaviour, TournamentUIObject {
 
         [SerializeField]
-        private List<MeshRenderer> playerSlots;
+        private List<VisualTournamentPlayerSlot> playerSlots;
         [SerializeField]
-        private RoundState state = RoundState.Idle;
+        private RoundState state = RoundState.Empty;
         private RoundID id;
         private List<TournamentPlayer> players;
-
-        public List<string> playersDebugList = new List<string>();
-
+        private TournamentRound serverRound;
+        private Action leftClick, rightClick;
+        private string preGameRoomID;
 
         public void init(TournamentRound serverRound) {
-            setState(serverRound.getState());
+            this.serverRound = serverRound;
             id = serverRound.getGameID();
             players = serverRound.getPlayers();
+            state = serverRound.getState();
+            preGameRoomID = serverRound.preGameRoomID;
             setPlayerSlots();
-
-            updateDebugList();
+            initClicks();
         }
 
-        private void updateDebugList() {
-            playersDebugList.Clear();
-            foreach (TournamentPlayer p in players)
-                playersDebugList.Add(p.info.username);
+        private void initClicks() {
+            if (AdminRunningTournamentManager.isAdmin()) {
+                leftClick = adminLeftClick; rightClick = adminRightClick;
+            }
+            else {
+                leftClick = clientLeftClick; rightClick = clientRightClick;
+            }
         }
 
         private void setPlayerSlots() {
             for (int i = 0; i < players.Count; i++)
-                playerSlots[i].material.color =  players[i].getIsNPC() ? Color.yellow : Color.blue;
+                playerSlots[i].setPlayer(players[i], state);
         }
 
 
-        public void setState(RoundState state) {
-            this.state = state;
+        public void onLeftClick() {leftClick();}
+        public void onRightClick() {rightClick();}
 
-            switch (state) {
-                case RoundState.Idle: setColor(Color.white); break;
-                case RoundState.Lobby: setColor(Color.blue); break;
-                case RoundState.Playing: setColor(Color.red); break;
-                case RoundState.Over: setColor(Color.yellow); break;
+
+        #region Client
+        private void clientLeftClick() {}
+        private void clientRightClick() { }
+        #endregion
+
+
+        #region Admin
+        private void adminLeftClick() {
+            if (state == RoundState.Lobby || state == RoundState.Playing)
+                AdminUpdateManager.startSpectateGame(preGameRoomID);
+        }
+        private void adminRightClick() {
+            if (state == RoundState.Lobby) {
+                if (serverRound.canStartGame())
+                    AdminRunningTournamentManager.startRoundGame(id);
             }
+            else if (state == RoundState.Idle && serverRound.hasAllPlayers())
+                AdminRunningTournamentManager.startRoundLobby(id);
         }
-
-        private void setColor(Color c) {
-            //GetComponent<MeshRenderer>().material.color = c; 
-        }
+        #endregion
     }
+
 }

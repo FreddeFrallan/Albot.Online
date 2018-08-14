@@ -3,6 +3,8 @@ using System.Collections;
 using System;
 using System.Linq;
 using AlbotServer;
+using Barebones.MasterServer;
+using Barebones.Networking;
 
 namespace Game {
 
@@ -19,7 +21,6 @@ namespace Game {
 		protected Action shutdownGameServer;
 		protected List<string> preGamePlayers;
 		protected List<PlayerColor> colorOrder;
-		protected List<string> gameHistory = new List<string>();
 		protected GameHistory gameLog = new GameHistory ();
         protected GameServerSpectatorModule spectatorModule = new GameServerSpectatorModule();
 
@@ -78,12 +79,15 @@ namespace Game {
 			shutdownGameServer ();
 		}
 
+        public virtual void reportGameOver(GameOverState winState, string[] winOrder = null) {spectatorModule.reportGameOver(winState, winOrder);}
 	    public abstract void startGame();
 		public virtual ConnectedPlayer onPlayerJoined(ConnectedPlayer newPlayer){
 			addNewPlayerAndClient (newPlayer);
 			newPlayer.color = assignPlayerColor (newPlayer.username, colorOrder);
 			return newPlayer;
 		}
+
+
 		public abstract void onPlayerLeft(ConnectedPlayer newPlayer);
 	    public abstract int maxNbrPlayers();
 		public ConnectedPlayer getMatchingPlayer(PlayerColor color){return players.Find (x => x.color == color);}

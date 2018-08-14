@@ -5,6 +5,7 @@ using AlbotServer;
 using Barebones.Networking;
 using Barebones.MasterServer;
 using Game;
+using System;
 
 namespace ClientUI {
 
@@ -20,8 +21,9 @@ namespace ClientUI {
             ClientUIOverlord.onUIStateChanged += UIStateChanged;
             Msf.Server.SetHandler((short)ServerCommProtocl.GameRoomInvite, handleStartGame);
         }
- 
 
+
+        #region Starting Game
         public static void handleStartGame(IIncommingMessage rawMsg) {
             PreGameStartedMsg msg = rawMsg.Deserialize<PreGameStartedMsg>();
             if(matchingSpecs(msg.specs, gameSpecs) == false) {
@@ -43,8 +45,6 @@ namespace ClientUI {
         }
 
         private static void addLocalPlayer(PreGameSlotType type) {
-            Debug.Log("Adding Local: " + type);
-
             if(type == PreGameSlotType.Player)
                 ClientPlayersHandler.addSelf();
             else if (type == PreGameSlotType.TrainingBot)
@@ -54,7 +54,24 @@ namespace ClientUI {
             else if (type == PreGameSlotType.Human)
                 ClientPlayersHandler.addHuman();
         }
+        #endregion
 
+        #region GameOver
+        public static void gameOver(string gameOverText) {
+            string buttonText = CurrentTournament.isInTournament ? "To Tournament" : "Return to lobby";
+
+            Action buttonAction;
+            if (CurrentTournament.isInTournament)
+                buttonAction = () => {CurrentTournament.reOpenTournament();};
+            else
+                buttonAction = () => {ClientUIStateManager.requestGotoState(ClientUIStates.GameLobby);};
+
+            AlbotDialogBox.setGameOver();
+            AlbotDialogBox.activateButton(buttonAction, DialogBoxType.GameState, gameOverText, buttonText, 70, 25);
+        }
+        #endregion
+
+        #region Restarting Game
         private static void UIStateChanged(ClientUIStates state) {
             if(currentlyPlayingGame && state != ClientUIStates.PlayingGame) {
                 Msf.Connection.SendMessage((short)ServerCommProtocl.PlayerLeftPreGame, gameSpecs.roomID);
@@ -63,7 +80,7 @@ namespace ClientUI {
         }
 
         private static void TCPStatusChanged(ConnectionStatus status) {
-            if (ClientUIOverlord.currentState != ClientUIStates.PlayingGame)
+            if (ClientUIOverlord.currentState != ClientUIStates.PlayingGame || CurrentTournament.isInTournament)
                 return;
 
             if (status == ConnectionStatus.Connected)
@@ -77,6 +94,7 @@ namespace ClientUI {
             AlbotDialogBox.removeAllPopups();
             Msf.Connection.SendMessage((short)ServerCommProtocl.RestartTrainingGame, gameSpecs.roomID, Msf.Helper.handleErrorResponse);
         }
+        #endregion
 
         private static bool matchingSpecs(PreGameSpecs a, PreGameSpecs b) {return a.roomID == b.roomID && a.type == b.type;}
         public static void setNewCurrentPreGame(PreGameSpecs newSpecs) { gameSpecs = newSpecs; }

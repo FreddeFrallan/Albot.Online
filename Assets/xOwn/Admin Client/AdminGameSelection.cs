@@ -73,19 +73,8 @@ namespace AdminUI{
 			if (selected == null || extractSelectedGameType(selected, ref selectedGameType) == false)
 				return;
 
-			SpectatorSubscriptionsMsg outMsg = new SpectatorSubscriptionsMsg(){broadcastID = selected.GameId};
-			Msf.Connection.SendMessage ((short)CustomMasterServerMSG.startSpectate, outMsg, ((s, m) => {
-                Debug.LogError("Sub status: " + s);
-
-                if (s == ResponseStatus.Success) {
-                    RunningGameInfoMsg infoMsg = m.Deserialize<RunningGameInfoMsg>();
-                    if (infoMsg.status == PreGameState.Running)
-                        updateManager.startNewSpectateGame(infoMsg);
-                }
-                else
-                    Debug.Log("Error:" + m.AsString());
-			}));
-		}
+            AdminUpdateManager.startSpectateGame(selected.GameId);
+        }
 
 
 		private bool extractSelectedGameType(AdminListUiItem item, ref GameType type){

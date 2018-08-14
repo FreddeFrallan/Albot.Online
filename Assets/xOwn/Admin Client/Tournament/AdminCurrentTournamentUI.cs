@@ -5,6 +5,7 @@ using UnityEngine;
 using Barebones.MasterServer;
 using AlbotServer;
 using System.Linq;
+using Tournament;
 
 namespace AdminUI {
 
@@ -20,7 +21,7 @@ namespace AdminUI {
         }
 
         public void handlePreTournamentUpdate(IIncommingMessage rawMsg) {
-            PreTournamentInfo info = rawMsg.Deserialize<PreTournamentInfo>();
+            TournamentInfoMsg info = rawMsg.Deserialize<TournamentInfoMsg>();
             print("Got Players :" + info.players.Length);
             showList(info.players);
         }
@@ -31,7 +32,7 @@ namespace AdminUI {
 
             foreach(string s in playerNames.Select(p => p.username)) {
                 GameObject temp = Instantiate(playerSlotPrefab, playerList.transform);
-                temp.GetComponent<AdminCurrentTournamentPlayerSlot>().init(s);
+                temp.GetComponent<PreTournamentListItem>().init(s);
                 currentPlayerSlots.Add(temp);
             }
         }

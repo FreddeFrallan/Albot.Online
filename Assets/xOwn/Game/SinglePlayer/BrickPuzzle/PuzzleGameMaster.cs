@@ -92,6 +92,9 @@ public class PuzzleGameMaster : MonoBehaviour {
 	}
 
 	public void speedValueChanged(int t){
-		slideSpeed = moveSpeedSlider.slider.value;
+        if (t == moveSpeedSlider.slider.maxValue)
+            slideSpeed = Mathf.Infinity;
+        else
+            slideSpeed = moveSpeedSlider.slider.value * 8;
 	}
 }

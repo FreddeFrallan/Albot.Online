@@ -41,7 +41,8 @@ public class MsfQuickBuild{
 	public static void BuildClient(string path, BuildTarget target, string fileExtension = ".exe", BuildOptions options = BuildOptions.Development){
 		var clientScenes = new[]{
 			QuickSetupRoot+ "/Client/Client.unity",
-			QuickSetupRoot+ "/Client/EmptyScene.unity", 
+			QuickSetupRoot+ "/Client/EmptyScene.unity",
+            QuickSetupRoot+ "/Admin Client/Tournament/Scene/TournamentScene.unity",
 			// Add all the game scenes
 			QuickSetupRoot+ "/Game/Games/Connect4/Connect4Game.unity",
 			QuickSetupRoot+ "/Game/Games/Othello/OthelloGame.unity",
@@ -84,7 +85,8 @@ public class MsfQuickBuild{
 		var gameServerScenes = new[]{
 			QuickSetupRoot+ "/Admin Client/Admin Client.unity",
 			QuickSetupRoot+ "/Client/EmptyScene.unity",
-			QuickSetupRoot+"/Game/Games/Brakethrough/Admin/BreakthroughAdmin.unity",
+            QuickSetupRoot+ "/Admin Client/Tournament/Scene/TournamentScene.unity",
+            QuickSetupRoot+"/Game/Games/Brakethrough/Admin/BreakthroughAdmin.unity",
 			QuickSetupRoot+"/Game/Games/Snake/SnakeGame.unity"
 		};
 		BuildPipeline.BuildPlayer(gameServerScenes, path + "/AlbotAdmin" + fileExtension, target, options);

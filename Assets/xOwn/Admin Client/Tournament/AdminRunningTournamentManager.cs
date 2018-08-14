@@ -24,40 +24,29 @@ namespace AdminUI {
         }
 
 
-        private void Update() {
+        private void openRoundLobby(RoundID id) {
             if (runningTournament == false)
                 return;
 
-            if (Input.GetKeyDown(KeyCode.Alpha0)) {
-                currentGame = new RoundID { col = 0, row = 0 };
-                openRoundLobby(currentGame);
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha1)) {
-                currentGame = new RoundID { col = 0, row = 1 };
-                openRoundLobby(currentGame);
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha2)) {
-                currentGame = new RoundID { col = 1, row = 0 };
-                openRoundLobby(currentGame);
-            }
-
-            if (Input.GetKeyDown(KeyCode.P)) {
-                startRoundGame(currentGame);
-            }
-        }
-
-        private void openRoundLobby(RoundID id) {
+            print("Starting lobby: " + id.col + "." + id.row);
             Msf.Connection.SendMessage((short)CustomMasterServerMSG.tournamentRoundPreStarted, new TournamentPreGameInfo() {
                 tournamentID = tournamentInfo.tournamentID, roundID = id
             });
         }
 
-        private void startRoundGame(RoundID id) {
+        private void startGame(RoundID id) {
+            if (runningTournament == false)
+                return;
+
+            print("Starting Game: " + id.col + "." + id.row);
             Msf.Connection.SendMessage((short)CustomMasterServerMSG.tournamentRoundStarted, new TournamentPreGameInfo() {
                 tournamentID = tournamentInfo.tournamentID, roundID = id
             });
         }
 
+        public static bool isAdmin() { return singleton != null; }
+        public static void startRoundGame(RoundID id) { singleton.startGame(id); }
+        public static void startRoundLobby(RoundID id) { singleton.openRoundLobby(id); }
         private void handleTournamentUpdate(IIncommingMessage rawMsg) {currentTree.updateRounds(rawMsg.Deserialize<TournamentTreeUpdate>().rounds);}
         public static void onTournamentStarted(TournamentInfoMsg tournamentInfo) {
             singleton.tournamentInfo = tournamentInfo;

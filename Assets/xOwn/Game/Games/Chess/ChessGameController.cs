@@ -89,8 +89,7 @@ namespace Chess{
 				else
 					gameOverMsg = msg.winnerColor == myColor ? "You won!" : "You lost!";
 
-				AlbotDialogBox.setGameOver ();
-                AlbotDialogBox.activateButton(() => { ClientUIStateManager.requestGotoState(ClientUIStates.GameLobby); }, DialogBoxType.GameState, gameOverMsg, "Return to lobby", 70, 25);
+                CurrentGame.gameOver(gameOverMsg);
             }
 		}
 	}

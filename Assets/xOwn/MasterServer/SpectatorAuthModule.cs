@@ -10,6 +10,7 @@ public class SpectatorAuthModule : ServerModuleBehaviour {
 	private readonly string ADMIN_PASSWORD = "Lol";
 	private List<IPeer> currentAdmins = new List<IPeer> ();
 	private static SpectatorAuthModule singleton;
+    public AlbotTournamentModule tournamentModule;
 
 	public override void Initialize (IServer server){
 		singleton = this;
@@ -42,22 +43,24 @@ public class SpectatorAuthModule : ServerModuleBehaviour {
 
 	private void handleLogout(IIncommingMessage msg){
 		IPeer admin = currentAdmins.Find (x => msg.Peer.Id == x.Id);
-		if (admin != null) {
-			currentAdmins.Remove (admin);
-			Debug.LogError ("Admin logedout");
-		}
-		else
-			Debug.LogError ("Tried to logout a user that was not registred");
+        if (admin != null)
+            removeAdmin(admin);
+        else
+            Debug.LogError("Tried to logout a user that was not registred");
 	}
+    private void removeAdmin(IPeer admin) {
+        currentAdmins.Remove(admin);
+        tournamentModule.adminLeft(admin);
+        Debug.LogError("Admin removed");
+    }
 
 	public bool playerDissconnected(IPeer p){
 		IPeer adminP = currentAdmins.Find (x => x.Id == p.Id);
 		if(adminP == null)
 			return false;
 
-		Debug.LogError ("Admin dissconnected");
-		currentAdmins.Remove (adminP);
-		return true;
+        removeAdmin(adminP);
+        return true;
 	}
 
 

@@ -21,19 +21,21 @@ namespace Barebones.MasterServer {
         private void handlePreGameStarted(IIncommingMessage rawMsg) {
             TournamentPreGameInfo info = rawMsg.Deserialize<TournamentPreGameInfo>();
             RunningTournamentGame game;
-            if (findGame(info.tournamentID, out game, rawMsg) == false)
-                return;
-
-            game.startRoundPreGame(info.roundID);
+            if (findGame(info.tournamentID, out game, rawMsg) && SpectatorAuthModule.existsAdmin(rawMsg.Peer))
+                game.startRoundPreGame(info.roundID);
         }
 
         private void handleRoundStarted(IIncommingMessage rawMsg) {
             TournamentPreGameInfo info = rawMsg.Deserialize<TournamentPreGameInfo>();
             RunningTournamentGame game;
-            if (findGame(info.tournamentID, out game, rawMsg) == false)
-                return;
+            if (findGame(info.tournamentID, out game, rawMsg) && SpectatorAuthModule.existsAdmin(rawMsg.Peer))
+                game.startRound(info.roundID);
+        }
 
-            game.startRound(info.roundID);
+        private void updateRound(string tournamentID, RoundID roundID) {
+            RunningTournamentGame game;
+            if (findGame(tournamentID, out game))
+                game.updateRound(roundID);
         }
 
         public void closeTournament(string roomID) {
@@ -45,26 +47,29 @@ namespace Barebones.MasterServer {
         }
         
 
+
         private bool findGame(string roomID, out RunningTournamentGame game, IIncommingMessage rawMsg = null, string error = "Could not find game: ") {
             if(runningTournaments.TryGetValue(roomID, out game))
                 return true;
-
             if (rawMsg != null)
                 rawMsg.Respond(error + roomID, ResponseStatus.Error);
             return false;
         }
 
+
+        #region Static Utils
         public static void addNewRunningGame(string roomID, RunningTournamentGame runningGame) {
+            Debug.LogError("Register tournament: " + roomID);
             singleton.runningTournaments.Add(roomID, runningGame);
         }
-
-
         public static void handleGameResult(string tournamentID, RoundID roundID, GameOverMsg result) {
             RunningTournamentGame game;
             if (singleton.findGame(tournamentID, out game))
                 game.reportRoundResult(roundID, result);
         }
+        public static void handleUpdateRound(string tournamentID, RoundID roundID) {singleton.updateRound(tournamentID, roundID);}
         public static void handleCloseTournament(string roomID) {singleton.closeTournament(roomID);}
         public static bool containsKey(string roomID) { return singleton.runningTournaments.ContainsKey(roomID); }
+        #endregion
     }
 }

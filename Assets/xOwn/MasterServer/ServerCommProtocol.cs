@@ -104,6 +104,7 @@ namespace AlbotServer{
 	public struct PlayerInfo{
 		public string username;
 		public int iconNumber;
+        public bool isNPC;
 		public Game.PlayerColor color;
 	}
 

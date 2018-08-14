@@ -17,17 +17,24 @@ namespace AdminUI{
 		private static List<Action> onLoadActions = new List<Action>();
 		public static event AdminUIStateChanged onAdminUIStateChanged;
 		public delegate void AdminUIStateChanged(ClientUIStates newState);
+        private static Dictionary<ClientUIStates, string> statesToScenes = new Dictionary<ClientUIStates, string>();
 
-		private static readonly string emptySceneName = "EmptyScene";
+        public SceneField tournamentScene, lobbyScene;
 
-		// Use this for initialization
 		void Start () {
 			singleton = this;
 			SceneManager.sceneLoaded += (arg0, arg1) => {foreach(Action a in onLoadActions) a();};
 			Msf.Connection.StatusChanged += ((status) => {if(status == Barebones.Networking.ConnectionStatus.Disconnected) requestLogout();});
 			mainMenu.init ();
-		}
-	
+            initScenes();
+        }
+	    private void initScenes() {
+            statesToScenes.Add(ClientUIStates.LoginMenu, lobbyScene.SceneName);
+            statesToScenes.Add(ClientUIStates.GameLobby, lobbyScene.SceneName);
+            statesToScenes.Add(ClientUIStates.LobbyBrowser, lobbyScene.SceneName);
+            statesToScenes.Add(ClientUIStates.PlayingTournament, tournamentScene.SceneName);
+        }
+
 
 		private void setPanelStates(bool auth, bool gameSelect){
 			authPanel.SetActive (auth);
@@ -37,19 +44,21 @@ namespace AdminUI{
 
 
 		#region request handlers
-		public static void requestLogin(){singleton.setUIState (ClientUIStates.GameLobby);}
+		public static void requestLogin(){ requestGotoState(ClientUIStates.GameLobby); }
 		public static void requestLogout(){
-			onLoadActions.Clear ();
 			Msf.Connection.SendMessage ((short)CustomMasterServerMSG.adminLogout);
-			singleton.setUIState (ClientUIStates.LoginMenu);
+            requestGotoState(ClientUIStates.LoginMenu);
 		}
-		public static void requestGotoGameLobby(){
+        public static void requestGotoState(ClientUIStates newState, Action onLoad = null) {
 			onLoadActions.Clear ();
-			singleton.setUIState (ClientUIStates.GameLobby);
+            if (onLoad != null)
+                onLoadActions.Add(onLoad);
 
-			if (SceneManager.GetActiveScene ().name != emptySceneName)
-				SceneManager.LoadScene (emptySceneName);
-		}
+            singleton.setUIState(newState);
+            print(newState);
+            if (SceneManager.GetActiveScene().name != statesToScenes[newState])
+                SceneManager.LoadScene(statesToScenes[newState]);
+        }
 
 		public static void requestGotoGame(GameType type, Action onLoad){
 			singleton.setUIState (ClientUIStates.PlayingGame);
@@ -73,7 +82,11 @@ namespace AdminUI{
 			case ClientUIStates.LoginMenu:
 				singleton.setPanelStates (true, false);
 				break;
-			}
+
+            case ClientUIStates.PlayingTournament:
+                singleton.setPanelStates(false, false);
+            break;
+            }
 
 
 			if (onAdminUIStateChanged != null)

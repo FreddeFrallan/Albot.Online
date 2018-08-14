@@ -10,13 +10,12 @@ namespace Barebones.MasterServer{
         public GameInfoPacket RawData { get; protected set; }
         public Image BgImage;
         public GameInfoType roomType;
-        public Color DefaultBgColor;
+        public Color[] defaultColor, tournamentColor;
+        private Color[] currentColor;
 		public ClientUI.GameSelectionUI ListView;
         public TextMeshProUGUI MapName;
         public TextMeshProUGUI Name;
         public TextMeshProUGUI Online;
-
-        public Color SelectedBgColor;
 
         public string UnknownMapName = "Unknown";
 
@@ -31,23 +30,21 @@ namespace Barebones.MasterServer{
         // Use this for initialization
         private void Awake(){
             BgImage = GetComponent<Image>();
-            DefaultBgColor = BgImage.color;
-
             SetIsSelected(false);
         }
 
         public void SetIsSelected(bool isSelected){
             IsSelected = isSelected;
-            BgImage.color = isSelected ? SelectedBgColor : DefaultBgColor;
+            BgImage.color = isSelected ? currentColor[1] : currentColor[0];
         }
 
         public void Setup(GameInfoPacket data){
             RawData = data;
             IsLobby = data.infoType == GameInfoType.Lobby;
             roomType = data.infoType;
-            SetIsSelected(false);
             Name.text = data.Name;
             GameId = data.Id;
+            initBackgroundColor(data.infoType);
 
 
             if (data.MaxPlayers > 0)
@@ -61,6 +58,15 @@ namespace Barebones.MasterServer{
 
         public void OnClick(){
             ListView.Select(this);
+        }
+
+        private void initBackgroundColor(GameInfoType type) {
+            if (type == GameInfoType.PreTournament)
+                currentColor = tournamentColor;
+            else
+                currentColor = defaultColor;
+
+            SetIsSelected(false);
         }
     }
 }

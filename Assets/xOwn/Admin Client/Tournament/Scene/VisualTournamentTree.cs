@@ -23,10 +23,8 @@ namespace Tournament.Client {
 
         private void generateTree(PlayerInfo[] playerOrder, PreGameSpecs gameSpecs) {
             List<TournamentPlayer> players = new List<TournamentPlayer>();
-            for (int i = 0; i < playerOrder.Length; i++) {
-                players.Add(new TournamentPlayer() {info = playerOrder[i]});
-                print(playerOrder[i].username + "  " + playerOrder[i].isNPC);
-            }
+            foreach(PlayerInfo p in playerOrder)
+                players.Add(new TournamentPlayer() {info = p});
 
             tournament = new TournamentTree(players, gameSpecs, false);
             renderVisualTree();
@@ -68,7 +66,8 @@ namespace Tournament.Client {
         private void clearOldTree() {
             foreach (List<VisualTournamentRound> col in tree)
                 foreach (VisualTournamentRound game in col)
-                    Destroy(game.gameObject);
+                    if(game != null)
+                        Destroy(game.gameObject);
             tree.Clear();
         }
         #endregion

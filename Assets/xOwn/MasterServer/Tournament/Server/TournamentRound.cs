@@ -1,4 +1,6 @@
 ﻿using AlbotServer;
+using Barebones.Networking;
+using Game;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,80 +13,160 @@ namespace Tournament.Server {
         public bool hasPossibleBotGame = false;
         public int stashedRoundsUntilBotGame; //Simple optimization
         public TournamentRound nextRound;
+        public PreGame thePregame;
+        public string preGameRoomID;
 
+        private PreGameSpecs gameSpecs;
         private List<TournamentPlayer> players = new List<TournamentPlayer>();
-        private GameScore score = new GameScore() {p1Wins = 0, p2Wins = 0, draws = 0, roundsCounter = 0 };
-        private GameWinRules rules = new GameWinRules() { winScore = 1, playUntilWinner = true };
+        private GameScore score = new GameScore() {wins = new int[] {0, 0 }, draws = 0, roundsCounter = 0 };
+        private GameWinRules rules = new GameWinRules() { winScore = 1, playUntilWinner = true, maxRounds = 3};
         private bool playingUntilWinner = true;
 
-        private GameState state = GameState.Empty;
-        private GameID id;
+        //Server variables
+        private IPeer admin, extraHost;
+        private bool isServer = false;
+        private RunningTournamentGame theTournament;
+
+        private RoundState state = RoundState.Empty;
+        private RoundID id;
 
 
-        public TournamentRound(int col, int row) {
-            id = new GameID() { col = col, row = row };
+        public TournamentRound(int col, int row, PreGameSpecs gameSpecs) {
+            id = new RoundID() { col = col, row = row };
+            this.gameSpecs = ServerUtils.clonePreGameSpecs(gameSpecs);
+            this.gameSpecs.tournamentRoundID = id;
         }
-
 
         #region Gameplay
+        public void initAndInvite() {
+            if (state != RoundState.Idle && hasAllPlayers() == false)
+                return;
+
+            thePregame = AlbotPreGameModule.createTournamentGame(gameSpecs, admin);
+            if (getNonNPCPlayers().Count == 0) { //If we have no human players in the game, we automaticly select a bot to win the game
+                forceRandomWinner();
+                return;
+            }
+
+            initHostAndBots();
+            getNonNPCPlayers().ForEach(p => p.peer.SendMessage((short)CustomMasterServerMSG.tournamentRoundPreStarted, thePregame.specs.roomID));
+            setState(RoundState.Lobby);
+        }
+
+        private void initHostAndBots() {
+            extraHost = players.Find(p => p.getIsNPC() == false).peer;
+            thePregame.setExtraHost(extraHost);
+            insertBots();
+        }
+
+        private void insertBots() {
+            if (getNPCPlayers().Count == 0)
+                return;
+
+            TournamentPlayer bot = getNPCPlayers()[0];
+            PreGameSlotInfo botSlot = new PreGameSlotInfo() { slotID = 1, playerInfo = LocalTrainingBots.StandardTrainingBotInfo, isReady = true, type = PreGameSlotType.TrainingBot };
+            thePregame.updateSlotType(botSlot, extraHost);
+        }
+
         public void startGame() {
+            AlbotPreGameModule.startTournamentgame(thePregame);
             score.roundsCounter++;
-            setState(GameState.Playing);
-
-            //Debug
-            reportResult(getRandomRoundResult());
+            setState(RoundState.Playing);
         }
+        #endregion
 
-        public void reportResult(GameResult result) {
-            if (result == GameResult.Player1) score.p1Wins++;
-            else if (result == GameResult.Player2) score.p2Wins++;
-            else score.draws++;
-
+        #region GameResults
+        private int extractWinningPlayerIndex(string[] winOrder) {
+            return players.FindIndex(p => p.info.username == winOrder[0]);
+        }
+        public void reportResult(GameOverMsg result) {
+            if (result.score.winState == GameOverState.draw)
+                score.draws++;
+            else
+                score.wins[extractWinningPlayerIndex(result.score.winOrder)]++;
+            
             checkForGameOver();
-            if (playingUntilWinner && state != GameState.Over)
-                startGame();
+            if (state != RoundState.Over)
+                rematch();
         }
+        private void rematch() { setState(RoundState.Idle); }
 
         private void checkForGameOver() {
-            if (score.p1Wins >= rules.winScore)
-                setGameOver(players[0]);
-            else if (score.p2Wins >= rules.winScore)
-                setGameOver(players[1]);
+            for (int i = 0; i < players.Count; i++)
+                if (score.wins[i] >= rules.winScore) {
+                    setGameOver(players[i]);
+                    return;
+                }
+
+             if (score.roundsCounter >= rules.maxRounds)
+                setGameOver(players[getRandomWinner()]);
         }
 
+        //******************************* TODO
+        private void forceRandomWinner() {
+            Debug.LogError("No humans forcing random bot win, NOT YET IMPLEMENTED");
+        }
+        private int getRandomWinner() {return (Random.Range(0, 100) > 50) ? 0 : 1;}
         public void setGameOver(TournamentPlayer winner) {
-            setState(GameState.Over);
-            score.winner = winner;
+            setState(RoundState.Over);
+            score.winner = winner.info.username;
             if (nextRound != null)
                 nextRound.addPlayer(winner);
-        }
-
-
-        private GameResult getRandomRoundResult() {
-            int value = Random.Range(0, 100);
-            if (value <= 33) return GameResult.Draw;
-            else if (value <= 66) return GameResult.Player1;
-            return GameResult.Player2;
         }
         #endregion
 
         #region Setters
-        private void setState(GameState newState) { state = newState; }
+        private void setState(RoundState newState) {
+            state = newState;
+            if(theTournament != null)
+                theTournament.updateRound(id);
+        }
         public void setNextGame(TournamentRound nextRound) { this.nextRound = nextRound; }
+        public void setServerVariables(IPeer admin, RunningTournamentGame runningGame) {
+            isServer = true;
+            this.admin = admin;
+            theTournament = runningGame;
+        }
+        public void setToTournamentDTO(TournamentRoundDTO dto) {
+            players = dto.players.Select(p => new TournamentPlayer() { info = p.info, isReady = p.isReady}).ToList();
+            score = dto.score;
+            state = dto.state;
+            preGameRoomID = dto.preGameID;
+        }
 
         public void addPlayer(TournamentPlayer player) {
-            setState(GameState.Lobby);
             players.Add(player);
             if (player.getIsNPC())
                 setHasPossibleBotGame();
+            setState(RoundState.Idle);
         }
         #endregion
 
         #region Getters
-        public GameState getState() { return state; }
-        public GameID getGameID() { return id; }
+        public bool hasAllPlayers() { return players.Count >= 2; }
+        public bool canStartGame() { return hasAllPlayers() && getNonNPCPlayers().All(p => p.isReady); }
+        private List<TournamentPlayer> getNPCPlayers() { return players.Where(p => p.getIsNPC()).ToList(); }
+        private List<TournamentPlayer> getNonNPCPlayers() { return players.Where(p => p.getIsNPC() == false).ToList(); }
+        public bool canStartRound() {return thePregame.canGameStart();}
+        public RoundState getState() { return state; }
+        public RoundID getGameID() { return id; }
         public List<TournamentPlayer> getPlayers() { return players; }
-        public TournamentRoundDTO createDTO() {return new TournamentRoundDTO() { players = this.players.Select(p => p.info).ToArray(), state = this.state };}
+        public TournamentRoundDTO createDTO() {
+            string roomID = state == RoundState.Lobby || state == RoundState.Playing ? thePregame.specs.roomID : "";
+            TournamentPlayerDTO[] pDTO = players.Select(p => new TournamentPlayerDTO() {
+                info = p.info,
+                isReady = state == RoundState.Lobby ? getPlayerPreGameReady(p) : true
+            }).ToArray();
+
+            return new TournamentRoundDTO() {players = pDTO, state = this.state, ID = id, score = score,preGameID = roomID};
+        }
+        private bool getPlayerPreGameReady(TournamentPlayer p) {
+            if (p.getIsNPC())
+                return true;
+
+            try { return thePregame.isPlayerReady(p.peer.Id); }
+            catch {} return false;
+        }
         #endregion
 
         #region PossibleBotGames
@@ -111,20 +193,17 @@ namespace Tournament.Server {
     }
 
 
-    public class TournamentRoundDTO {
-        public PlayerInfo[] players;
-        public GameState state;
-    }
 
 
-    public struct GameID {public int col, row;}
+
+    public struct RoundID {public int col, row;}
     public struct GameScore {
-        public int p1Wins, p2Wins, draws, roundsCounter;
-        public TournamentPlayer winner;
+        public int[] wins;
+        public int draws, roundsCounter;
+        public string winner;
     }
     public struct GameWinRules {
         public int winScore, maxRounds;
         public bool playUntilWinner;
     }
-    public enum GameResult {Player1, Player2, Draw,}
 }

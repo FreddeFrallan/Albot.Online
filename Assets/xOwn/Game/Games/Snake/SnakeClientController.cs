@@ -147,9 +147,8 @@ namespace Snake{
 			foreach (int[] crash in infoMsg.crashPos)
 				localRenderer.displayCrash (new Vector2(crash[0], crash[1]));
 
-			AlbotDialogBox.setGameOver ();
-			AlbotDialogBox.activateButton (() => { ClientUIStateManager.requestGotoState(ClientUIStates.GameLobby); }, DialogBoxType.GameState, gameOverMsg, "Return to lobby", 70, 25);
-		}
+            CurrentGame.gameOver(gameOverMsg);
+        }
 
 		public void handleBoardUpdate(NetworkMessage msg){
 			BoardUpdate updateMsg = Deserialize<BoardUpdate> (msg.reader.ReadBytesAndSize ());

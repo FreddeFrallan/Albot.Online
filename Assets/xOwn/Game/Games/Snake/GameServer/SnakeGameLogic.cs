@@ -124,13 +124,17 @@ namespace Snake{
 		private void setPlayerCrash(bool p1, bool p2){
 			List<int[]> newCrash = new List<int[]> ();
 			PlayerColor winColor;
+            GameOverState winState;
 
 			if (p1 && p2) {
+                winState = GameOverState.draw;
 				winColor = PlayerColor.None;
 				newCrash.Add (new int[]{(int)crashPos[0].x, (int)crashPos[0].y});
 				newCrash.Add (new int[]{(int)crashPos[1].x, (int)crashPos[1].y});
-			} else {
-				int crashPlayerIndex = p1 ? 0 : 1;
+
+            } else {
+                winState = GameOverState.playerWon;
+                int crashPlayerIndex = p1 ? 0 : 1;
 				winColor = master.getIndexColor (p1 ? 1 : 0);
 				newCrash.Add (new int[]{(int)crashPos[crashPlayerIndex].x, (int)crashPos[crashPlayerIndex].y});
 			}
@@ -139,9 +143,8 @@ namespace Snake{
 			for (int i = 0; i < newCrash.Count; i++)
 				crashes [i] = newCrash [i];
 
-			updater.setGameOver (winColor, crashes);
 			master.submitToGameLog (SnakeGameLogProtocol.generateCrash(p1, p2, crashPos));
-			gameRunning = false;
+            master.onGameOver(winState, winColor, crashes);
 		}
 
 		public void gameOver(){	gameRunning = false;}

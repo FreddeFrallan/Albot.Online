@@ -90,11 +90,14 @@ namespace ClientUI{
 				setMenuPanels (true, false, false);
 				setLobbyPanels (false, false, false);
 				break;
-			case ClientUIStates.PlayingGame:
+            case ClientUIStates.PreTournament:
+            case ClientUIStates.PlayingTournament:
+            case ClientUIStates.PlayingGame:
 				setMenuPanels (false, false, false);
 				setLobbyPanels (false, false, false);
 				break;
-			}
+            }
+        
 
 			if (state != ClientUIStates.PlayingGame)
 				dissconnectFromGameRoom ();

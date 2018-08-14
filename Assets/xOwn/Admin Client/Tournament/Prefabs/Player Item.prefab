@@ -22,7 +22,7 @@ GameObject:
   - component: {fileID: 222650620715760692}
   - component: {fileID: 114646005001708326}
   - component: {fileID: 114070045927022822}
-  - component: {fileID: 114758991954741332}
+  - component: {fileID: 114328395664857486}
   m_Layer: 5
   m_Name: Player Item
   m_TagString: Untagged
@@ -122,6 +122,18 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Player Name
+--- !u!114 &114328395664857486
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1187498099825314}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b4427db1c457304b8fae806b9ea0acf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerName: {fileID: 114154101708504930}
 --- !u!114 &114646005001708326
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -149,18 +161,6 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
---- !u!114 &114758991954741332
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1187498099825314}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8bdd75a2b348c9b4e9e3ba808c583b1b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerName: {fileID: 114154101708504930}
 --- !u!222 &222650620715760692
 CanvasRenderer:
   m_ObjectHideFlags: 1
