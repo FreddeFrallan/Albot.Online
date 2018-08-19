@@ -67,7 +67,7 @@ public class AlbotAuthModule : ServerModuleBehaviour {
 				username = user.username,
 				logins = "0",
 				roomActions = "0",
-				profilePic = ClientIconManager.getRandomIconNumber().ToString ()
+				profilePic = ClientIconManager.giveNewPlayerIconNumber().ToString ()
 			};
 		}
 		else
