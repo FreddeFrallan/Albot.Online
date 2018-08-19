@@ -7,7 +7,7 @@ using System;
 namespace Snake{
 
 	public class SnakeGameLogic : MonoBehaviour {
-		public static readonly float refreshRate = 1.5f;
+		public static readonly float refreshRate = 2.5f;
         public const int GRID_SIZE = 10;
 
         private System.Random rand = new System.Random();
@@ -21,6 +21,7 @@ namespace Snake{
 		private Position2D[] playerPos = new Position2D[2];
 		private Vector2[] crashPos = new Vector2[2];
 		private int[] dir = new int[]{ 0, 2 };
+        private int[] oldDir = new int[] { 0, 2 };
 
 
 		#region init
@@ -41,7 +42,8 @@ namespace Snake{
 					gameGrid [x, y] = 0;
 		
 			generateRandomStartPos ();
-		}
+            setOldDirs();
+        }
 
 		private void generateRandomStartPos(){
 			int x = rand.Next (2, GRID_SIZE / 2-3);
@@ -79,8 +81,9 @@ namespace Snake{
 			Vector2 tPos1 = Vector2.zero, tPos2 = Vector2.zero;
 			bool crash1 = movePlayer (0, ref tPos1);
 			bool crash2 = movePlayer (1, ref tPos2);
+            setOldDirs();
 
-			if (crash1 || crash2) {
+            if (crash1 || crash2) {
 				setPlayerCrash (crash1, crash2);
 				return;
 			}
@@ -118,6 +121,10 @@ namespace Snake{
 
 			return false;
 		}
+        private void setOldDirs() {
+            oldDir[0] = dir[0];
+            oldDir[1] = dir[1];
+        }
 
 
 		#region Crash
@@ -156,8 +163,8 @@ namespace Snake{
 			if (moveMsg.myColor != PlayerColor.Blue && moveMsg.myColor != PlayerColor.Red)
 				return;
 
-			int oldDir = dir [convertColorToTeam(moveMsg.myColor)];
-			if ((moveMsg.dir + 2) % 4 == oldDir)
+			int postDir = oldDir [convertColorToTeam(moveMsg.myColor)];
+			if ((moveMsg.dir + 2) % 4 == postDir)
 				return;
 
 			dir [convertColorToTeam(moveMsg.myColor)] = (int)moveMsg.dir;
