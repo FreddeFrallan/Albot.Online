@@ -50,7 +50,7 @@ namespace ClientUI {
 
         private AlbotChatMsg getChatSpecsMsg() {
             AccountInfoPacket currentAcountInfo = ClientUIOverlord.getCurrentAcountInfo();
-            return new AlbotChatMsg() { icon = int.Parse(currentAcountInfo.Properties["icon"]), username = currentAcountInfo.Username };
+            return new AlbotChatMsg() { icon = int.Parse(currentAcountInfo.Properties[AlbotDictKeys.icon]), username = currentAcountInfo.Username };
         }
         #endregion
 

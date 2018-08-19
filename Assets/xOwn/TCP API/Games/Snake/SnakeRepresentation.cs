@@ -25,6 +25,7 @@ namespace TCP_API.Snake {
             public const string enemyMove = "enemyMove";
             public const string playerMoves = "playerMoves";
             public const string enemyMoves = "enemyMoves";
+            public const string simMoveDelta = "simulateMoveDelta";
         }
 
         public class Movement {
@@ -66,11 +67,13 @@ namespace TCP_API.Snake {
  
     public class Board {
 
-        //Currently players[0] == Player && players[1] == Enemy
         private SnakePlayer[] players = new SnakePlayer[] {new SnakePlayer(), new SnakePlayer()};
         private List<Position2D> blockedList = new List<Position2D>();
         private bool[,] blockedGrid = new bool[Constants.BOARD_WIDTH, Constants.BOARD_HEIGHT];
 
+        public Board(SnakePlayer[] playerPos, bool deepCopy) {
+            this.players = deepCopy ? (SnakePlayer[])playerPos.Clone() : playerPos;
+        }
 
         public Board(bool[,] oldBlockedGrid, SnakePlayer[] oldPlayers, List<Position2D> oldBlockedList, bool deepCopy) {
             if (deepCopy) {
@@ -86,7 +89,6 @@ namespace TCP_API.Snake {
         public Board(JSONObject jObj) {
             parsePlayer(jObj.GetField(Constants.JProtocol.player), ref players[0]);
             parsePlayer(jObj.GetField(Constants.JProtocol.enemy), ref players[1]);
-            //if(jObj.HasField(Constants.JProtocol.blocked))
             parseBlocked((jObj.GetField(Constants.JProtocol.blocked).list));
         }
 
@@ -133,23 +135,23 @@ namespace TCP_API.Snake {
         #region Evaluation
         public BoardState evaluateBoard() {
             SnakePlayer p = players[0], e = players[1];
-            Debug.Log("Player: " + p.x + "," + p.y + "\nEnemy: " + e.x + "," + e.y);
+            //Debug.Log("Player: " + p.x + "," + p.y + "\nEnemy: " + e.x + "," + e.y);
             if (p.x == e.x && p.y == e.y) // Players Crash into eachother
-                return BoardState.Draw;
+                return BoardState.draw;
 
             bool playerCrash = coordCrash(p.x, p.y);
             bool enemyCrash = coordCrash(e.x, e.y);
 
-            Debug.Log("Playercrash: " + playerCrash.ToString() + ", Enemycrash: " + enemyCrash.ToString());
+           // Debug.Log("Playercrash: " + playerCrash.ToString() + ", Enemycrash: " + enemyCrash.ToString());
 
             if (playerCrash && enemyCrash)
-                return BoardState.Draw;
+                return BoardState.draw;
             if (playerCrash && enemyCrash == false)
-                return BoardState.EnemyWon;
+                return BoardState.enemyWon;
             if (playerCrash == false && enemyCrash)
-                return BoardState.PlayerWon;
+                return BoardState.playerWon;
 
-            return BoardState.Ongoing;
+            return BoardState.ongoing;
         }
 
         private bool coordCrash(int x, int y) {
@@ -163,6 +165,27 @@ namespace TCP_API.Snake {
         public Board deepCopy() {return new Board(blockedGrid, players, blockedList, true);}
         public bool[,] getBlockedGrid() { return blockedGrid; }
         public List<Position2D> getBlockedList() { return blockedList; }
+
+        public void printBoard() {
+            Debug.Log("***************");
+            string temp = "";
+            for(int y = 0; y < Constants.BOARD_HEIGHT; y++) {
+                string row = "";
+                for(int x = 0; x < Constants.BOARD_WIDTH; x++) {
+                    string sign = "-";
+                    if (blockedList.Any(p => p.x == x && p.y == y))
+                        sign = "X";
+                    if (players[0].x == x && players[0].y == y)
+                        sign = "P";
+                    if (players[1].x == x && players[1].y == y)
+                        sign = "E";
+                    row += sign + " ";
+                }
+                temp += row + "\n";
+            }
+            Debug.Log(temp);
+            Debug.Log(string.Format("P: {0}.{1}  E: {2}.{3}", players[0].x, players[0].y, players[1].x, players[1].y));
+        }
     }
 
     public struct SnakePlayer {

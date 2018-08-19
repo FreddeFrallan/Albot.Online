@@ -18,6 +18,7 @@ namespace Game {
             pList.ForEach(p => temp.Add(pos2DToInt(p)));
             return temp;
         }
+        public static bool compareVec3(Vector3 a, Vector3 b) { return a.x == b.x && a.y == b.y && a.z == b.z; }
         public static Vector2 pos2DToVec2(Position2D p) { return new Vector2(p.x, p.y); }
         public static int[] pos2DToInt(Position2D p) {return new int[] { p.x, p.y };}
         public static bool comparePos(Position2D a, Position2D b) { return a.x == b.x && a.y == b.y; }

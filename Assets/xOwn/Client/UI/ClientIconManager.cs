@@ -4,10 +4,16 @@ using UnityEngine;
 
 namespace ClientUI{
 	public class ClientIconManager{
+
+        private static int amountOfImages = 8;
+
 		public static Sprite loadIcon(int iconNumber){
-			string imagePath = "PlayerIcons/" + "Icon.1_";
-			imagePath += iconNumber < 10 ? "0"+ iconNumber.ToString() : iconNumber.ToString();
+			string imagePath = "PlayerIcons/" + "Ball" + iconNumber;
 			return Resources.Load<Sprite> (imagePath);
 		}
+
+        public static int getRandomIconNumber() {
+            return Random.Range(1, amountOfImages);
+        }
 	}
 }

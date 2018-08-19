@@ -52,7 +52,7 @@ namespace ClientUI{
 
 		private void initUserPanel(){
 			AccountInfoPacket p = ClientUIOverlord.getCurrentAcountInfo ();
-			int iconNumber = int.Parse (p.Properties ["icon"]);
+			int iconNumber = int.Parse (p.Properties [AlbotDictKeys.icon]);
 			playerSlot.setUserPanel (iconNumber, p.Username, false);
 		}
 

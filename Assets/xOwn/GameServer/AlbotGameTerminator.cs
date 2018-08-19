@@ -58,7 +58,6 @@ public class AlbotGameTerminator : MonoBehaviour{
     }
 
 	private void OnPlayerJoined(ConnectedPlayer p){
-		Debug.Log ("Invoked on player joined");
         _hasFirstPlayerShowedUp = true;
     }
 

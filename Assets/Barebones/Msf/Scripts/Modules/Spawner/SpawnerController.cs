@@ -84,7 +84,7 @@ namespace Barebones.MasterServer{
         private static void HandleSpawnRequest(IIncommingMessage message){
             var data = message.Deserialize(new SpawnRequestPacket());
 
-			UnityEngine.Debug.LogError("Handle spawn req: " + data.Properties[MsfDictKeys.GameType]);
+			//UnityEngine.Debug.LogError("Handle spawn req: " + data.Properties[MsfDictKeys.GameType]);
 
             var controller = Msf.Server.Spawners.GetController(data.SpawnerId);
 

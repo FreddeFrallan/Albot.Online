@@ -12,11 +12,16 @@ namespace TCP_API.Snake {
     public class SnakeTestUtils{
 
         #region Generating
-        public static Board generateBoard(string rawBoard, string playerDir, string enemyDir) {
+        public static Board generateBoard(string rawBoard, string playerDir, string enemyDir, int[] pPos = null, int[] ePos = null) {
             string[] cells = rawBoard.Split(' ');
             int size = (int)Math.Round(Math.Sqrt(cells.Length));
             List<Position2D> blocked = new List<Position2D>();
             SnakePlayer[] players = new SnakePlayer[2];
+
+            if(pPos != null)
+                players[0] = new SnakePlayer() { x = pPos[0], y = pPos[1], dir = playerDir };
+            if (ePos != null)
+                players[1] = new SnakePlayer() { x = ePos[0], y = ePos[1], dir = playerDir };
 
             for (int y = 0; y < size; y++)
                 for (int x = 0; x < size; x++)

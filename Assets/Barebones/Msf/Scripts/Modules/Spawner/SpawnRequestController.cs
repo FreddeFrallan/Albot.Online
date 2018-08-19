@@ -48,7 +48,7 @@ namespace Barebones.MasterServer
         private static void HandleStatusUpdate(IIncommingMessage message)
         {
             var data = message.Deserialize(new SpawnStatusUpdatePacket());
-            Debug.LogError(data.Status + "  " + data.SpawnId);
+            //Debug.LogError(data.Status + "  " + data.SpawnId);
 
             var controller = Msf.Client.Spawners.GetRequestController(data.SpawnId);
 

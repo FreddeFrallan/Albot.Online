@@ -23,8 +23,10 @@ namespace ClientUI{
 		}
 
         private void Update() {
+            /*
             if (Input.GetKeyDown(KeyCode.P))
                 CurrentTournament.leaveCurrentTournament();
+            */
         }
     }
 

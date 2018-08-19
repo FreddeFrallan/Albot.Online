@@ -57,11 +57,10 @@ namespace Snake{
 			int playerIndex = convertColorToTeam (msg.myColor);
 			TCPFormater [playerIndex] = new SnakeTCPFormater (playerIndex);
 			Action<string> sendBoardFunc = p.getTakeInputFunc ();
-			Action test = TCPFormater [playerIndex].newBoardSent; 
 
 
 			RealtimeTCPController.registerLocalPlayer (playerIndex, 
-				(string s) => {  test();
+				(string s) => {  
 				sendBoardFunc(s);}
 				, !p.isNPC () && !p.Human);
 

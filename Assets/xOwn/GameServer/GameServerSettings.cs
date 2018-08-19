@@ -4,15 +4,14 @@ using UnityEngine;
 
 public class GameServerSettings : MonoBehaviour {
 
-	public int serverFPS = 10;
-
+    private int frameRate = 5;
 	// Use this for initialization
 	void Awake () {
-		setGameServerSettings (serverFPS);
+		setGameServerSettings ();
 	}
 
-	public void setGameServerSettings(int fps){
-		Application.targetFrameRate = 5;
-		Debug.LogError ("Setting framerate to: " + fps);
+	public void setGameServerSettings(){
+		Application.targetFrameRate = frameRate;
+		Debug.LogError ("Setting framerate to: " + frameRate);
 	}
 }

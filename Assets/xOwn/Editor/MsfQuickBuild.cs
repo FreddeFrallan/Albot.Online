@@ -45,21 +45,23 @@ public class MsfQuickBuild{
             QuickSetupRoot+ "/Admin Client/Tournament/Scene/TournamentScene.unity",
 			// Add all the game scenes
 			QuickSetupRoot+ "/Game/Games/Connect4/Connect4Game.unity",
-			QuickSetupRoot+ "/Game/Games/Othello/OthelloGame.unity",
+			QuickSetupRoot+"/Game/Games/Snake/SnakeGame.unity",
+			QuickSetupRoot+"/Game/SinglePlayer/BrickPuzzle/BrickPuzzleGame.unity",
+            /*
+            QuickSetupRoot + "/Game/Games/Othello/OthelloGame.unity",
 			QuickSetupRoot+ "/Game/Games/FallingDebris/FallingDebrisGame.unity",
 			QuickSetupRoot+ "/Game/Games/Chess/ChessGame.unity",
 			QuickSetupRoot+ "/Game/Games/Battleships/BattleshipsGame.unity",
 			QuickSetupRoot+"/Game/Games/Soldiers/Game/SoldiersGame.unity",
-			QuickSetupRoot+"/Game/SinglePlayer/BrickPuzzle/BrickPuzzleGame.unity",
 			QuickSetupRoot+"/Game/SinglePlayer/Pickup/PickupGame.unity",
 			QuickSetupRoot+"/Game/SinglePlayer/2048/2048Game.unity", 
 			QuickSetupRoot+"/Game/SinglePlayer/Tower Of Hanoi/TowerOfHanoiGame.unity", 
 			QuickSetupRoot+"/Game/Games/Bomberman/Game/BombermanGame.unity",
 			QuickSetupRoot+"/Game/Games/Brakethrough/BrakethroughGame.unity",
-			QuickSetupRoot+"/Game/Games/Snake/SnakeGame.unity",
 			QuickSetupRoot+"/Game/SinglePlayer/HeapManager/HeapManager.unity",
 			QuickSetupRoot+"/DemoGame/BlockBattleGame.unity",
             QuickSetupRoot+"/Game/Games/SpeedRunner/SpeedRunnerGame.unity"
+            */
         };
 		BuildPipeline.BuildPlayer(clientScenes, path + "/Albot.Online.exe",  target, options);
 	}

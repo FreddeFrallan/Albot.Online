@@ -37,7 +37,7 @@ namespace ClientUI{
 
         private void initPlayerInfos() {
             AccountInfoPacket ac = ClientUIOverlord.getCurrentAcountInfo();
-            localInfo = new PlayerInfo() { username = ac.Username, iconNumber = int.Parse(ac.Properties["icon"]) };
+            localInfo = new PlayerInfo() { username = ac.Username, iconNumber = int.Parse(ac.Properties[AlbotDictKeys.icon]) };
             p2Slot = new PreGameSlotInfo() { slotID = 1, playerInfo = localInfo };
         }
 

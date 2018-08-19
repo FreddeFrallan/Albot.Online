@@ -12,6 +12,7 @@ namespace TCP_API.Snake {
             APIFuncs.Add(Constants.Actions.getPossMoves, handleGetPossibleMoves);
             APIFuncs.Add(Constants.Actions.simMove, handleSimulateMove);
             APIFuncs.Add(Constants.Actions.evalBoard, handleEvaluateBoard);
+            APIFuncs.Add(Constants.JProtocol.simMoveDelta, handleSimulateMoveDelta);
         }
 
         private APIMsgConclusion handleEvaluateBoard(JSONObject jObj) {
@@ -28,31 +29,41 @@ namespace TCP_API.Snake {
             JSONObject jBoard = jObj.GetField(Constants.JProtocol.board);
             Board startBoard = new Board(jBoard);
             BoardMoves moves = parseBoardMoves(jObj);
-            string encodedBoards;
-
-            SimulatedMove temp;
-            if (moves.hasPlayerMove == false) {
-                //List<SimulatedMove[]> temp = SnakeAPILogic.simulateAllPossibleMoves(startBoard);
-                temp = SnakeAPILogic.simulateSingleMove(startBoard, moves.enemyMove, false, false);
-            }
-            else if (moves.hasEnemyMove == false) {
-                //SimulatedMove[] temp = SnakeAPILogic.simulateAllEnemyMoves(startBoard, startBoard.getPlayers(), moves.playerMove);
-                temp = SnakeAPILogic.simulateSingleMove(startBoard, moves.playerMove, true, false);
-            } 
-            else {
-                temp = SnakeAPILogic.simulateMove(startBoard, moves.playerMove, moves.enemyMove, false);
-            }
-            encodedBoards = SnakeProtocolEncoder.compressSimulatedMove(temp);
+            
+            SimulatedMove temp = SnakeAPILogic.simulateMove(startBoard, moves.playerMove, moves.enemyMove, false);
+            string encodedBoards = SnakeProtocolEncoder.compressSimulatedMove(temp);
 
             return new APIMsgConclusion() {status = ResponseStatus.Success, msg = encodedBoards, target = MsgTarget.Player };
+        }
+
+        private APIMsgConclusion handleSimulateMoveDelta(JSONObject jObj) {
+            JSONObject jPlayer = jObj.GetField(Constants.JProtocol.player);
+            JSONObject jEnemy = jObj.GetField(Constants.JProtocol.enemy);
+            BoardMoves moves = parseBoardMoves(jObj);
+
+            SnakePlayer p = new SnakePlayer() {
+                x = (int)jPlayer.GetField(Constants.JProtocol.posX).i,
+                y = (int)jPlayer.GetField(Constants.JProtocol.posY).i,
+                dir = moves.playerMove
+            };
+            SnakePlayer e = new SnakePlayer() {
+                x = (int)jEnemy.GetField(Constants.JProtocol.posX).i,
+                y = (int)jEnemy.GetField(Constants.JProtocol.posY).i,
+                dir = moves.enemyMove
+            };
+
+            Board b = new Board(new SnakePlayer[] { p, e }, false);
+            b.playMove(new string[] { moves.playerMove, moves.enemyMove});
+            SimulatedMove temp = new SimulatedMove() {enemyMove = moves.enemyMove, playerMove = moves.playerMove,board = b};
+
+            string encodedBoards = SnakeProtocolEncoder.compressSimulatedMove(temp);
+            return new APIMsgConclusion() { status = ResponseStatus.Success, msg = encodedBoards, target = MsgTarget.Player };
         }
 
         private APIMsgConclusion handleGetPossibleMoves(JSONObject jObj) {
             string[] directions = new string[2];
             directions[0] = jObj.GetField(Constants.JProtocol.player).str;
             directions[1] = jObj.GetField(Constants.JProtocol.enemy).str;
-            Debug.Log("Player dir:" + directions[0]);
-            Debug.Log("Enemy dir:" + directions[1]);
             //PossibleMoves possMoves = SnakeAPILogic.getPossibleMoves(new Board(jObj));
             PossibleMoves possMoves = SnakeAPILogic.getPossibleMoves(directions);
 

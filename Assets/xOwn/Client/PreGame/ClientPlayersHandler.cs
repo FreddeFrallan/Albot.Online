@@ -16,14 +16,6 @@ namespace Game{
 		private static List<PlayerColor> currentPlayerQ = new List<PlayerColor>();
 		private static List<TrainingBot> currentBots = new List<TrainingBot> ();
 
-        public static void printQueue()
-        {
-            Debug.Log("Q size: " + currentPlayerQ.Count);
-            foreach (PlayerColor c in currentPlayerQ)
-                Debug.Log(c);
-        }
-
-
 		private static ClientController theClientController;
 		public static void init(ClientController c) {
 			theClientController = c;
@@ -88,21 +80,21 @@ namespace Game{
 			AccountInfoPacket playerInfo = ClientUI.ClientUIOverlord.getCurrentAcountInfo ();
 			ClientPlayersHandler.addPlayer (false, false, new AlbotServer.PlayerInfo {
 				username = playerInfo.Username,
-				iconNumber = int.Parse(playerInfo.Properties ["icon"])
+				iconNumber = int.Parse(playerInfo.Properties [AlbotDictKeys.icon])
 			});
 		}
 		public static void addClone(){
 			AccountInfoPacket playerInfo = ClientUI.ClientUIOverlord.getCurrentAcountInfo ();
 			ClientPlayersHandler.addPlayer (false, false, new AlbotServer.PlayerInfo {
 				username = "<" + playerInfo.Username + ">",
-				iconNumber = int.Parse(playerInfo.Properties ["icon"])
+				iconNumber = int.Parse(playerInfo.Properties [AlbotDictKeys.icon])
 			});
 		}
 		public static void addHuman(){
 			AccountInfoPacket playerInfo = ClientUI.ClientUIOverlord.getCurrentAcountInfo ();
 			ClientPlayersHandler.addPlayer (false, true, new AlbotServer.PlayerInfo {
 				username = "<Human>",
-				iconNumber = int.Parse(playerInfo.Properties ["icon"])
+				iconNumber = int.Parse(playerInfo.Properties [AlbotDictKeys.icon])
 			});
 		}
 
@@ -143,7 +135,6 @@ namespace Game{
 		public void takeInput(string msg){
             if (isMainPlayer())
             {
-                Debug.Log("Player input" + msg);
                 TCPLocalConnection.sendMessage(msg);
             }
             else if (NPC)

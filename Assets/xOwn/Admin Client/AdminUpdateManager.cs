@@ -108,7 +108,6 @@ namespace AdminUI{
             Msf.Connection.SendMessage((short)CustomMasterServerMSG.requestSpecificGameLog, 
                 new SpectatorSpecificLogRequestMsg() {broadcastID = currentRoomID, IDs = missingUpdates},
                 (s, m) => {
-                    print("Missing Response: " + s);
                     if (s == ResponseStatus.Success)
                         localRenderer.addMissingUpdates(m.Deserialize<SpectatorGameLog>().gameLog); } 
             );

@@ -11,9 +11,9 @@ using System.Threading;
 
 namespace AlbotServer{
 
-	public class PreGame{
+    public class PreGame {
         public PreGamePlayerSlot[] playerSlots;
-        public PreGameSpecs specs;
+        public PreGameSpecs specs { get; private set; }
         public PreGameState state { get; private set; }
 
         public RunningGameInfoMsg storedInfoMsg { get; private set; }
@@ -64,7 +64,7 @@ namespace AlbotServer{
         }
 
         private void addPeerToGame(IPeer peer, PlayerInfo info) {
-            Debug.LogError("Adding peer: " + info.username + "  to game: " + specs.roomID);
+            //Debug.LogError("Adding peer: " + info.username + "  to game: " + specs.roomID);
             PreGamePeer newPeer = new PreGamePeer(peer, info, peerLeft);
             lock (playerLock) connectedPeers.Add(newPeer);
 

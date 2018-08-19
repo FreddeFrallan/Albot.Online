@@ -107,7 +107,7 @@ namespace AlbotDB{
 			ActiveUser newUser = activeUsersColl.FindOne (x => x.username == user.username);
 			if (newUser == null) {
 				activeUsersColl.Insert (new ActiveUser{ username = user.username, peerId = newPeerID.ToString() });
-				Debug.LogError ("Adding user with ID: " + newPeerID);
+				//Debug.LogError ("Adding user with ID: " + newPeerID);
 			}
 			else { //This should never happen
 				newUser.peerId = newPeerID.ToString();
@@ -119,7 +119,7 @@ namespace AlbotDB{
             string keyID = peerID.ToString();
 			ActiveUser oldUser = activeUsersColl.FindOne (x => x.peerId == keyID);
 			if (oldUser != null) {
-				Debug.LogError ("Removing for id: " + peerID);
+				//Debug.LogError ("Removing for id: " + peerID);
 				activeUsersColl.Delete (oldUser.peerId);
 				UserLoginInformation savedUser = userLoginColl.FindOne (x => x.username == oldUser.username);
 				if (savedUser != null) {

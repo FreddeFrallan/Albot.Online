@@ -7,7 +7,7 @@ using TCP_API.Connect4;
 public class Connect4EvaluateBoardTest{
 
     #region Diagonals
-    [TestCase(BoardState.Ongoing,
+    [TestCase(BoardState.ongoing,
         "0 0 0 0 0 0 0 " +
         "0 0 0 0 0 0 0 " +
         "0 0 0 0 0 0 0 " +
@@ -15,7 +15,7 @@ public class Connect4EvaluateBoardTest{
         "0 0 0 0 0 0 0 " +
         "0 0 0 0 0 0 0 "
         )]
-    [TestCase(BoardState.PlayerWon,
+    [TestCase(BoardState.playerWon,
         "0 0 0 0 0 0 0 " +
         "0 1 0 0 0 0 0 " +
         "0 0 1 0 0 0 0 " +
@@ -23,7 +23,7 @@ public class Connect4EvaluateBoardTest{
         "0 0 0 0 1 0 0 " +
         "0 0 0 0 0 0 0 "
         )]
-    [TestCase(BoardState.PlayerWon,
+    [TestCase(BoardState.playerWon,
         "0 0 0 0 0 0 0 " +
         "0 0 0 0 0 1 0 " +
         "0 0 0 0 1 0 0 " +
@@ -31,7 +31,7 @@ public class Connect4EvaluateBoardTest{
         "0 0 1 0 0 0 0 " +
         "0 0 0 0 0 0 0 "
         )]
-    [TestCase(BoardState.PlayerWon,
+    [TestCase(BoardState.playerWon,
         "0 0 0 1 0 0 0 " +
         "0 0 0 0 1 0 0 " +
         "0 0 0 0 0 1 0 " +
@@ -39,7 +39,7 @@ public class Connect4EvaluateBoardTest{
         "0 0 0 0 0 0 0 " +
         "0 0 0 0 0 0 0 "
         )]
-    [TestCase(BoardState.PlayerWon,
+    [TestCase(BoardState.playerWon,
         "0 0 0 0 0 0 0 " +
         "0 0 0 0 0 0 0 " +
         "1 0 0 0 0 0 0 " +
@@ -47,7 +47,7 @@ public class Connect4EvaluateBoardTest{
         "0 0 1 0 0 0 0 " +
         "0 0 0 1 0 0 0 "
         )]
-    [TestCase(BoardState.PlayerWon,
+    [TestCase(BoardState.playerWon,
         "0 0 0 0 0 0 0 " +
         "0 0 0 0 0 0 0 " +
         "0 0 0 0 0 0 1 " +
@@ -61,7 +61,7 @@ public class Connect4EvaluateBoardTest{
 
     #endregion
     #region Rows
-    [TestCase(BoardState.Ongoing,
+    [TestCase(BoardState.ongoing,
         "0 0 0 0 0 0 0 " +
         "0 0 0 0 0 0 0 " +
         "0 0 0 0 0 0 0 " +
@@ -69,7 +69,7 @@ public class Connect4EvaluateBoardTest{
         "0 0 0 0 0 0 0 " +
         "0 0 0 0 0 0 0 "
         )]
-    [TestCase(BoardState.PlayerWon,
+    [TestCase(BoardState.playerWon,
         "1 1 1 1 0 0 0 " +
         "0 0 0 0 0 0 0 " +
         "0 0 0 0 0 0 0 " +
@@ -77,7 +77,7 @@ public class Connect4EvaluateBoardTest{
         "0 0 0 0 0 0 0 " +
         "0 0 0 0 0 0 0 "
         )]
-    [TestCase(BoardState.PlayerWon,
+    [TestCase(BoardState.playerWon,
         "0 0 0 0 0 0 0 " +
         "0 0 0 0 0 0 0 " +
         "0 0 0 0 0 0 0 " +
@@ -85,7 +85,7 @@ public class Connect4EvaluateBoardTest{
         "0 0 0 0 0 0 0 " +
         "0 0 0 0 0 0 0 "
         )]
-    [TestCase(BoardState.PlayerWon,
+    [TestCase(BoardState.playerWon,
         "0 0 0 0 0 0 0 " +
         "0 0 0 0 0 0 0 " +
         "0 0 0 0 0 0 0 " +
@@ -93,7 +93,7 @@ public class Connect4EvaluateBoardTest{
         "0 0 0 0 0 0 0 " +
         "0 0 0 1 1 1 1 "
         )]
-    [TestCase(BoardState.PlayerWon,
+    [TestCase(BoardState.playerWon,
         "0 0 0 0 0 0 0 " +
         "0 0 0 0 0 0 0 " +
         "0 0 0 0 0 0 0 " +
@@ -106,7 +106,7 @@ public class Connect4EvaluateBoardTest{
     }
     #endregion
     #region Colls
-    [TestCase(BoardState.Ongoing,
+    [TestCase(BoardState.ongoing,
         "0 0 0 0 0 0 0 " +
         "0 0 0 0 0 0 0 " +
         "0 0 0 0 0 0 0 " +
@@ -114,7 +114,7 @@ public class Connect4EvaluateBoardTest{
         "0 0 0 0 0 0 0 " +
         "0 0 0 0 0 0 0 "
         )]
-    [TestCase(BoardState.PlayerWon,
+    [TestCase(BoardState.playerWon,
         "1 0 0 0 0 0 0 " +
         "1 0 0 0 0 0 0 " +
         "1 0 0 0 0 0 0 " +
@@ -122,7 +122,7 @@ public class Connect4EvaluateBoardTest{
         "0 0 0 0 0 0 0 " +
         "0 0 0 0 0 0 0 "
         )]
-    [TestCase(BoardState.PlayerWon,
+    [TestCase(BoardState.playerWon,
         "0 1 0 0 0 0 0 " +
         "0 1 0 0 0 0 0 " +
         "0 1 0 0 0 0 0 " +
@@ -130,7 +130,7 @@ public class Connect4EvaluateBoardTest{
         "0 1 0 0 0 0 0 " +
         "0 0 0 0 0 0 0 "
         )]
-    [TestCase(BoardState.PlayerWon,
+    [TestCase(BoardState.playerWon,
         "0 0 0 0 0 0 0 " +
         "0 0 0 1 0 0 0 " +
         "0 0 0 1 0 0 0 " +
@@ -138,7 +138,7 @@ public class Connect4EvaluateBoardTest{
         "0 0 0 1 0 0 0 " +
         "0 0 0 0 0 0 0 "
         )]
-    [TestCase(BoardState.PlayerWon,
+    [TestCase(BoardState.playerWon,
         "0 0 0 0 0 0 0 " +
         "0 0 0 0 0 0 0 " +
         "0 0 0 0 0 0 1 " +
@@ -151,7 +151,7 @@ public class Connect4EvaluateBoardTest{
     }
     #endregion
     #region Earlier Problems
-    [TestCase(BoardState.Ongoing,
+    [TestCase(BoardState.ongoing,
     "0 0 0 0 0 0 0 " +
     "0 0 0 0 0 0 0 " +
     "-1 0 0 0 0 0 0 " +
@@ -164,7 +164,7 @@ public class Connect4EvaluateBoardTest{
     }
     #endregion
     #region Draw
-    [TestCase(BoardState.Draw,
+    [TestCase(BoardState.draw,
         "-1 -1 1 -1 -1 1 1 " +
         "1 -1 -1 1 1 -1 -1 " +
         "-1 1 -1 -1 -1 1 1 " +
@@ -180,10 +180,10 @@ public class Connect4EvaluateBoardTest{
     private void evaluateAndInvert(BoardState expected, string rawBoard) {
         string invertedBoard = rawBoard.Replace("1", "-1");
         BoardState invertedExpected = expected;// = expected * -1;
-        if (expected == BoardState.PlayerWon)
-            invertedExpected = BoardState.EnemyWon;
-        else if (expected == BoardState.EnemyWon)
-            invertedExpected = BoardState.PlayerWon;
+        if (expected == BoardState.playerWon)
+            invertedExpected = BoardState.enemyWon;
+        else if (expected == BoardState.enemyWon)
+            invertedExpected = BoardState.playerWon;
 
         evaluateWin(expected, rawBoard);
         evaluateWin(invertedExpected, invertedBoard);

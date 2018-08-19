@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using DigitalRuby.AnimatedLineRenderer;
+using Game;
+using System.Linq;
 
 namespace Snake{
 	public class SnakeHead : MonoBehaviour{
@@ -9,7 +11,15 @@ namespace Snake{
 		public AnimatedLineRenderer tailRenderer;
 		private List<Vector3> targetPos = new List<Vector3>();
 		private Vector3 nextTarget, oldPos, delta;
+        private List<Vector3> queuePoints = new List<Vector3>();
         private float slideDist = 0.05f;
+
+		public void init(Material m){
+			nextTarget = transform.position;
+			GetComponent<MeshRenderer> ().material = m;
+			GetComponent<LineRenderer> ().material = m;
+		}
+
 
 		public void startNewTargetPos(){
             slideToNewTarget(nextTarget);
@@ -24,22 +34,24 @@ namespace Snake{
             while(Vector3.Distance(transform.position, targetPos) > slideDist){
                 Vector3 slideDelta = (targetPos - transform.position).normalized * slideDist;
                 transform.position = transform.position + slideDelta;
-                tailRenderer.Enqueue(transform.position);
+                enqueuePos(transform.position);
             }
             transform.position = targetPos;
-            tailRenderer.Enqueue(transform.position);
+            enqueuePos(transform.position);
         }
 			
-		public void init(Material m){
-			nextTarget = transform.position;
-			GetComponent<MeshRenderer> ().material = m;
-			GetComponent<LineRenderer> ().material = m;
-		}
 			
 		public void interpolateBetweenPos(float procentCovered){
 			transform.position = oldPos + delta*procentCovered;
-			tailRenderer.Enqueue (transform.position);
-		}
+            enqueuePos(transform.position);
+        }
+        private void enqueuePos(Vector3 newPos) {
+            if(queuePoints.Any(p => GameUtils.compareVec3(newPos, p)) == false) {
+               tailRenderer.Enqueue(newPos);
+                queuePoints.Add(newPos);
+            }
+        }
+
 		public void addTargetPos(Vector3 pos){targetPos.Add (pos);}
 	}
 }

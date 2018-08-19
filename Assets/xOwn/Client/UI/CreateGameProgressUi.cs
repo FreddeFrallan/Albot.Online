@@ -137,7 +137,6 @@ namespace Barebones.MasterServer
 
 			if (Request != null){
 				Request.StatusChanged -= OnStatusChange;
-				print("Removing status Changed");
 			}
         }
 

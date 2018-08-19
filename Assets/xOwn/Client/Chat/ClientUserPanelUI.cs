@@ -20,7 +20,7 @@ namespace ClientUI{
 		private bool timerHasInit = false;
 
 		public void init(){ClientLogin.LoggedIn += onLoggedIn;}
-		private void onLoggedIn(){setUserPanel (int.Parse(Msf.Client.Auth.AccountInfo.Properties["icon"]), Msf.Client.Auth.AccountInfo.Username);}
+		private void onLoggedIn(){setUserPanel (int.Parse(Msf.Client.Auth.AccountInfo.Properties[AlbotDictKeys.icon]), Msf.Client.Auth.AccountInfo.Username);}
 		public void setUserPanel(int iconNumber, string username){
 			this.icon.sprite = ClientIconManager.loadIcon(iconNumber);
 			this.icon.enabled = true;

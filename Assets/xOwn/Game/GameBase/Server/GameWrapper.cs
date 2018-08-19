@@ -24,8 +24,6 @@ public class GameWrapper{
 		ConnectedClient c = GameRoomClients.getMatchingClient (playerID);
 		c.conn.RegisterHandler (newHandler.msgType, listenForClientMsg);
 		currentHandlers.Add (newHandler);
-
-		Debug.LogError ("Subscribing Handler for: " + playerID + "  " + newHandler.msgType);
 	}
 
 

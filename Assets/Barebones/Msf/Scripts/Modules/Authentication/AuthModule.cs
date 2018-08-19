@@ -505,7 +505,7 @@ namespace Barebones.MasterServer
 			accountData.IsGuest = true;
 			accountData.IsAdmin = false;
 			accountData.Properties = new Dictionary<string, string> ();
-			accountData.Properties.Add("icon", (UnityEngine.Random.Range(1, 100).ToString()) );
+			accountData.Properties.Add(AlbotDictKeys.icon, (UnityEngine.Random.Range(1, 100).ToString()) );
 
 
 			//Small hack to check if the key is active
@@ -526,7 +526,7 @@ namespace Barebones.MasterServer
                 accountData.IsGuest = true;
                 accountData.IsAdmin = false;
 				accountData.Properties = new Dictionary<string, string> ();
-				accountData.Properties.Add("icon", (UnityEngine.Random.Range(1, 100).ToString()) );
+				accountData.Properties.Add(AlbotDictKeys.icon, (UnityEngine.Random.Range(1, 100).ToString()) );
             }
 			*/
 			/*

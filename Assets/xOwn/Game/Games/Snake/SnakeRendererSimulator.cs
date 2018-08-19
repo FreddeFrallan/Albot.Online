@@ -10,7 +10,6 @@ namespace Snake{
 		public SnakeRenderer theRenderer;
 		private List<BoardUpdate> moves = new List<BoardUpdate> ();
 		private GameInfo finalMsg;
-		private float refreshRate = 0.5f;
 
 		// Use this for initialization
 		private void Start () {
@@ -20,11 +19,11 @@ namespace Snake{
 			
 		private IEnumerator sendGame(){
 			while (moves.Count > 0) {
-				yield return new WaitForSeconds (refreshRate);
+				yield return new WaitForSeconds (SnakeGameLogic.refreshRate);
 				theRenderer.handleBoardUpdate (moves [0]);
 				moves.RemoveAt (0);
 			}
-			yield return new WaitForSeconds (refreshRate);
+			yield return new WaitForSeconds (SnakeGameLogic.refreshRate);
 			theRenderer.displayCrash (new Vector2 (finalMsg.crashPos [0] [0], finalMsg.crashPos [0] [1]));
 		}
 

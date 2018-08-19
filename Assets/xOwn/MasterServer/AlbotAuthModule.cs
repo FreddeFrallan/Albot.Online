@@ -4,6 +4,8 @@ using UnityEngine;
 using Barebones.MasterServer;
 using Barebones.Networking;
 using AlbotDB;
+using AlbotServer;
+using ClientUI;
 
 
 //Framework starts from 32000, so we can use anything from 0 - 32000 ^^
@@ -47,14 +49,14 @@ public class AlbotAuthModule : ServerModuleBehaviour {
 		}
 
 		string errorMsg = "";
-		if (alphaLegitCredentials (data, out errorMsg) == false) {
+		if (checkLoginCredentials (data, out errorMsg) == false) {
 			msg.Respond(errorMsg.ToBytes(), ResponseStatus.Failed);
 			return;
 		}
 			
 		UserLoginInformation user = new UserLoginInformation () {
-			username = data ["Username"].Trim(),
-			password = data ["Password"],
+			username = data [AlbotDictKeys.username],
+			password = data [AlbotDictKeys.password],
 			isLoggedIn = true
 		};
 		AlbotDBManager.updateLoginInfo (user);
@@ -65,7 +67,7 @@ public class AlbotAuthModule : ServerModuleBehaviour {
 				username = user.username,
 				logins = "0",
 				roomActions = "0",
-				profilePic = (Random.Range (1, 100)).ToString ()
+				profilePic = ClientIconManager.getRandomIconNumber().ToString ()
 			};
 		}
 		else
@@ -99,7 +101,7 @@ public class AlbotAuthModule : ServerModuleBehaviour {
 		accountData.IsGuest = true;
 		accountData.IsAdmin = false;
 		accountData.Properties = new Dictionary<string, string> ();
-		accountData.Properties.Add("icon", storedInfo.profilePic.ToString());
+		accountData.Properties.Add(AlbotDictKeys.icon, storedInfo.profilePic.ToString());
 
 		if (accountData == null)
 			return false;
@@ -120,53 +122,46 @@ public class AlbotAuthModule : ServerModuleBehaviour {
 		return true;
 	}
 
-	private bool legitLoginCredentials(Dictionary<string, string> data, out string errorMsg){
+    #region Validate login
+    private bool checkLoginCredentials(Dictionary<string, string> data, out string errorMsg){
 		errorMsg = "";
-		if (data.ContainsKey ("Username") == false || data.ContainsKey ("Password") == false){
+		if (containsNeededInfo(data) == false){
 			errorMsg = "Something went wrong in login";
 			return false;
 		}
-		string username = data ["Username"];
-		string password = data["Password"];
+		string username = data [AlbotDictKeys.username].Trim();
+		string version = data[AlbotDictKeys.clientVersion].Trim();
 
-		UserLoginInformation user = new UserLoginInformation();
-		if (AlbotDBManager.getLoginInfo (username, out user) == false)
-			errorMsg = "Could not find registred acount";
-		else if (password != user.password)
-			errorMsg = "Incorrect password";
-		else if (user.isLoggedIn)
-			errorMsg = "Current acount is already loged in!";
+        //Check Client version vs Server version
+        if(validClientVersion(version) == false) {
+            errorMsg = "Invalid Client version, please make sure you have the latest version downloaded.";
+            return false;
+        }
 
-		if (errorMsg != "")
-			return false;
-		return true;
-	}
+        //Name validation check
+        if(InvalidNames.isValidName(username) == false) {
+            errorMsg = "Username is invalid";
+            return false;
+        }
 
-	private bool alphaLegitCredentials(Dictionary<string, string> data, out string errorMsg){
-		errorMsg = "";
-		if (data.ContainsKey ("Username") == false || data.ContainsKey ("Password") == false){
-			errorMsg = "Something went wrong in login";
-			return false;
-		}
-		string username = data ["Username"].Trim();
-		string password = data["Password"];
-
+        //Check if the current username is aldready in use
 		UserLoginInformation user = new UserLoginInformation();
 		AlbotDBManager.getLoginInfo (username, out user);
-		if (user != null && user.isLoggedIn)
+		if (user != null && user.isLoggedIn) {
 			errorMsg = "Current acount is already loged in!";
-		else if (username [0] == '<' && username [username.Length - 1] == '>')
-			errorMsg = "Invalid name format, please don't use the \"<\" or \">\" sign in your name.";
-		else if(username == Game.LocalTrainingBots.StandardTrainingBotInfo.username)
-			errorMsg = "Please don't choose \""+username+"\" as your username";
-		
-		if (errorMsg != "")
-			return false;
+            return false;
+        }
+        
 		return true;
 	}
 
+    private bool validClientVersion(string version) {return version == ConnectionToMaster.getAlbotVersion();}
+    private bool containsNeededInfo(Dictionary<string, string > data) {
+        return data.ContainsKey(AlbotDictKeys.username) && data.ContainsKey(AlbotDictKeys.username) && data.ContainsKey(AlbotDictKeys.clientVersion);
+    }
+    #endregion
 
-	private void FinalizeLogin(IUserExtension extension, UserLoginInformation newUser){
+    private void FinalizeLogin(IUserExtension extension, UserLoginInformation newUser){
 		AlbotDBManager.onUserLogedIn (newUser, extension.Peer.Id);
 		if (LoggedIn != null)
 			LoggedIn.Invoke(extension);
@@ -184,7 +179,7 @@ public class AlbotAuthModule : ServerModuleBehaviour {
 			
 		var packet = new PeerAccountInfoPacket(){
 			PeerId = peerId,
-			Properties = new Dictionary<string, string>(){{"Icon", user.profilePic}},
+			Properties = new Dictionary<string, string>(){{AlbotDictKeys.icon, user.profilePic}},
 			Username = user.username
 		};
 

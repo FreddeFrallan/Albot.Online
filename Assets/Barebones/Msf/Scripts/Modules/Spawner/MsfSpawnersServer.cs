@@ -160,7 +160,7 @@ namespace Barebones.MasterServer
                 return;
             }
 
-            Debug.LogError("SPWn code: " + spawnCode); 
+            //Debug.LogError("SPWn code: " + spawnCode); 
             var packet = new RegisterSpawnedProcessPacket()
             {
                 SpawnCode = spawnCode,

@@ -146,7 +146,7 @@ namespace Connect4{
 			for (int x = 0; x < 6; x++)
 				for (int y = 0; y < 7; y++)
 					s += words [y * 6 + x] + " ";
-			return s;
+			return s.TrimEnd();
 		}
 	}
 	

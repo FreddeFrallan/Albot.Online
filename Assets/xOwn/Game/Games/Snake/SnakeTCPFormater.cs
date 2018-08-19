@@ -10,20 +10,19 @@ namespace Snake{
 	public class SnakeTCPFormater{
 
 		private int team;
-		private List<Position2D> freshCoords = new List<Position2D> (), freshCoords2 = new List<Position2D>(), oldCoords = new List<Position2D> ();
+		private List<Position2D> freshCoords = new List<Position2D> (), oldCoords = new List<Position2D> ();
 		public SnakeTCPFormater(int team){
             this.team = team;
         }
 
 
-		public void addNewUpdate(List<Position2D> coords, int dir, int enemyDir, Position2D playerPos, Position2D enemyPos){
-			foreach (Position2D c in coords) {
-				if (freshCoords.Any((p) => GameUtils.comparePos(c, p)) || oldCoords.Any((p) => GameUtils.comparePos(c, p)))
+		public void addNewUpdate(List<Position2D> blocked, int dir, int enemyDir, Position2D playerPos, Position2D enemyPos){
+			foreach (Position2D c in blocked) {
+				if (oldCoords.Any((p) => GameUtils.comparePos(c, p)))
                     continue;
-				freshCoords.Add (c);
+                oldCoords.Add (c);
 			}
-				
-			Game.RealtimeTCPController.gotNewBoard (team, formatBoard(dir, enemyDir, playerPos, enemyPos));
+            RealtimeTCPController.gotNewBoard (team, formatBoard(dir, enemyDir, playerPos, enemyPos));
 		}
 
 
@@ -38,20 +37,10 @@ namespace Snake{
 
         private List<Position2D> getCurrentBlockedCoords(Position2D playerPos, Position2D enemyPos) {
             List<Position2D> blockedCoords = new List<Position2D>();
-            blockedCoords.AddRange(freshCoords);
-            blockedCoords.AddRange(freshCoords2);
+            blockedCoords.AddRange(oldCoords);
             blockedCoords = removePlayerFromFresh(playerPos, enemyPos, blockedCoords);
             return blockedCoords;
         }
-
-
-        public void newBoardSent(){
-			oldCoords.AddRange (freshCoords2);
-			freshCoords2.Clear ();
-			freshCoords2.AddRange (freshCoords);
-			freshCoords.Clear ();
-		}
-
 
 		private List<Position2D> removePlayerFromFresh(Position2D playerPos, Position2D enemyPos, List<Position2D> blockedCoords){
 			blockedCoords = blockedCoords.Where ((p) => GameUtils.comparePos(p, playerPos) == false && GameUtils.comparePos(p, enemyPos) == false).ToList();

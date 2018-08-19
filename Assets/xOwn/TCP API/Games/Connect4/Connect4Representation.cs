@@ -106,7 +106,7 @@ namespace TCP_API.Connect4{
         public override string ToString() {
             string s = "";
             Utils.iterateBoard((x, y) => { s += grid[x, y] + " "; });
-            return s;
+            return s.TrimEnd();
         }
     }
 

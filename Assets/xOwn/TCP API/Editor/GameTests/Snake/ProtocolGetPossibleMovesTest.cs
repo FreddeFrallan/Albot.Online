@@ -12,19 +12,9 @@ namespace TCP_API.Snake {
         [TestCase(
         "down", "down",
         new string[] { "right", "down", "left" },
-        new string[] { "right", "down", "left" },
-        "0 0 0 0 0 0 0 0 0 0 " +
-        "X X X 0 0 0 0 0 0 0 " +
-        "0 0 P 0 0 0 0 0 0 0 " +
-        "0 0 0 0 0 0 0 0 0 0 " +
-        "0 0 0 0 0 0 0 0 0 0 " +
-        "0 0 0 0 0 0 0 0 0 0 " +
-        "0 0 0 0 0 X X X X 0 " +
-        "0 0 0 0 0 0 0 E X 0 " +
-        "0 0 0 0 0 0 0 0 0 0 " +
-        "0 0 0 0 0 0 0 0 0 0 "
+        new string[] { "right", "down", "left" }
         )]
-        public void getPossibleMovesTest(string playerDir, string enemyDir, string[] playerExpected, string[] enemyExpected, string rawBoard) {
+        public void getPossibleMovesTest(string playerDir, string enemyDir, string[] playerExpected, string[] enemyExpected) {
             List<string> playerExpectedList = playerExpected.ToList();
             List<string> enemyExpectedList = enemyExpected.ToList();
             SnakeAPIRouter router = new SnakeAPIRouter();
@@ -40,6 +30,8 @@ namespace TCP_API.Snake {
             PossibleMoves moves = extractPossibleMoves(new JSONObject(response.msg));
             Assert.True(SnakeTestUtils.comparePossibleMoves(playerExpectedList, moves.playerMoves));
             Assert.True(SnakeTestUtils.comparePossibleMoves(enemyExpectedList, moves.enemyMoves));
+
+            Debug.Log("True....");
         }
 
         private PossibleMoves extractPossibleMoves(JSONObject jObj) {

@@ -383,8 +383,8 @@ namespace Barebones.MasterServer
             var data = message.Deserialize(new RegisterSpawnedProcessPacket());
 
             SpawnTask task;
-            Debug.LogError("Register");
-            Debug.LogError("Register spawncode: " + data.SpawnCode);
+            //Debug.LogError("Register");
+            //Debug.LogError("Register spawncode: " + data.SpawnCode);
             SpawnTasks.TryGetValue(data.SpawnCode, out task);
 
             if (task == null){

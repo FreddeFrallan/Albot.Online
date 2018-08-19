@@ -39,7 +39,7 @@ namespace ClientUI{
         public void joineLobbyGame(GamesListUiItem game) { joinPreGame(game.roomType, game.GameId); }
         public void joinPreGame(GameInfoType roomType, string roomID){
             PreGameJoinRequest joinRequest = getJoinRequest(roomType, roomID);
-            print("Joining PreGame: " + roomID);
+            //print("Joining PreGame: " + roomID);
 
             if(roomType == GameInfoType.PreGame)
 			    Msf.Connection.SendMessage((short)ServerCommProtocl.RequestJoinPreGame, joinRequest, handleJoinPreGameMsg);
@@ -70,7 +70,7 @@ namespace ClientUI{
                 roomID = roomID,
                 joiningPlayer = new PlayerInfo {
                     username = ac.Username,
-                    iconNumber = int.Parse(ac.Properties["icon"])
+                    iconNumber = int.Parse(ac.Properties[AlbotDictKeys.icon])
                 }
             };
         }

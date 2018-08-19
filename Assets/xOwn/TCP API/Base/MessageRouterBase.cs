@@ -25,8 +25,8 @@ namespace TCP_API{
         /// <param name="msg"></param>
         /// <returns>APIMsgConclusion</returns>
         public APIMsgConclusion handleIncomingMsg(string msg) {
-            msg = msg.Trim();
-            //if (msg.ToLower() == "restartgame") {
+            //msg = msg.Trim();
+            Debug.Log(msg);
             if(msg == APIStandardConstants.Actions.restartGame) {
                 MainThread.fireEventAtMainThread(() => ClientUI.CurrentGame.restartCurrentGame());
                 return restartReturnMsg();
@@ -38,10 +38,11 @@ namespace TCP_API{
             try{
                 JSONObject jObj = new JSONObject(msg);
                 Func<JSONObject, APIMsgConclusion> linkedFunc = APIFuncs[jObj.GetField(TCPFields.action).str];
-                Debug.LogError(linkedFunc);
                 return linkedFunc(jObj);
             }
             catch(Exception e) {
+                JSONObject jObj = new JSONObject(msg);
+                Debug.LogError(jObj.GetField(TCPFields.action).str);
                 Debug.LogError(e.Message);
                 Debug.LogError(e.StackTrace);
                 return errorParsingJson(e.Message);

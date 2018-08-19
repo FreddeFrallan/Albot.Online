@@ -62,7 +62,7 @@ namespace AlbotServer {
                 allGamesDict.Add(roomID, game);
             if(allGames.Contains(game) == false)
                 allGames.Add(game);
-            if(allPreGamesList.Contains(game))
+            if(allPreGamesList.Contains(game) == false)
                 allPreGamesList.Add(game);
         }
 
@@ -123,10 +123,12 @@ namespace AlbotServer {
 
         public static void startTournamentgame(PreGame game) {singleton.startGame(game);}
         private void moveGameToActiveGames(PreGame game) {
-            allPreGamesList.Remove(game);
-            currentPreGames.Remove(game.specs.roomID);
-            activeGames.Add(game.specs.roomID, game); //Adding the game to the active pool, so it can be re-started easily.
-            Debug.LogError(game.specs.roomID + " was added to active games");
+            if(allGames.Contains(game))
+                allPreGamesList.Remove(game);
+            if(currentPreGames.ContainsKey(game.specs.roomID))
+                currentPreGames.Remove(game.specs.roomID);
+            if(activeGames.ContainsKey(game.specs.roomID) == false)
+                activeGames.Add(game.specs.roomID, game); //Adding the game to the active pool, so it can be re-started easily.
         }
         private void startGame(PreGame game, IIncommingMessage rawMsg = null) {
             string spawnCode = SpawnersModule.singleton.createNewRoomFromPreGame(game.getPeers(), game.generateGameSettings(), game.specs.roomID);
@@ -139,7 +141,7 @@ namespace AlbotServer {
 
             game.specs.spawnCode = spawnCode;
             PreGameStartedMsg msg = new PreGameStartedMsg() { specs = game.specs, slots = game.getPlayerSlots() };
-            Debug.LogError("Starting game: " + game.specs.roomID + " with: " + game.getPeers().Count + " peers." + "  Tournament: " + game.specs.tournamentRoundID.col + "." + game.specs.tournamentRoundID.row);
+            //Debug.LogError("Starting game: " + game.specs.roomID + " with: " + game.getPeers().Count + " peers." + "  Tournament: " + game.specs.tournamentRoundID.col + "." + game.specs.tournamentRoundID.row);
 
             GamesData.totallGamesPlayed++;
             game.onpreGameStarted();

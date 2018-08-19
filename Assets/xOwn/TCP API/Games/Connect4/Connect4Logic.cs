@@ -17,7 +17,6 @@ namespace TCP_API.Connect4 {
         /// <returns>APIMsgConclusion</returns>
         public static APIMsgConclusion simulateMove(Connect4Command command){
 			playMove (command.board, command.move, command.player);
-
 			if (command.getPossibleMoves)
 				getPossibleMoves (command.board);
 

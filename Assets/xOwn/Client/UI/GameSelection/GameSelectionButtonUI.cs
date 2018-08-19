@@ -37,7 +37,7 @@ namespace ClientUI {
             AccountInfoPacket currentUser = ClientUI.ClientUIOverlord.getCurrentAcountInfo();
 
 
-            PlayerInfo playerInfo = new PlayerInfo() { iconNumber = int.Parse(currentUser.Properties["icon"]), username = currentUser.Username };
+            PlayerInfo playerInfo = new PlayerInfo() { iconNumber = int.Parse(currentUser.Properties[AlbotDictKeys.icon]), username = currentUser.Username };
             PreGameSlotInfo[] players = new PreGameSlotInfo[] {
                 new PreGameSlotInfo() { playerInfo = playerInfo, slotID = 0 },
                   new PreGameSlotInfo() { playerInfo = playerInfo, slotID = 1, isReady = true}

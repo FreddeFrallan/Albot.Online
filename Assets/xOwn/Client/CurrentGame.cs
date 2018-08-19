@@ -30,7 +30,6 @@ namespace ClientUI {
                 Debug.LogError("Got non-matching start msg to: " + msg.specs.roomID +  " Type: " + msg.specs.type);
                 return;
             }
-            Debug.Log("Got starting game msg: " + msg.specs.roomID);
             currentlyPlayingGame = true;
             setupLocalPlayers(msg.slots);
             gameConnector.onJoinStartedGame(msg);

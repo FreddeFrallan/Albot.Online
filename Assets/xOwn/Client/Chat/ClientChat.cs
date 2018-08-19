@@ -42,7 +42,7 @@ namespace ClientUI{
 				}
 
 			AccountInfoPacket currentAcountInfo = ClientUIOverlord.getCurrentAcountInfo ();
-			AlbotChatMsg msg = new AlbotChatMsg (){icon = int.Parse(currentAcountInfo.Properties ["icon"]), username = currentAcountInfo.Username} ;
+			AlbotChatMsg msg = new AlbotChatMsg (){icon = int.Parse(currentAcountInfo.Properties [AlbotDictKeys.icon]), username = currentAcountInfo.Username} ;
 
 			if (enteredChat) {
 				for (int i = MessagesList.transform.childCount; i > 1; i--)

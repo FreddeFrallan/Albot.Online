@@ -8,7 +8,7 @@ namespace TCP_API.Snake {
     public class EvaluateBoardTest {
 
         [TestCase(
-        BoardState.Ongoing, "right", "left",
+        BoardState.ongoing, "right", "left",
         "0 0 0 0 0 0 0 0 0 0 " +
         "0 0 0 0 0 0 0 0 0 0 " +
         "0 0 P 0 0 0 0 0 0 0 " +
@@ -26,7 +26,7 @@ namespace TCP_API.Snake {
         }
 
         #region EnemyWon
-        [TestCase(BoardState.EnemyWon, "right", "left",
+        [TestCase(BoardState.enemyWon, "right", "left",
         "0 0 0 0 0 0 0 0 0 0 " +
         "0 0 0 0 0 0 0 0 0 0 " +
         "0 0 X X X X X X X P " +
@@ -38,7 +38,7 @@ namespace TCP_API.Snake {
         "0 0 0 0 0 0 0 0 0 0 " +
         "0 0 0 0 0 0 0 0 0 0 "
         )]
-        [TestCase(BoardState.EnemyWon, "left", "left",
+        [TestCase(BoardState.enemyWon, "left", "left",
         "0 0 0 0 0 0 0 0 0 0 " +
         "0 0 0 0 0 0 0 0 0 0 " +
         "0 0 X X X X X X X 0 " +
@@ -52,7 +52,7 @@ namespace TCP_API.Snake {
         )]
         #endregion
         #region Draw
-        [TestCase(BoardState.Draw, "right", "left",
+        [TestCase(BoardState.draw, "right", "left",
         "0 0 0 0 0 0 0 0 0 0 " +
         "0 0 0 0 0 0 0 0 0 0 " +
         "0 0 X 0 0 0 0 0 0 0 " +
@@ -64,7 +64,7 @@ namespace TCP_API.Snake {
         "0 0 0 0 0 0 0 0 0 0 " +
         "0 0 0 0 0 0 0 0 0 0 "
         )]
-        [TestCase(BoardState.Draw, "down", "right",
+        [TestCase(BoardState.draw, "down", "right",
         "0 0 0 0 0 0 0 0 0 0 " +
         "0 0 0 0 0 0 0 0 0 0 " +
         "0 0 X 0 0 0 0 0 0 0 " +
@@ -76,7 +76,7 @@ namespace TCP_API.Snake {
         "0 0 X 0 0 0 0 X X E " +
         "0 0 P 0 0 0 0 0 0 0 "
         )]
-        [TestCase(BoardState.Draw, "down", "right",
+        [TestCase(BoardState.draw, "down", "right",
         "0 0 0 0 0 0 0 0 0 0 " +
         "0 0 0 0 0 0 0 0 0 0 " +
         "0 0 X 0 0 0 0 0 0 0 " +
@@ -88,7 +88,7 @@ namespace TCP_API.Snake {
         "0 0 X 0 0 0 0 X X E " +
         "0 0 P 0 0 0 0 0 0 0 "
         )]
-        [TestCase(BoardState.Draw, "down", "right",
+        [TestCase(BoardState.draw, "down", "right",
         "0 0 0 0 0 0 0 0 0 E " +
         "0 0 0 0 0 0 0 0 0 X " +
         "0 0 X 0 0 0 0 0 0 X " +
@@ -102,7 +102,7 @@ namespace TCP_API.Snake {
         )]
         #endregion
         #region PlayerWon
-        [TestCase(BoardState.PlayerWon, "up", "up",
+        [TestCase(BoardState.playerWon, "up", "up",
         "0 0 0 0 0 0 0 0 0 E " +
         "0 0 0 0 0 0 0 0 0 X " +
         "0 0 X 0 0 0 0 0 0 X " +
@@ -114,7 +114,7 @@ namespace TCP_API.Snake {
         "0 0 X 0 0 0 0 X X X " +
         "P X X 0 0 0 0 0 0 0 "
         )]
-        [TestCase(BoardState.PlayerWon, "up", "left",
+        [TestCase(BoardState.playerWon, "up", "left",
         "0 0 0 0 0 0 0 0 0 X " +
         "0 0 0 0 0 0 0 0 0 X " +
         "0 0 X 0 0 0 0 0 0 X " +
