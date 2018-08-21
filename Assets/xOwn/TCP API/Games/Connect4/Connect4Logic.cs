@@ -58,13 +58,13 @@ namespace TCP_API.Connect4 {
 					board.possibleMoves.Add (i);
 		}
 
-		private static void playMove(Board board, int move, string player){
+		private static void playMove(Board board, int move, int player){
 			int targetRow = findFreeRow (board.grid, move);
             if (targetRow == -1) {// Do nothing if illegal move
                 Debug.Log("Tried to simulate illegal move: " + move);
                 return;
             }
-			board.grid.list[targetRow].list[move].i = int.Parse(player);
+            board.grid.list[targetRow].list[move].i = player;
 		}
 
 		private static int findFreeRow(JSONObject grid, int col){

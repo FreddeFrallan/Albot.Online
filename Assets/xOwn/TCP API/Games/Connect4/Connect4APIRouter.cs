@@ -27,7 +27,7 @@ namespace TCP_API.Connect4 {
 
         private APIMsgConclusion handleSimulateMove(JSONObject jObj) {
             Connect4Command command = parseAPICommand(jObj, Consts.Actions.simMove);
-            command.player = jObj.GetField(Consts.Fields.player).str;
+            command.player = (int)jObj.GetField(Consts.Fields.player).i;
             command.getPossibleMoves = jObj.HasField(Consts.Fields.possibleMoves);
             command.move = (int)jObj.GetField(Consts.Fields.move).i;
 

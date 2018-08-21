@@ -9,7 +9,7 @@ namespace TCP_API {
     }
 
     public abstract class TCPCommand {
-        public string player;
+        public int player;
         public string action;
     }
 }
