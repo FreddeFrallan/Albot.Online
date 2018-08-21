@@ -66,7 +66,7 @@ namespace TCP_API.Connect4{
 			JSONObject jBoard = new JSONObject ();
 
 			if (board)
-				jBoard.AddField (Consts.Fields.board, grid.Print());
+				jBoard.AddField (Consts.Fields.board, grid);
             if(evaluated)
                 jBoard.AddField(Consts.Fields.boardState, boardState.ToString());
 			if (sendPMoves) {
