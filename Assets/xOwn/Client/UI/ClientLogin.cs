@@ -66,8 +66,7 @@ namespace ClientUI{
 				return;
 
 			if (couldLogin == false) {
-                Debug.LogError(msg);
-                Msf.Events.Fire(Msf.EventNames.ShowDialogBox, DialogBoxData.CreateError(msg));
+                AlbotDialogBox.activateButton(() => { }, DialogBoxType.BotConnectionError, msg, "Ok!", 30, 30);
                 resetToNormalState ();
 				return;
 			}

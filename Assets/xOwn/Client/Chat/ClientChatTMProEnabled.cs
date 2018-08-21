@@ -20,7 +20,7 @@ namespace ClientUI {
         private bool FocusOnEnterClick = true;
         private bool isCurrentlyInChat = false;
         private NetworkConnection serverConnection;
-
+        private int maxMessageLenght = 50;
 
         public void initChat() {
             Msf.Connection.SetHandler((short)ServerCommProtocl.LobbyChatMsg, onIncominChatgMsg);
@@ -125,12 +125,15 @@ namespace ClientUI {
             }
         }
         public virtual void OnSendClick() {
-            var text = InputField.text;
+            String text = InputField.text;
             if (string.IsNullOrEmpty(text))
                 return;
 
+            if (text.Length > maxMessageLenght)
+                text = text.Substring(0, maxMessageLenght);
+
             AlbotChatMsg msg = new AlbotChatMsg();
-            msg.textMsg = InputField.text;
+            msg.textMsg = text;
             msg.username = Msf.Client.Auth.AccountInfo.Username;
             Msf.Connection.SendMessage((short)ServerCommProtocl.LobbyChatMsg, msg);
 
