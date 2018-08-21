@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using TCP_API;
 using TCP_API.Connect4;
+using Connect4;
+using UnityEngine;
 
 public class Connect4EvaluateBoardTest{
 
@@ -160,7 +162,8 @@ public class Connect4EvaluateBoardTest{
     "1 0 0 -1 0 0 0 "
     )]
     public void evaluateEarlierProblems(BoardState expected, string board) {
-        evaluateAndInvert(expected, board);
+        //evaluateAndInvert(expected, board);
+        evaluateWin(expected, board);
     }
     #endregion
     #region Draw
@@ -173,7 +176,8 @@ public class Connect4EvaluateBoardTest{
         "1 -1 1 1 -1 -1 1 "
     )]
     public void evaluateDraw(BoardState expected, string board) {
-        evaluateAndInvert(expected, board);
+        //evaluateAndInvert(expected, board);
+        evaluateWin(expected, board);
     }
     #endregion
 
@@ -190,8 +194,12 @@ public class Connect4EvaluateBoardTest{
     }
 
     private void evaluateWin(BoardState expected, string board) {
-        Board b = new Board(board, true);
-        BoardState actual = BoardEvaluator.evaluateBoard(b);
-        Assert.AreEqual(expected, actual, b.getWinChecks());
+        JSONObject jObj = Connect4JsonParser.createJGrid(board);
+        Debug.Log(jObj.Print());
+
+        Board b = new Board(jObj, true);
+        Debug.Log(b.boardState + "  " + expected);
+
+        Assert.AreEqual(expected, b.boardState);
     }
 }

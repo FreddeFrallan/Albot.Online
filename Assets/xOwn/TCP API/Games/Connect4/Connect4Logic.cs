@@ -41,7 +41,6 @@ namespace TCP_API.Connect4 {
         /// <param name="command"></param>
         /// <returns>APIMsgConclusion</returns>
         public static APIMsgConclusion evaluateBoard(Connect4Command command) {
-            command.board.boardState = BoardEvaluator.evaluateBoard(command.board);
             string boardMsg = command.board.encodeBoard(false, false, true);
             return new APIMsgConclusion() { msg = boardMsg, status = ResponseStatus.Success, target = MsgTarget.Player };
         }
@@ -53,8 +52,9 @@ namespace TCP_API.Connect4 {
 		#region Simulator
 		private static void getPossibleMoves(Board board){
 			board.possibleMoves = new List<int> ();
+            JSONObject topRow = board.grid.list[0];
 			for (int i = 0; i < Consts.BOARD_WIDTH; i++)
-				if (board.grid [i,0] == "0")
+				if (topRow.list[i].i == 0)
 					board.possibleMoves.Add (i);
 		}
 
@@ -64,12 +64,12 @@ namespace TCP_API.Connect4 {
                 Debug.Log("Tried to simulate illegal move: " + move);
                 return;
             }
-			board.grid [move, targetRow] = player;
+			board.grid.list[targetRow].list[move].i = int.Parse(player);
 		}
 
-		private static int findFreeRow(string[,] grid, int col){
+		private static int findFreeRow(JSONObject grid, int col){
 			for (int y = Consts.BOARD_HEIGHT - 1; y >= 0; y--)
-				if (grid [col, y] == "0")
+				if (grid.list[y].list[col].i == 0)
 					return y;
 			return -1;
 		}

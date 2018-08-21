@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Barebones.Networking;
 using System;
+using UnityEngine;
 
 namespace TCP_API.Connect4{
 
@@ -30,18 +31,34 @@ namespace TCP_API.Connect4{
     /// TODO Optimize
     /// </summary>
     public class Board{
+        private static List<DiagCheck> diagChecks = new List<DiagCheck>() {
+            //Left->Up diags
+            new DiagCheck(){x=0, y = 3, dX = 1, dY = -1},
+            new DiagCheck(){x=0, y = 4, dX = 1, dY = -1},
+            new DiagCheck(){x=0, y = 5, dX = 1, dY = -1},
+            new DiagCheck(){x=1, y = 5, dX = 1, dY = -1},
+            new DiagCheck(){x=2, y = 5, dX = 1, dY = -1},
+            new DiagCheck(){x=3, y = 5, dX = 1, dY = -1},
+
+            //Right->Up Diags
+            new DiagCheck(){x=6, y = 3, dX = -1, dY = -1},
+            new DiagCheck(){x=6, y = 4, dX = -1, dY = -1},
+            new DiagCheck(){x=6, y = 5, dX = -1, dY = -1},
+            new DiagCheck(){x=5, y = 5, dX = -1, dY = -1},
+            new DiagCheck(){x=4, y = 5, dX = -1, dY = -1},
+            new DiagCheck(){x=3, y = 5, dX = -1, dY = -1},
+        };
+
         public List<string> winChecks = new List<string>();
 
-		public string[,] grid = new string[Consts.BOARD_WIDTH, Consts.BOARD_HEIGHT];
+        public JSONObject grid;
 		public BoardState boardState = 0;
 		public List<int> possibleMoves;
 
-        public Board(string rawBoard, bool evaluate) {
-            string[] cells = rawBoard.Trim().Split(' ');
+        public Board(JSONObject board, bool evaluate) {
+            grid = board;
             if (evaluate)
-                generateGridAndWinData(cells);
-            else
-                Utils.iterateBoard((x, y) => { grid[x, y] = cells[y * Consts.BOARD_WIDTH + x]; });
+                evaluateBoard();
         }
 
 
@@ -49,7 +66,7 @@ namespace TCP_API.Connect4{
 			JSONObject jBoard = new JSONObject ();
 
 			if (board)
-				jBoard.AddField (Consts.Fields.board, ToString ());
+				jBoard.AddField (Consts.Fields.board, grid.Print());
             if(evaluated)
                 jBoard.AddField(Consts.Fields.boardState, boardState.ToString());
 			if (sendPMoves) {
@@ -68,47 +85,74 @@ namespace TCP_API.Connect4{
             return jBoard.Print();
 		}
 
+        public void evaluateBoard() {
+            long counter = 0, last = 0;
+            bool draw = true;
 
-        private void generateGridAndWinData(string[] cells) {
-            string[] rows = new string[] { "", "", "", "", "", "" };
-            string[] cols = new string[] { "", "", "", "", "", "", "" };
-            string[] lDiags = new string[6] { "", "", "", "", "", "" };
-            string[] rDiags = new string[6] { "", "", "", "", "", "" };
-            Utils.iterateBoard((x, y) => {
-                string cell = cells[y * Consts.BOARD_WIDTH + x];
-                cell = (cell == "-1" ? "2" : cell); //Switch "-1" to a "2"
+            //Rows
+            for (int y = 0; y < Consts.BOARD_HEIGHT; y++)
+                for (int x = 0; x < Consts.BOARD_WIDTH; x++) {
+                    BoardState s = checkNewNumber(grid.list[y].list[x].i, ref counter, ref last, ref draw);
+                    if(s != BoardState.ongoing) {
+                        boardState = s;
+                        return;
+                    }    
+                }
 
-                grid[x, y] = cell;
-                rows[y] += cell;
-                cols[x] += cell;
+            //Cols
+            resetCounters(ref counter, ref last);
+            for (int x = 0; x < Consts.BOARD_WIDTH; x++)
+                for (int y = 0; y < Consts.BOARD_HEIGHT; y++) {
+                    BoardState s = checkNewNumber(grid.list[y].list[x].i, ref counter, ref last, ref draw);
+                    if (s != BoardState.ongoing) {
+                        boardState = s;
+                        return;
+                    }
+                }
 
-                int diff = x - y;
-                int sum = x + y;
-                if (diff >= -2 && diff <= 3)
-                    lDiags[diff + 2] += cell;
-                if (sum >= 3 && sum <= 8)
-                    rDiags[sum - 3] += cell;
-            });
+            //Diags
+            foreach(DiagCheck d in diagChecks) {
+                resetCounters(ref counter, ref last);
+                int x = d.x; int y = d.y;
+                do {
+                    BoardState s = checkNewNumber(grid.list[y].list[x].i, ref counter, ref last, ref draw);
+                    if (s != BoardState.ongoing) {
+                        boardState = s;
+                        return;
+                    }
 
-            winChecks.AddRange(rows);
-            winChecks.AddRange(cols);
-            winChecks.AddRange(lDiags);
-            winChecks.AddRange(rDiags);
+                    x += d.dX; y += d.dY;
+                } while (isInRange(x, y));
+            }
+
+
+            if (draw)
+                boardState = BoardState.draw;
+            else
+                boardState = BoardState.ongoing;
         }
 
-        public string getWinChecks() {
-            string temp = "";
-            for(int i = 0; i < winChecks.Count; i++)
-                temp += i + ":  " + winChecks[i] + "\n";
-            return temp;
-        }
+        private bool isInRange(int x, int y) { return x >= 0 && y >= 0 && x < Consts.BOARD_WIDTH && y < Consts.BOARD_HEIGHT; }
+        private struct DiagCheck {public int x, y, dX, dY;}
+        private void resetCounters(ref long counter, ref long last) { counter = 0; last = 0; }
+        private BoardState checkNewNumber(long n, ref long counter, ref long last, ref bool draw) {
+            if (n == last)
+                counter++;
+            else
+                counter = 1;
 
-        public override string ToString() {
-            string s = "";
-            Utils.iterateBoard((x, y) => { s += grid[x, y] + " "; });
-            return s.TrimEnd();
+            if (n == 0)
+                draw = false;
+
+            last = n;
+            if(counter == 4 && last == 1)
+                return BoardState.playerWon;
+            if (counter == 4 && last == -1)
+                return BoardState.enemyWon;
+            return BoardState.ongoing;
         }
     }
+
 
 	public class Utils{
         /// <summary>
@@ -121,4 +165,7 @@ namespace TCP_API.Connect4{
 					a (x, y);
 		}
     }		
+
+
+
 }

@@ -78,7 +78,7 @@ namespace Connect4{
 			byte[] bytes = boardMsg.reader.ReadBytesAndSize ();
 			CommProtocol.StringMessage msg = Deserialize<Game.CommProtocol.StringMessage> (bytes);
 
-			string formattedBoard = formatBoard (msg.msg, msg.color);
+			string formattedBoard = Connect4JsonParser.formatBoardMsgFromServer(msg.msg, msg.color);
 			ClientPlayersHandler.onReceiveServerMsg (formattedBoard, msg.color);
 		}
 		public void initSettings(NetworkMessage initMsg){
@@ -124,21 +124,6 @@ namespace Connect4{
 		#endregion
 		// In my old variation the server only sent the board as 0 = empty, 1 = yellow, 2 = red
 		// So here i do a conversion to the local player to get  0 = empty, 1 = you, -1 = enemy
-		public string formatBoard(string rawBoard, Game.PlayerColor color){
-			string tempBoard = "";
-			
-			if (color == Game.PlayerColor.Red)
-				tempBoard = rawBoard.Replace ("2", "-1");
-			else {
-				tempBoard = rawBoard.Replace ("1", "-1");
-				tempBoard = tempBoard.Replace ("2", "1");
-			}
-
-			string rotatedBoard = rotateBoard(tempBoard);
-			JSONObject board = new JSONObject ();
-			board.AddField ("board", rotatedBoard);
-			return board.Print ();
-		}
 
 		private string rotateBoard(string rawBoard){
 			string s = "";

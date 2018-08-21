@@ -20,7 +20,7 @@ namespace TCP_API.Connect4 {
         private Connect4Command parseAPICommand(JSONObject jObj, string action) {
             Connect4Command command = new Connect4Command() { action = action };
             command.evaluate = action == Consts.Actions.evalBoard || jObj.HasField(Consts.Fields.evaluate);
-            command.board = command.board = new Board(jObj.GetField(Consts.Fields.board).str, command.evaluate);
+            command.board = command.board = new Board(jObj.GetField(Consts.Fields.board), command.evaluate);
 
             return command;
         }
