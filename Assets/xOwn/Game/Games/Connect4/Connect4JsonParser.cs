@@ -18,15 +18,18 @@ namespace Connect4 {
         
 
         public static JSONObject createJGrid(string rawBoard) {
+            print(rawBoard);
             string[] words = rawBoard.Split(' ');
-            JSONObject jGrid = new JSONObject();
-            for (int y = 0; y < Consts.BOARD_HEIGHT; y++) {
-                JSONObject row = new JSONObject();
-                for(int x = 0; x < Consts.BOARD_WIDTH; x++)
-                    row.Add(int.Parse(words[y * Consts.BOARD_WIDTH + x]));
 
-                jGrid.Add(row);
-            }
+            JSONObject jGrid = new JSONObject();
+            for (int y = 0; y < Consts.BOARD_HEIGHT; y++)
+                jGrid.Add(new JSONObject());
+
+            for(int x = 0; x < Consts.BOARD_WIDTH; x++)
+                for (int y = 0; y < Consts.BOARD_HEIGHT; y++)
+                    jGrid[y].Add(int.Parse(words[x * Consts.BOARD_HEIGHT + y]));
+            
+            Debug.Log(jGrid);
             return jGrid;
         }
 
