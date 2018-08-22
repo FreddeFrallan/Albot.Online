@@ -18,7 +18,6 @@ namespace Connect4 {
         
 
         public static JSONObject createJGrid(string rawBoard) {
-            print(rawBoard);
             string[] words = rawBoard.Split(' ');
 
             JSONObject jGrid = new JSONObject();
@@ -29,7 +28,6 @@ namespace Connect4 {
                 for (int y = 0; y < Consts.BOARD_HEIGHT; y++)
                     jGrid[y].Add(int.Parse(words[x * Consts.BOARD_HEIGHT + y]));
             
-            Debug.Log(jGrid);
             return jGrid;
         }
 

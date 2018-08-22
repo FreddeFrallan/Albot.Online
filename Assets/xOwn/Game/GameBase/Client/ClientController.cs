@@ -32,6 +32,7 @@ namespace Game{
 		protected bool isListeningForTCP = false, canSendServerMsg = true;
 		protected GameWrapper wrapper  = new GameWrapper ();
 		protected GameUI localGameUI;
+        protected Dictionary<PlayerColor, PlayerInfo> currentPlayers = new Dictionary<PlayerColor, PlayerInfo>();
 
 
 		public void initController(GameType currentType){
@@ -142,10 +143,16 @@ namespace Game{
 		#endregion
 
 		public void gameOver(){
-			UnetRoomConnector.shutdownCurrentConnection ();
+            UnetRoomConnector.shutdownCurrentConnection ();
 			localGameUI.stopAllTimers ();
 			ClientPlayersHandler.killBots ();
 		}
+        public string getGameOverText(PlayerColor winColor) {
+            if (winColor == PlayerColor.None)
+                return "It's a draw!";
+            else
+                return currentPlayers[winColor].username + " won!";
+        }
 
 		//For in editor
 		void OnApplicationQuit(){ClientPlayersHandler.killBots ();}
@@ -173,6 +180,7 @@ namespace Game{
 		public virtual void handlePlayerJoinedRoom(NetworkMessage msg){
 			PlayerInfoMsg readyMsg = msg.ReadMessage<PlayerInfoMsg> ();
 			PlayerInfo p = readyMsg.player;
+            currentPlayers.Add(p.color, p);
 
 			localGameUI.initPlayerSlot (p.color, p.username, p.iconNumber);
 		}

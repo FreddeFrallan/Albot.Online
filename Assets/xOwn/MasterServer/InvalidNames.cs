@@ -7,7 +7,7 @@ namespace AlbotServer {
 
     public class InvalidNames {
 
-        private static int nameMinLenght = 1, nameMaxLenght = 10;
+        private static int nameMinLenght = 1, nameMaxLenght = 12;
         private static List<string> illegalChars = new List<string>() { "<", ">" };
 
         public static bool isValidName(string username) {
@@ -31,7 +31,7 @@ namespace AlbotServer {
             return false;
         }
 
-        private static bool isValidLenght(string username) {return username.Length >= nameMinLenght && username.Length >= nameMinLenght;}
+        private static bool isValidLenght(string username) {return username.Length >= nameMinLenght && username.Length <= nameMaxLenght; }
         private static bool isTrainingBotName(string username){return username == LocalTrainingBots.botName.ToLower();}
     }
 }

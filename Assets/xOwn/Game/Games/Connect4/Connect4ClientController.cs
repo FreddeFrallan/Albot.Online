@@ -23,7 +23,7 @@ namespace Connect4{
 
         #region override from base clientController
         public override void initProtocol (Game.CommProtocol protocol){this.protocol = (Connect4.CommProtocol)protocol;}
-		public override Game.GameType getGameType (){return Game.GameType.Connect4;}
+		public override Game.GameType getGameType (){return GameType.Connect4;}
 		protected CommProtocol protocol;
         protected override void initHandlers (){
             apiRouter = new Connect4APIRouter();
@@ -57,7 +57,7 @@ namespace Connect4{
 		}
 		#endregion
 
-		public override void onOutgoingLocalMsg (string msg, Game.PlayerColor color){
+		public override void onOutgoingLocalMsg (string msg, PlayerColor color){
 			sendServerMsg(msg, color, (short)CommProtocol.MsgType.move);
 		}
 
@@ -91,10 +91,10 @@ namespace Connect4{
 		public void handleRPCMove(NetworkMessage RPCMsg){
 			byte[] bytes = RPCMsg.reader.ReadBytesAndSize ();
 			RPCMove msg = Deserialize<RPCMove> (bytes);
-			Game.PlayerColor color = msg.color;
+			PlayerColor color = msg.color;
 			int move = msg.move;
 
-            localRenderer.dropPiece (move, color == Game.PlayerColor.Yellow ? Piece.Yellow : Piece.Red);
+            localRenderer.dropPiece (move, color == PlayerColor.Yellow ? Piece.Yellow : Piece.Red);
 		}
 		public void handleGameStatus(NetworkMessage gameStatusMsg){
 			byte[] bytes = gameStatusMsg.reader.ReadBytesAndSize ();
@@ -109,16 +109,9 @@ namespace Connect4{
                     winner = "-1";
 				TCPLocalConnection.sendMessage (gameOverString + ": " + winner);
                 localRenderer.onGameOver (msg.winnerColor == PlayerColor.Yellow ? Piece.Yellow : Piece.Red);
-				//gameOver ();
 
-				string gameOverMsg;
-				if (msg.winnerColor == Game.PlayerColor.None)
-					gameOverMsg = "It's a draw!";
-				else
-					//gameOverMsg = msg.winnerColor == myColor ? "You won!" : "You lost!";
-					gameOverMsg = msg.winnerColor + " won";
-
-                CurrentGame.gameOver(gameOverMsg);
+                gameOver();
+                CurrentGame.gameOver(getGameOverText(msg.winnerColor));
             }
 		}
 		#endregion

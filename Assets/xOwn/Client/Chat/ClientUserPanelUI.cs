@@ -42,7 +42,9 @@ namespace ClientUI{
 			timerHasInit = true;
 		}
 		public void startTimer(float maxTime){turnTimer.startTimer (maxTime);}
-		public void stopTimer(){turnTimer.stopTimer ();}
+		public void stopTimer(){
+            if(turnTimer != null)
+                turnTimer.stopTimer ();}
 		void Update(){
 			if (timerHasInit)
 				turnTimer.updateTimer ();

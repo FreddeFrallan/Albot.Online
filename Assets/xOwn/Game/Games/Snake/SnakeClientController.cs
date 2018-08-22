@@ -133,20 +133,16 @@ namespace Snake{
 			UnetRoomConnector.shutdownCurrentConnection ();
 
             string gameOverString = Constants.Fields.gameOver;
-			string gameOverMsg;
-			if (infoMsg.winnerColor == Game.PlayerColor.None) {
-				gameOverMsg = "It's a draw!";
+			if (infoMsg.winnerColor == Game.PlayerColor.None) 
 				TCPLocalConnection.sendMessage (gameOverString + ": 0");
-			}
-			else {
-				gameOverMsg = (infoMsg.winnerColor == PlayerColor.Blue ? "Pink" : "Yellow") + " won";
+			else 
 				TCPLocalConnection.sendMessage (gameOverString + ": " + (infoMsg.winnerColor == PlayerColor.Blue ? "1" : "-1"));
-			}
 
 			foreach (int[] crash in infoMsg.crashPos)
 				localRenderer.displayCrash (new Vector2(crash[0], crash[1]));
 
-            CurrentGame.gameOver(gameOverMsg);
+            gameOver();
+            CurrentGame.gameOver(getGameOverText(infoMsg.winnerColor));
         }
 
 		public void handleBoardUpdate(NetworkMessage msg){
