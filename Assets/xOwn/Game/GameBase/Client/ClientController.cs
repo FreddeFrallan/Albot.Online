@@ -117,8 +117,8 @@ namespace Game{
 
 	
 		protected virtual void readTCPMsg (ReceivedLocalMessage inMsg){
+            Debug.Log("IN: " +  inMsg.message);
             APIMsgConclusion outMsg = apiRouter.handleIncomingMsg(inMsg.message);
-            bool temp = ClientPlayersHandler.getCurrentPlayer().isMainPlayer();
 
             if (outMsg.target == MsgTarget.Server){
                 onOutgoingLocalMsg(outMsg.msg, ClientPlayersHandler.sendFromCurrentPlayer());
@@ -150,8 +150,13 @@ namespace Game{
         public string getGameOverText(PlayerColor winColor) {
             if (winColor == PlayerColor.None)
                 return "It's a draw!";
-            else
-                return currentPlayers[winColor].username + " won!";
+            else {
+                try {
+                    return currentPlayers[winColor].username + " won!";
+                } catch {
+                    return winColor.ToString() + " won!";
+                }
+            }
         }
 
 		//For in editor

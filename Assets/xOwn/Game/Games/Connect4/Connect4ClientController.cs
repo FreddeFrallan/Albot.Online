@@ -25,6 +25,8 @@ namespace Connect4{
         public override void initProtocol (Game.CommProtocol protocol){this.protocol = (Connect4.CommProtocol)protocol;}
 		public override Game.GameType getGameType (){return GameType.Connect4;}
 		protected CommProtocol protocol;
+        private bool gameOver = false;
+
         protected override void initHandlers (){
             apiRouter = new Connect4APIRouter();
 
@@ -61,18 +63,6 @@ namespace Connect4{
 			sendServerMsg(msg, color, (short)CommProtocol.MsgType.move);
 		}
 
-
-		public void handlePlayerLeftRoom(NetworkMessage msg){
-			PlayerInfoMsg readyMsg = msg.ReadMessage<PlayerInfoMsg> ();
-			PlayerInfo p = readyMsg.player;
-			localGameUI.removeConnectedPlayer (p.color, p.username, p.iconNumber);
-		}
-		public void handlePlayerJoinedRoom(NetworkMessage msg){
-			PlayerInfoMsg readyMsg = msg.ReadMessage<PlayerInfoMsg> ();
-			PlayerInfo p = readyMsg.player;
-			localGameUI.initPlayerSlot (p.color, p.username, p.iconNumber);
-		}
-
 		#region Bunch of GameLogic communication handlers
 		public void requestMove(NetworkMessage boardMsg){
 			byte[] bytes = boardMsg.reader.ReadBytesAndSize ();
@@ -100,8 +90,9 @@ namespace Connect4{
 			byte[] bytes = gameStatusMsg.reader.ReadBytesAndSize ();
 			GameInfo msg = Deserialize<GameInfo> (bytes);
 			
-			if (msg.gameOver) {
-                string gameOverString = TCP_API.APIStandardConstants.Fields.gameOver;
+			if (msg.gameOver && gameOver == false) {
+                gameOver = true;
+                string gameOverString = APIStandardConstants.Fields.gameOver;
                 string winner = "0";
                 if (msg.winnerColor == PlayerColor.Yellow)
                     winner = "1";

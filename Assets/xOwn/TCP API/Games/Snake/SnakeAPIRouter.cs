@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Barebones.Networking;
+using System;
 
 namespace TCP_API.Snake {
 
@@ -10,8 +11,11 @@ namespace TCP_API.Snake {
 
         public SnakeAPIRouter() {
             APIFuncs.Add(Constants.Actions.getPossMoves, handleGetPossibleMoves);
-            APIFuncs.Add(Constants.Actions.simMove, handleSimulateMove);
             APIFuncs.Add(Constants.Actions.evalBoard, handleEvaluateBoard);
+
+            APIFuncs.Add(Constants.Actions.simMove, handleSimulateMove);
+            APIFuncs.Add(Constants.JProtocol.simPlayerMove, handleSimulatePlayerMove);
+            APIFuncs.Add(Constants.JProtocol.simEnemyMove, handleSimulateEnemyMove);
             APIFuncs.Add(Constants.JProtocol.simMoveDelta, handleSimulateMoveDelta);
         }
 
@@ -25,15 +29,27 @@ namespace TCP_API.Snake {
             };
         }
 
+
+        #region Simulate Moves
         private APIMsgConclusion handleSimulateMove(JSONObject jObj) {
+            return activateSimulateMove(jObj, (b, p, e) => {return SnakeAPILogic.simulateMove(b, p, e, false);});
+        }
+        private APIMsgConclusion handleSimulatePlayerMove(JSONObject jObj) {
+            return activateSimulateMove(jObj, (b, p, e) => {return SnakeAPILogic.simulateSingleMove(b, p, false, false);});
+        }
+        private APIMsgConclusion handleSimulateEnemyMove(JSONObject jObj) {
+            return activateSimulateMove(jObj, (b, p, e) => {return SnakeAPILogic.simulateSingleMove(b, e, true, false);});
+        }
+
+        private APIMsgConclusion activateSimulateMove(JSONObject jObj, Func<Board, string, string, SimulatedMove> simMove) {
             JSONObject jBoard = jObj.GetField(Constants.JProtocol.board);
             Board startBoard = new Board(jBoard);
             BoardMoves moves = parseBoardMoves(jObj);
-            
-            SimulatedMove temp = SnakeAPILogic.simulateMove(startBoard, moves.playerMove, moves.enemyMove, false);
+
+            SimulatedMove temp = simMove(startBoard, moves.playerMove, moves.enemyMove);//SnakeAPILogic.simulateMove(startBoard, moves.playerMove, moves.enemyMove, false);
             string encodedBoards = SnakeProtocolEncoder.compressSimulatedMove(temp);
 
-            return new APIMsgConclusion() {status = ResponseStatus.Success, msg = encodedBoards, target = MsgTarget.Player };
+            return new APIMsgConclusion() { status = ResponseStatus.Success, msg = encodedBoards, target = MsgTarget.Player };
         }
 
         private APIMsgConclusion handleSimulateMoveDelta(JSONObject jObj) {
@@ -59,6 +75,7 @@ namespace TCP_API.Snake {
             string encodedBoards = SnakeProtocolEncoder.compressSimulatedMove(temp);
             return new APIMsgConclusion() { status = ResponseStatus.Success, msg = encodedBoards, target = MsgTarget.Player };
         }
+        #endregion
 
         private APIMsgConclusion handleGetPossibleMoves(JSONObject jObj) {
             string[] directions = new string[2];

@@ -45,12 +45,16 @@ namespace TCP_API.Snake {
             addPlayerField(ref jBoard, players[0], Constants.JProtocol.player);
             addPlayerField(ref jBoard, players[1], Constants.JProtocol.enemy);
             addBlockedField(ref jBoard, blockedList);
-            
+
             return jBoard;
         }
         #endregion
 
         #region Util
+        public static void addStateField(ref JSONObject jObj, BoardState state) {
+            jObj.AddField(Constants.Fields.boardState, state.ToString());
+        }
+
         public static void addPlayerField(ref JSONObject jObj, SnakePlayer p, string name) {
             JSONObject player = new JSONObject();
             player.AddField(Constants.JProtocol.dir, p.dir);
@@ -73,9 +77,9 @@ namespace TCP_API.Snake {
 
         public static JSONObject generateJBoard(Board b, string playerDir, string enemyDir) {
             JSONObject jObj = new JSONObject();
-            SnakeProtocolEncoder.addPlayerField(ref jObj, b.getPlayers()[0], Constants.JProtocol.player);
-            SnakeProtocolEncoder.addPlayerField(ref jObj, b.getPlayers()[1], Constants.JProtocol.enemy);
-            SnakeProtocolEncoder.addBlockedField(ref jObj, b.getBlockedList());
+            addPlayerField(ref jObj, b.getPlayers()[0], Constants.JProtocol.player);
+            addPlayerField(ref jObj, b.getPlayers()[1], Constants.JProtocol.enemy);
+            addBlockedField(ref jObj, b.getBlockedList());
             return jObj;
         }
         #endregion

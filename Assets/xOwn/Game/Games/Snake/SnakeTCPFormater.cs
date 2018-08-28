@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Linq;
 using TCP_API.Snake;
 using Game;
+using TCP_API;
 
 namespace Snake{
 
@@ -16,23 +17,26 @@ namespace Snake{
         }
 
 
-		public void addNewUpdate(List<Position2D> blocked, int dir, int enemyDir, Position2D playerPos, Position2D enemyPos){
+		public void addNewUpdate(List<Position2D> blocked, int dir, int enemyDir, Position2D playerPos, Position2D enemyPos, BoardState state) {
 			foreach (Position2D c in blocked) {
 				if (oldCoords.Any((p) => GameUtils.comparePos(c, p)))
                     continue;
                 oldCoords.Add (c);
 			}
-            RealtimeTCPController.gotNewBoard (team, formatBoard(dir, enemyDir, playerPos, enemyPos));
+            RealtimeTCPController.gotNewBoard (team, formatBoard(dir, enemyDir, playerPos, enemyPos, state));
 		}
 
 
-		private string formatBoard(int playerDir, int enemyDir, Position2D playerPos, Position2D enemyPos){
+		private string formatBoard(int playerDir, int enemyDir, Position2D playerPos, Position2D enemyPos, BoardState state){
 			SnakePlayer player = decodeSnakePlayer(playerPos, playerDir);
             SnakePlayer enemy = decodeSnakePlayer(enemyPos, enemyDir);
             SnakePlayer[] players = new SnakePlayer[]{player, enemy};
             List<Position2D> blockedCoords = getCurrentBlockedCoords(playerPos, enemyPos);
 
-            return SnakeProtocolEncoder.compressBoard(blockedCoords, players).Print();
+            JSONObject jBoard = SnakeProtocolEncoder.compressBoard(blockedCoords, players);
+            SnakeProtocolEncoder.addStateField(ref jBoard, state);
+
+            return jBoard.Print();
         }
 
         private List<Position2D> getCurrentBlockedCoords(Position2D playerPos, Position2D enemyPos) {

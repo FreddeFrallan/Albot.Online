@@ -23,6 +23,10 @@ namespace Snake{
         private SnakeAPIRouter APIRouter = new SnakeAPIRouter();
 		private bool hasLocalBluePlayer = false, hasLocalRedPlayer = false;
 
+        //
+        private List<Position2D> lastBlocked = new List<Position2D>();
+        private Position2D lastBluePos = new Position2D(), lastRedPos = new Position2D();
+        private int lastBlueDir, lastRedDir;
 
 		public override void initProtocol (CommProtocol protocol){this.protocol = (SnakeProtocol)protocol;}
 		public override void onOutgoingLocalMsg (string msg, PlayerColor color){
@@ -107,8 +111,6 @@ namespace Snake{
 				return;
 			}
             APIMsgConclusion conclusion = APIRouter.handleIncomingMsg(msg.message);
-            if (isGameOver)
-				return;
 
             if (conclusion.target == MsgTarget.Server) {
                 int dir = -1;
@@ -124,20 +126,14 @@ namespace Snake{
 
 		public void handleGameInfo(NetworkMessage msg){
 			GameInfo infoMsg = Deserialize<GameInfo> (msg.reader.ReadBytesAndSize ());
-			if (infoMsg.gameOver == false)
+			if (infoMsg.gameOver == false || isGameOver)
 				return;
 
 			isGameOver = true;
 			canSendServerMsg = false;
-			isListeningForTCP = false;
+			//isListeningForTCP = false;
 			UnetRoomConnector.shutdownCurrentConnection ();
-
-            string gameOverString = Constants.Fields.gameOver;
-			if (infoMsg.winnerColor == Game.PlayerColor.None) 
-				TCPLocalConnection.sendMessage (gameOverString + ": 0");
-			else 
-				TCPLocalConnection.sendMessage (gameOverString + ": " + (infoMsg.winnerColor == PlayerColor.Blue ? "1" : "-1"));
-
+            addFinalUpdate(infoMsg.winnerColor);
 			foreach (int[] crash in infoMsg.crashPos)
 				localRenderer.displayCrash (new Vector2(crash[0], crash[1]));
 
@@ -145,25 +141,43 @@ namespace Snake{
             CurrentGame.gameOver(getGameOverText(infoMsg.winnerColor));
         }
 
+        private void addFinalUpdate(PlayerColor winColor) {
+            BoardState finalState;
+            if (winColor == PlayerColor.None)
+                finalState = BoardState.draw;
+            else
+                finalState = (winColor == PlayerColor.Blue ? BoardState.playerWon : BoardState.enemyWon);
+
+            addLocalBoardUpdate(lastBlocked, lastBlueDir, lastRedDir, lastBluePos, lastRedPos, finalState);
+        }
+
+
 		public void handleBoardUpdate(NetworkMessage msg){
 			BoardUpdate updateMsg = Deserialize<BoardUpdate> (msg.reader.ReadBytesAndSize ());
 			if (updateMsg.updateNumber <= lastUpdateID)
 				return;
 			lastUpdateID = updateMsg.updateNumber;
-
+            
 			localRenderer.handleBoardUpdate (updateMsg);
 
-			List<Position2D> blocked = new List<Position2D> ();
-			blocked.AddRange (updateMsg.blueCoords);
-			blocked.AddRange (updateMsg.redCoords);
-            Position2D bluePos = updateMsg.blueCoords [updateMsg.blueCoords.Length - 1];
-            Position2D redPos = updateMsg.redCoords [updateMsg.redCoords.Length - 1];
+            //Extract information and store it
+			lastBlocked = new List<Position2D> ();
+            lastBlocked.AddRange (updateMsg.blueCoords);
+            lastBlocked.AddRange (updateMsg.redCoords);
+            lastBluePos = updateMsg.blueCoords [updateMsg.blueCoords.Length - 1];
+            lastRedPos = updateMsg.redCoords [updateMsg.redCoords.Length - 1];
+            lastBlueDir = updateMsg.blueDir;
+            lastRedDir = updateMsg.redDir;
 
-			if(hasLocalBluePlayer)
-				TCPFormater [0].addNewUpdate (blocked, updateMsg.blueDir, updateMsg.redDir, bluePos, redPos);
-			if(hasLocalRedPlayer)
-				TCPFormater [1].addNewUpdate (blocked, updateMsg.redDir, updateMsg.blueDir, redPos, bluePos);
+            addLocalBoardUpdate(lastBlocked, updateMsg.blueDir, updateMsg.redDir, lastBluePos, lastRedPos, BoardState.ongoing);
 		}
+
+        private void addLocalBoardUpdate(List<Position2D> blocked, int blueDir, int redDir,Position2D bluePos, Position2D redPos, BoardState state) {
+            if (hasLocalBluePlayer)
+                TCPFormater[0].addNewUpdate(blocked, blueDir, redDir, bluePos, redPos, state);
+            if (hasLocalRedPlayer)
+                TCPFormater[1].addNewUpdate(blocked, redDir, blueDir, redPos, bluePos, state);
+        }
 
 		#region Utils
 		private bool parseCommandMsg(string msg, out int dir){

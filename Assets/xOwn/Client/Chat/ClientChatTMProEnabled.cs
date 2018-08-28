@@ -10,7 +10,9 @@ using AlbotServer;
 using TMPro;
 
 namespace ClientUI {
+
     public class ClientChatTMProEnabled : MonoBehaviour {
+
         public TMP_InputField InputField;
         public LayoutGroup MessagesList;
         public TextMeshProUGUI MessagePrefab;
