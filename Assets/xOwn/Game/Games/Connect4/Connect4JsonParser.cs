@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TCP_API;
 using TCP_API.Connect4;
 using UnityEngine;
 
@@ -8,10 +9,11 @@ namespace Connect4 {
     public class Connect4JsonParser : MonoBehaviour {
 
         
-        public static string formatBoardMsgFromServer(string rawBoard, Game.PlayerColor color) {
+        public static string formatBoardMsgFromServer(string rawBoard, Game.PlayerColor color, BoardState state = BoardState.ongoing) {
             rawBoard = replaceServerFormat(rawBoard, color);
             JSONObject jMsg = new JSONObject();
             jMsg.AddField(Consts.Fields.board, createJGrid(rawBoard));
+            jMsg.AddField(Consts.Fields.boardState, state.ToString());
 
             return jMsg.Print();
         }

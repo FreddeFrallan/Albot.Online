@@ -16,14 +16,13 @@ namespace Snake{
 
 		protected SnakeProtocol protocol;
 		private SnakeRenderer localRenderer;
-		private bool isGameOver = false, gotInitMsg = false;
+		private bool gotInitMsg = false;
 		private uint lastUpdateID = 0;
 		private PlayerColor localPlayerColor = PlayerColor.None, localHumanColor = PlayerColor.None;
 		private SnakeTCPFormater[] TCPFormater = new SnakeTCPFormater[2];
         private SnakeAPIRouter APIRouter = new SnakeAPIRouter();
 		private bool hasLocalBluePlayer = false, hasLocalRedPlayer = false;
 
-        //
         private List<Position2D> lastBlocked = new List<Position2D>();
         private Position2D lastBluePos = new Position2D(), lastRedPos = new Position2D();
         private int lastBlueDir, lastRedDir;
@@ -129,10 +128,6 @@ namespace Snake{
 			if (infoMsg.gameOver == false || isGameOver)
 				return;
 
-			isGameOver = true;
-			canSendServerMsg = false;
-			//isListeningForTCP = false;
-			UnetRoomConnector.shutdownCurrentConnection ();
             addFinalUpdate(infoMsg.winnerColor);
 			foreach (int[] crash in infoMsg.crashPos)
 				localRenderer.displayCrash (new Vector2(crash[0], crash[1]));

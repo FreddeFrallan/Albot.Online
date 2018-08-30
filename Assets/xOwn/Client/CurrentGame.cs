@@ -56,7 +56,7 @@ namespace ClientUI {
         #endregion
 
         #region GameOver
-        public static void gameOver(string gameOverText) {
+        public static void gameOver(string gameOverText, bool sendTCPGameOver = false) {
             string buttonText = CurrentTournament.isInTournament ? "To Tournament" : "Return to lobby";
 
             Action buttonAction;
