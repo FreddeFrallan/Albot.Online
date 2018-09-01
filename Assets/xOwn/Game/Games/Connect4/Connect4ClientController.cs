@@ -25,7 +25,7 @@ namespace Connect4{
         public override void initProtocol (Game.CommProtocol protocol){this.protocol = (Connect4.CommProtocol)protocol;}
 		public override Game.GameType getGameType (){return GameType.Connect4;}
 		protected CommProtocol protocol;
-        private bool gameOver = false;
+        private string lastRawBoard = "";
 
         protected override void initHandlers (){
             apiRouter = new Connect4APIRouter();
@@ -68,6 +68,7 @@ namespace Connect4{
 			byte[] bytes = boardMsg.reader.ReadBytesAndSize ();
 			CommProtocol.StringMessage msg = Deserialize<Game.CommProtocol.StringMessage> (bytes);
 
+            lastRawBoard = msg.msg;
 			string formattedBoard = Connect4JsonParser.formatBoardMsgFromServer(msg.msg, msg.color);
 			ClientPlayersHandler.onReceiveServerMsg (formattedBoard, msg.color);
 		}
@@ -90,15 +91,9 @@ namespace Connect4{
 			byte[] bytes = gameStatusMsg.reader.ReadBytesAndSize ();
 			GameInfo msg = Deserialize<GameInfo> (bytes);
 			
-			if (msg.gameOver && gameOver == false) {
-                gameOver = true;
-                string gameOverString = APIStandardConstants.Fields.gameOver;
-                string winner = "0";
-                if (msg.winnerColor == PlayerColor.Yellow)
-                    winner = "1";
-                else if (msg.winnerColor == PlayerColor.Red)
-                    winner = "-1";
-				TCPLocalConnection.sendMessage (gameOverString + ": " + winner);
+			if (msg.gameOver && isGameOver == false) {
+                BoardState finalState = getFinalState(msg.winnerColor);
+				TCPLocalConnection.sendMessage (Connect4JsonParser.formatBoardMsgFromServer(lastRawBoard, msg.myColor, finalState));
                 localRenderer.onGameOver (msg.winnerColor == PlayerColor.Yellow ? Piece.Yellow : Piece.Red);
 
                 gameOver();

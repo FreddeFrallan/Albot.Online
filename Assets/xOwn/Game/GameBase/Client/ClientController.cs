@@ -29,7 +29,7 @@ namespace Game{
         }
 		public abstract GameType getGameType();
 		protected NetworkConnection serverConnection;
-		protected bool isListeningForTCP = false, canSendServerMsg = true;
+		protected bool isListeningForTCP = false, canSendServerMsg = true, isGameOver = false;
 		protected GameWrapper wrapper  = new GameWrapper ();
 		protected GameUI localGameUI;
         protected Dictionary<PlayerColor, PlayerInfo> currentPlayers = new Dictionary<PlayerColor, PlayerInfo>();
@@ -143,6 +143,8 @@ namespace Game{
 		#endregion
 
 		public void gameOver(){
+            isGameOver = true;
+            canSendServerMsg = false;
             UnetRoomConnector.shutdownCurrentConnection ();
 			localGameUI.stopAllTimers ();
 			ClientPlayersHandler.killBots ();
@@ -157,6 +159,14 @@ namespace Game{
                     return winColor.ToString() + " won!";
                 }
             }
+        }
+
+        public BoardState getFinalState(PlayerColor winColor) {
+            if (winColor == PlayerColor.None)
+                return BoardState.draw;
+            if (currentPlayers[winColor].username == "")
+                return BoardState.playerWon;
+            return BoardState.enemyWon;
         }
 
 		//For in editor
