@@ -10,6 +10,7 @@ using System.Linq;
 using Barebones.MasterServer;
 using AlbotServer;
 using Game;
+using TMPro;
 
 namespace AdminUI{
 
@@ -20,7 +21,7 @@ namespace AdminUI{
         public Button GameJoinButton;
 		public AdminListUiItem ItemPrefab;
 		public LayoutGroup LayoutGroup;
-		public Text currentGames, totalGames;
+		public TextMeshProUGUI currentGames, totalGames;
 		private string selectedID = "";
 		private bool waitingForPreGame = false;
 

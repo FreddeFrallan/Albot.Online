@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Barebones.MasterServer;
+using TMPro;
 
 namespace AdminUI{
 
@@ -12,9 +13,9 @@ namespace AdminUI{
 		public Color DefaultBgColor;
 		public AdminGameSelection ListView;
 		public GameObject LockImage;
-		public Text MapName;
-		public Text Name;
-		public Text Online;
+		public TextMeshProUGUI MapName;
+		public TextMeshProUGUI Name;
+		public TextMeshProUGUI Online;
 		public bool isPreGame;
 
 		public Color SelectedBgColor;
