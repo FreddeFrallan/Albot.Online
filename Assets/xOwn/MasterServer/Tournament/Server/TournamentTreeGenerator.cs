@@ -13,22 +13,29 @@ namespace Tournament.Server {
             List<List<TournamentRound>> treeStructure = new List<List<TournamentRound>>();
 
             for (int col = 0; col < layers; col++) {
-                List<TournamentRound> layer = new List<TournamentRound>();
-                for (int row = 0; row < Mathf.Pow(2, layers - col - 1); row++)  //Create new game Row
-                    layer.Add(new TournamentRound(col, row, gameSpecs));
-
-                treeStructure.Add(layer);
+                List<TournamentRound> newLayer = createLayer((int)Mathf.Pow(2, layers - col - 1), col, gameSpecs);
+                treeStructure.Add(newLayer);
                 if (col == 0) 
                     continue;
 
-                //Link previous layer
-                List<TournamentRound> prevCol = treeStructure[col - 1];
-                for (int j = 0; j < layer.Count; j++) {
-                    prevCol[j * 2].setNextGame(layer[j]);
-                    prevCol[j * 2 + 1].setNextGame(layer[j]);
-                }
+                fullyLinkLayers(treeStructure[col - 1], newLayer); //Link previous layer
             }
             return treeStructure;
+        }
+
+        private static List<TournamentRound> createLayer(int size, int col, PreGameSpecs gameSpecs) {
+            List<TournamentRound> layer = new List<TournamentRound>();
+            for (int row = 0; row < size; row++)  //Create new game Row
+                layer.Add(new TournamentRound(col, row, gameSpecs));
+
+            return layer;
+        }
+
+        private static void fullyLinkLayers(List<TournamentRound> previous, List<TournamentRound> next) {
+            for (int i = 0; i < next.Count; i++) {
+                previous[i * 2].setNextGame(next[i]);
+                previous[i * 2 + 1].setNextGame(next[i]);
+            }
         }
 
 
@@ -61,5 +68,51 @@ namespace Tournament.Server {
             for (int i = 0; i < players.Count; i++) 
                 tree[0][i / 2].addPlayer(players[i]);
         }
+
+        //Creates 
+        public static List<List<TournamentRound>> generateLoserBrackets(List<List<TournamentRound>> tree, PreGameSpecs specs) {
+            int firstLayerSize = tree[0].Count / 2;
+            List<List<TournamentRound>> loserTree = new List<List<TournamentRound>>();
+            loserTree.Add(createLayer(firstLayerSize, 0, specs));
+
+            int treeCounter = 1, loserCounter = 1;
+            while(treeCounter < tree.Count) {
+                List<TournamentRound> treeLayer = tree[treeCounter];
+                List<TournamentRound> loserLayer = loserTree[loserCounter - 1];
+
+                float combinedSize = (float)loserLayer.Count / 2 + (float)treeLayer.Count / 2;
+                if (Mathf.Log(combinedSize, 2) % 1 == 0) { //Check if our new layer can be integrated with the normal tree
+                    List<TournamentRound> mergedLayer = createLayer((int)combinedSize, loserCounter, specs);
+                    loserTree.Add(mergedLayer);
+
+                    for (int i = 0; i < loserLayer.Count; i++) { //Link the previous layer but expect the losing players to join.
+                        loserLayer[i].setNextGame(mergedLayer[i]);
+                        treeLayer[i].setNextLoserGame(mergedLayer[i]);
+                    }
+
+                    treeCounter++; loserCounter++;
+                    continue;
+                }
+                //Since we can't just combine with the normal trees layer we need to create another layer that's just internat to our loser bracket
+
+                List<TournamentRound> newLayer = createLayer(loserLayer.Count / 2, loserCounter, specs);
+                loserTree.Add(newLayer);
+                fullyLinkLayers(loserLayer, newLayer);
+                loserCounter++; // Since we did not merge with original tree we only increment losers
+
+                if (newLayer.Count == 1)//If we have ghost layer with size 1, we have reached the pre final game
+                    break;
+            }
+
+            //Add Final game that combines the two trees
+            List<TournamentRound> finalLayer = createLayer(1, loserTree.Count, specs);
+            tree[tree.Count - 1][0].setNextGame(finalLayer[0]);
+            loserTree[loserTree.Count - 1][0].setNextGame(finalLayer[0]);
+            loserTree.Add(finalLayer);
+
+            return loserTree;
+        }
+
+
     }
 }

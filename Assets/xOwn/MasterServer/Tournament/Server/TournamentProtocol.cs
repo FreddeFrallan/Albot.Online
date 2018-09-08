@@ -29,6 +29,7 @@ namespace Tournament {
         public GameType type;
         public string tournamentID;
         public int maxPlayers;
+        public bool doubleElimination;
         public PlayerInfo[] players;
     }
 

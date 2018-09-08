@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Tournament.Server;
 using AlbotServer;
+using System.Linq;
 
 namespace Tournament.Client {
 
@@ -13,20 +14,20 @@ namespace Tournament.Client {
         private List<List<VisualTournamentRound>> tree = new List<List<VisualTournamentRound>>();
         private TournamentTree tournament;
 
-        private float firstColSpacing = 2;
-        private float rowSpacing = 8;
+        private float firstRowSpacing = 2;
+        private float colSpacing = 8;
         private int rowCounter = 0;
 
-        public void init(PlayerInfo[] playerOrder, PreGameSpecs gameSpecs) {
-            generateTree(playerOrder, gameSpecs);
+        public void init(PlayerInfo[] playerOrder, PreGameSpecs gameSpecs, bool doubleElimination = false) {
+            generateTree(playerOrder, gameSpecs, doubleElimination);
         }
 
-        private void generateTree(PlayerInfo[] playerOrder, PreGameSpecs gameSpecs) {
+        private void generateTree(PlayerInfo[] playerOrder, PreGameSpecs gameSpecs, bool doubleElimination) {
             List<TournamentPlayer> players = new List<TournamentPlayer>();
             foreach(PlayerInfo p in playerOrder)
                 players.Add(new TournamentPlayer() {info = p});
 
-            tournament = new TournamentTree(players, gameSpecs, false);
+            tournament = new TournamentTree(players, gameSpecs, false, doubleElimination);
             renderVisualTree();
         }
 
@@ -43,22 +44,32 @@ namespace Tournament.Client {
             clearOldTree();
 
             List<List<TournamentRound>> serverTree = tournament.getTree();
-            float startY = 0, yIncrement = firstColSpacing;
+            float roundHeight = 1.16f; //Should not have to be hardcoded here
+
+            //Create appropirate y spacing in the rows
+            int biggestLayerSize = serverTree.OrderByDescending(l => l.Count).ToArray()[0].Count;
+            Dictionary<int, float> layerSizeToYIncrement = new Dictionary<int, float>();
+            int counter = 0;
+            for(int i = biggestLayerSize; i > 0; i /= 2) {
+                layerSizeToYIncrement.Add(i, Mathf.Pow(2, counter) * firstRowSpacing);
+                counter++;
+            }
+
 
             for (int col = 0; col < serverTree.Count; col++) {
+                float yIncrement = layerSizeToYIncrement[serverTree[col].Count];
                 List<VisualTournamentRound> visualCol = new List<VisualTournamentRound>();
+                float rowHeight = (serverTree[col].Count - 1) * yIncrement + roundHeight;
+                float startY = -rowHeight / 2;
 
                 for (int i = 0; i < serverTree[col].Count; i++) {
-                    Vector3 spawnPos = new Vector3(col * rowSpacing, startY + yIncrement * i, 0);
+                    Vector3 spawnPos = new Vector3(col * colSpacing, startY + yIncrement * i, 0);
                     GameObject tempObj = Instantiate(gamePrefab, spawnPos, Quaternion.identity);
 
                     VisualTournamentRound game = tempObj.GetComponent<VisualTournamentRound>();
                     game.init(serverTree[col][i]);
                     visualCol.Add(game);
                 }
-
-                startY += yIncrement * 0.5f;
-                yIncrement *= 2;
                 tree.Add(visualCol);
             }
         }

@@ -186,6 +186,7 @@ GameObject:
   - component: {fileID: 615574642}
   - component: {fileID: 615574641}
   - component: {fileID: 615574644}
+  - component: {fileID: 615574645}
   m_Layer: 0
   m_Name: TournamentCamera
   m_TagString: MainCamera
@@ -247,7 +248,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 615574640}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 12, y: 7, z: -10}
+  m_LocalPosition: {x: 12, y: 0, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -265,6 +266,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tournamentCamera: {fileID: 615574642}
+--- !u!114 &615574645
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 615574640}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f45934ab82ce64947b8854c60e27488b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  visualTree: {fileID: 1168714215}
+  amountOfPlayers: 16
 --- !u!1 &1168714214
 GameObject:
   m_ObjectHideFlags: 0

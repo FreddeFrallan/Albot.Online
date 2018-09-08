@@ -14,10 +14,11 @@ namespace Tournament.Server {
     public class TournamentTree{
         private List<TournamentRound> currentGames = new List<TournamentRound>();
         private List<List<TournamentRound>> treeStructure = new List<List<TournamentRound>>();
+        private List<List<TournamentRound>> losersTree = new List<List<TournamentRound>>();
         public List<TournamentPlayer> players { get; private set; }
         public int layers { get; private set; }
 
-        public TournamentTree(List<TournamentPlayer> players, PreGameSpecs gameSpecs, bool insertRandomly = true) {
+        public TournamentTree(List<TournamentPlayer> players, PreGameSpecs gameSpecs, bool insertRandomly = true, bool doubleElimination = false) {
             this.players = players;
             layers = (int)Mathf.Ceil(Mathf.Log(players.Count, 2));
             layers = layers <= 0 ? 1 : layers;
@@ -25,7 +26,13 @@ namespace Tournament.Server {
             treeStructure = TournamentTreeGenerator.generateTreeStructure(layers, gameSpecs);
             TournamentTreeGenerator.addBots(treeStructure, this.players);
 
-            if(insertRandomly)
+            if (doubleElimination) {
+                losersTree = TournamentTreeGenerator.generateLoserBrackets(treeStructure, gameSpecs);
+                for (int i = 0; i < losersTree.Count; i++)// Add losers bracket to treeStructure
+                    treeStructure.Add(losersTree[losersTree.Count - 1 - i]); 
+            }
+
+            if (insertRandomly)
                 TournamentTreeGenerator.insertPlayersRandomly(treeStructure, this.players);
             else
                 TournamentTreeGenerator.insertPlayersLinear(treeStructure, this.players);
@@ -42,6 +49,7 @@ namespace Tournament.Server {
         public TournamentRound getRound(RoundID ID) { return getRound(ID.col, ID.row); }
         public TournamentRound getRound(int col, int row) { return treeStructure[col][row]; }
         public List<List<TournamentRound>> getTree() { return treeStructure; }
+        public List<List<TournamentRound>> getLosersTree() { return losersTree; }
         public PlayerInfo[] getPlayerOrder() {
             List<PlayerInfo> players = new List<PlayerInfo>();
             foreach (TournamentRound r in treeStructure[0])

@@ -12,7 +12,7 @@ namespace Tournament.Server {
 
         public bool hasPossibleBotGame = false;
         public int stashedRoundsUntilBotGame; //Simple optimization
-        public TournamentRound nextRound;
+        public TournamentRound nextRound, nextLoserRound;
         public PreGame thePregame;
         public string preGameRoomID;
 
@@ -122,6 +122,7 @@ namespace Tournament.Server {
             if(theTournament != null)
                 theTournament.updateRound(id);
         }
+        public void setNextLoserGame(TournamentRound nextRound) { this.nextRound = nextLoserRound; }
         public void setNextGame(TournamentRound nextRound) { this.nextRound = nextRound; }
         public void setServerVariables(IPeer admin, RunningTournamentGame runningGame) {
             isServer = true;
