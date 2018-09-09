@@ -29,13 +29,20 @@ namespace Tournament.Server {
             if (doubleElimination) {
                 losersTree = TournamentTreeGenerator.generateLoserBrackets(treeStructure, gameSpecs);
                 for (int i = 0; i < losersTree.Count; i++)// Add losers bracket to treeStructure
-                    treeStructure.Add(losersTree[losersTree.Count - 1 - i]); 
+                    treeStructure.Add(losersTree[losersTree.Count - 1 - i]);
+                resetRoundIDs();
             }
 
             if (insertRandomly)
                 TournamentTreeGenerator.insertPlayersRandomly(treeStructure, this.players);
             else
                 TournamentTreeGenerator.insertPlayersLinear(treeStructure, this.players);
+        }
+
+        private void resetRoundIDs() {
+            for (int col = 0; col < treeStructure.Count; col++)
+                for (int row = 0; row < treeStructure[col].Count; row++)
+                    treeStructure[col][row].id = new RoundID() { col = col, row = row };
         }
 
         public void playGame(int col, int row) {treeStructure[col][row].startGame();}
@@ -47,7 +54,7 @@ namespace Tournament.Server {
 
         public TournamentRoundDTO getRoundDTO(RoundID id) {return getRound(id).createDTO();}
         public TournamentRound getRound(RoundID ID) { return getRound(ID.col, ID.row); }
-        public TournamentRound getRound(int col, int row) { return treeStructure[col][row]; }
+        public TournamentRound getRound(int col, int row) {return treeStructure[col][row];}
         public List<List<TournamentRound>> getTree() { return treeStructure; }
         public List<List<TournamentRound>> getLosersTree() { return losersTree; }
         public PlayerInfo[] getPlayerOrder() {

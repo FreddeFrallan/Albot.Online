@@ -21,12 +21,14 @@ namespace Tournament {
         private static VisualTournamentTree visualSingleton;
 
         private void Start() {
+            if (enabled == false)
+                return;
+            isTraining = true;
             visualSingleton = visualTree;
         }
 
         // Update is called once per frame
         void Update() {
-            isTraining = true;
             if (Input.GetKeyDown(KeyCode.Space)) {
                 List<TournamentPlayer> players = createFakePlayers(amountOfPlayers);
                 tree = new TournamentTree(players, new PreGameSpecs(), true, true);
@@ -46,7 +48,7 @@ namespace Tournament {
             return players;
         }
 
-        public static void playGame(int row, int col) {
+        public static void playGame(int col, int row) {
             tree.getRound(col, row).forceRandomWinner();
             List<TournamentRoundDTO> temp = new List<TournamentRoundDTO>();
             foreach (List<TournamentRound> layer in tree.getTree()) {

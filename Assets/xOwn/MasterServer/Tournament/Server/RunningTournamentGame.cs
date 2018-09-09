@@ -15,10 +15,10 @@ namespace Tournament.Server {
         private TournamentGameInfo gameInfo;
         private PreGameSpecs gameSpecs;
 
-        public RunningTournamentGame(TournamentGameInfo gameInfo, PreGameSpecs gameSpecs) {
+        public RunningTournamentGame(TournamentGameInfo gameInfo, PreGameSpecs gameSpecs, bool doubleElemination) {
             this.gameInfo = gameInfo;
             this.gameSpecs = gameSpecs;
-            gameTree = new TournamentTree(gameInfo.players, gameSpecs);
+            gameTree = new TournamentTree(gameInfo.players, gameSpecs, true, doubleElemination);
             gameTree.traverseRounds(r => r.setServerVariables(gameInfo.admin, this));
             this.gameInfo.specs.players = gameTree.getPlayerOrder();
         }
@@ -44,7 +44,7 @@ namespace Tournament.Server {
         #endregion
 
         private void playerDissconnected(IPeer peer) {
-            Debug.LogError("Peer dissconnected from running tournament: " + peer.Id);
+            Debug.LogError("Peer dissconnected from running tournament: " + peer.Id); 
         }
     }
 
@@ -54,6 +54,7 @@ namespace Tournament.Server {
         public TournamentInfoMsg specs;
         public List<IPeer> connectedPeers;
         public List<TournamentPlayer> players;
+        public bool doubleElimination;
     }
 
 

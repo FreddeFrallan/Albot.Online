@@ -36,7 +36,7 @@ namespace ClientUI {
         }
         private static void initCurrentTree(TournamentInfoMsg infoMsg) {
             currentTree = GameObject.FindGameObjectWithTag("GameController").GetComponent<VisualTournamentTree>();
-            currentTree.init(infoMsg.players, ServerUtils.tournamentInfoToGameSpecs(infoMsg));
+            currentTree.init(infoMsg.players, ServerUtils.tournamentInfoToGameSpecs(infoMsg), infoMsg.doubleElimination);
             isInTournament = true;
         }
 

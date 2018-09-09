@@ -21,6 +21,7 @@ namespace Tournament.Server {
                 connectedPeers = new List<IPeer>(),
                 players = new List<TournamentPlayer>(),
                 hostName = "Admin",
+                doubleElimination = specs.doubleElimination
             };
         }
 
@@ -55,7 +56,7 @@ namespace Tournament.Server {
             }
 
             gameInfo.connectedPeers.ForEach(p => p.Disconnected -= playerDissconnected);
-            game = new RunningTournamentGame(gameInfo, ServerUtils.tournamentInfoToGameSpecs(gameInfo.specs));
+            game = new RunningTournamentGame(gameInfo, ServerUtils.tournamentInfoToGameSpecs(gameInfo.specs), gameInfo.doubleElimination);
             gameInfo.connectedPeers.ForEach(p => p.SendMessage((short)CustomMasterServerMSG.startTournament, gameInfo.specs));
             rawMsg.Respond(gameInfo.specs, ResponseStatus.Success);
             return true;

@@ -122,7 +122,7 @@ public class MsfQuickBuild{
 		BuildAdminClient (path, BuildTarget.StandaloneWindows);
 	}
 
-	[MenuItem("Tools/Msf/Build Master + Spawner %&m", false, 11)]
+	[MenuItem("Tools/Msf/Build Master + Spawner %&n", false, 11)]
 	public static void BuildMasterAndSpawnerMenu(){
 		var path = GetPath();
 		if (!string.IsNullOrEmpty(path))

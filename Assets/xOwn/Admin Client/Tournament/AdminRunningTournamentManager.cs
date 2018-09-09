@@ -49,7 +49,7 @@ namespace AdminUI {
         public static void onTournamentStarted(TournamentInfoMsg tournamentInfo) {
             singleton.tournamentInfo = tournamentInfo;
             singleton.currentTree = GameObject.FindGameObjectWithTag("GameController").GetComponent<VisualTournamentTree>();
-            singleton.currentTree.init(tournamentInfo.players, ServerUtils.tournamentInfoToGameSpecs(tournamentInfo));
+            singleton.currentTree.init(tournamentInfo.players, ServerUtils.tournamentInfoToGameSpecs(tournamentInfo), tournamentInfo.doubleElimination);
             singleton.runningTournament = true;
         }
 

@@ -28,7 +28,7 @@ namespace Tournament.Server {
         private RunningTournamentGame theTournament;
 
         private RoundState state = RoundState.Empty;
-        private RoundID id;
+        public RoundID id;
 
 
         public TournamentRound(int col, int row, PreGameSpecs gameSpecs) {
@@ -107,14 +107,20 @@ namespace Tournament.Server {
         public void forceRandomWinner() {
             int randomPlayer = getRandomWinner();
             setGameOver(players[randomPlayer]);
+
         }
+        private List<TournamentPlayer> getLosers(TournamentPlayer winner) { return players.Where(p => p != winner).ToList(); }
         private int getRandomWinner() {return (Random.Range(0, 100) > 50) ? 0 : 1;}
         public void setGameOver(TournamentPlayer winner) {
             winner.isWinning = true;
             setState(RoundState.Over);
             score.winner = winner.info.username;
+
             if (nextRound != null)
                 nextRound.addPlayer(winner);
+            if(nextLoserRound != null) 
+                getLosers(winner).ForEach(p => nextLoserRound.addPlayer(p));
+
         }
         #endregion
 
@@ -124,7 +130,7 @@ namespace Tournament.Server {
             if(theTournament != null)
                 theTournament.updateRound(id);
         }
-        public void setNextLoserGame(TournamentRound nextRound) { this.nextRound = nextLoserRound; }
+        public void setNextLoserGame(TournamentRound nextRound) {this.nextLoserRound = nextRound; }
         public void setNextGame(TournamentRound nextRound) { this.nextRound = nextRound; }
         public void setServerVariables(IPeer admin, RunningTournamentGame runningGame) {
             isServer = true;

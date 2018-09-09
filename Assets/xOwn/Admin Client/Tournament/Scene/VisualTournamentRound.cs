@@ -31,7 +31,7 @@ namespace Tournament.Client {
         }
 
         private void initClicks() {
-            if (AdminRunningTournamentManager.isAdmin()) {
+            if (AdminRunningTournamentManager.isAdmin() || TournamentTest.isTraining) {
                 leftClick = adminLeftClick; rightClick = adminRightClick;
             }
             else {
@@ -62,7 +62,7 @@ namespace Tournament.Client {
         }
         private void adminRightClick() {
             if (TournamentTest.isTraining) {
-                TournamentTest.playGame(id.row, id.col);
+                TournamentTest.playGame(id.col, id.row);
                 return;
             }
             if (state == RoundState.Lobby) {

@@ -74,6 +74,10 @@ namespace Tournament.Server {
             int firstLayerSize = tree[0].Count / 2;
             List<List<TournamentRound>> loserTree = new List<List<TournamentRound>>();
             loserTree.Add(createLayer(firstLayerSize, 0, specs));
+            for(int i = 0; i < firstLayerSize; i++) { //Link the first layer to the first loser layer
+                tree[0][i * 2].setNextLoserGame(loserTree[0][i]);
+                tree[0][i * 2 + 1].setNextLoserGame(loserTree[0][i]);
+            }
 
             int treeCounter = 1, loserCounter = 1;
             while(treeCounter < tree.Count) {

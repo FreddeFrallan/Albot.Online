@@ -11,29 +11,30 @@ namespace Tournament.Client {
         private TournamentUIObject lastSelected;
         public float camSpeed = 1f;
 
-        public void LateUpdate() {
-            if (Input.GetKey(KeyCode.RightArrow)) {
-                transform.Translate(new Vector3(camSpeed * 5 * Time.deltaTime, 0, 0));
-            }
-            if (Input.GetKey(KeyCode.LeftArrow)) {
-                transform.Translate(new Vector3(-camSpeed * 5 * Time.deltaTime, 0, 0));
-            }
-            if (Input.GetKey(KeyCode.DownArrow)) {
-                transform.Translate(new Vector3(0, -camSpeed * 5 * Time.deltaTime, 0));
-            }
-            if (Input.GetKey(KeyCode.UpArrow)) {
-                transform.Translate(new Vector3(0, camSpeed * 5 * Time.deltaTime, 0));
-            }
-        }
-
-        #region MouseControlls
         void Update() {
+            keyBoardControlls();
             if (Input.GetMouseButtonDown(0) && getSelectedObject())
                 lastSelected.onLeftClick();
             if (Input.GetMouseButtonDown(1) && getSelectedObject())
                 lastSelected.onRightClick();
         }
 
+        private void keyBoardControlls() {
+            if (Input.GetKey(KeyCode.RightArrow))
+                moveCamera(1, 0, camSpeed);
+            if (Input.GetKey(KeyCode.LeftArrow))
+                moveCamera(-1, 0, camSpeed);
+            if (Input.GetKey(KeyCode.DownArrow))
+                moveCamera(0, -1, camSpeed);
+            if (Input.GetKey(KeyCode.UpArrow))
+                moveCamera(0, 1, camSpeed);
+        }
+
+        private void moveCamera(float x, float y, float speed) {
+            transform.Translate(new Vector3(x, y, 0) * camSpeed * Time.deltaTime);
+        }
+
+        #region MouseControlls
         private bool getSelectedObject() {
             RaycastHit hit;
             Ray ray = tournamentCamera.ScreenPointToRay(Input.mousePosition);

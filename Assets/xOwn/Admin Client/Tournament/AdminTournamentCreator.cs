@@ -19,7 +19,7 @@ namespace AdminUI {
         public void createButtonPressed() {
             if (waitingForResponse)
                 return;
-            TournamentInfoMsg msg = new TournamentInfoMsg() { type = Game.GameType.Snake, maxPlayers = 16 };
+            TournamentInfoMsg msg = new TournamentInfoMsg() { type = Game.GameType.Snake, maxPlayers = 16, doubleElimination = true };
             Msf.Connection.SendMessage((short)CustomMasterServerMSG.createTournament, msg, handleTournamentCreated);
             waitingForResponse = true;
         }
