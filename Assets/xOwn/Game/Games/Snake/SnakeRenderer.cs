@@ -9,10 +9,10 @@ namespace Snake{
 	public class SnakeRenderer : GameRenderer {
 
 		public SnakeSmoothRenderer smoothRenderer;
-		public GameObject bgBrick, collisionBlock;
+		public GameObject bgBrick, collisionBlock, gridContainer;
 		public Material redHead, redBody, blueHead, blueBody;
 
-		private float blockSize = 1.15f;
+		private float blockSize = 1.05f;
 		private SnakeBlock[,] blocks;
 		private bool isInit = false;
         private int gridSize;
@@ -31,6 +31,7 @@ namespace Snake{
 					float posX = -(gridSize * blockSize / 2) + blockSize * x;
 					float posZ = -(gridSize * blockSize / 2) + blockSize * z;
 					GameObject temp = Instantiate (bgBrick, new Vector3(posX, 0, posZ), bgBrick.transform.rotation);
+                    temp.transform.parent = gridContainer.transform;
 					blocks [x, z] = temp.GetComponent<SnakeBlock> ();
 				}
 		}

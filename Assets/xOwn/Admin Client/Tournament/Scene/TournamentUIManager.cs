@@ -9,8 +9,22 @@ namespace Tournament.Client {
         [SerializeField]
         private Camera tournamentCamera;
         private TournamentUIObject lastSelected;
+        public float camSpeed = 1f;
 
-
+        public void LateUpdate() {
+            if (Input.GetKey(KeyCode.RightArrow)) {
+                transform.Translate(new Vector3(camSpeed * 5 * Time.deltaTime, 0, 0));
+            }
+            if (Input.GetKey(KeyCode.LeftArrow)) {
+                transform.Translate(new Vector3(-camSpeed * 5 * Time.deltaTime, 0, 0));
+            }
+            if (Input.GetKey(KeyCode.DownArrow)) {
+                transform.Translate(new Vector3(0, -camSpeed * 5 * Time.deltaTime, 0));
+            }
+            if (Input.GetKey(KeyCode.UpArrow)) {
+                transform.Translate(new Vector3(0, camSpeed * 5 * Time.deltaTime, 0));
+            }
+        }
 
         #region MouseControlls
         void Update() {

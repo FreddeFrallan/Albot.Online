@@ -14,7 +14,7 @@ namespace Tournament.Client {
         private List<List<VisualTournamentRound>> tree = new List<List<VisualTournamentRound>>();
         private TournamentTree tournament;
 
-        private float firstRowSpacing = 2;
+        private float firstRowSpacing = 3;
         private float colSpacing = 8;
         private int rowCounter = 0;
 
@@ -44,7 +44,7 @@ namespace Tournament.Client {
             clearOldTree();
 
             List<List<TournamentRound>> serverTree = tournament.getTree();
-            float roundHeight = 1.16f; //Should not have to be hardcoded here
+            float roundHeight = 3f; //Should not have to be hardcoded here
 
             //Create appropirate y spacing in the rows
             int biggestLayerSize = serverTree.OrderByDescending(l => l.Count).ToArray()[0].Count;

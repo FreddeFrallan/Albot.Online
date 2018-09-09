@@ -15,11 +15,18 @@ namespace Tournament {
         "Ubenstrauff", "David", "Erik", "Gombi", "Uluf", "Azerbajjn", "Kotlin", "Linux"};
 
         public VisualTournamentTree visualTree;
-        private TournamentTree tree;
+        private static TournamentTree tree;
         public int amountOfPlayers = 16;
+        public static bool isTraining = false;
+        private static VisualTournamentTree visualSingleton;
+
+        private void Start() {
+            visualSingleton = visualTree;
+        }
 
         // Update is called once per frame
         void Update() {
+            isTraining = true;
             if (Input.GetKeyDown(KeyCode.Space)) {
                 List<TournamentPlayer> players = createFakePlayers(amountOfPlayers);
                 tree = new TournamentTree(players, new PreGameSpecs(), true, true);
@@ -37,6 +44,17 @@ namespace Tournament {
                 players.Add(new TournamentPlayer() { info = info});
             }
             return players;
+        }
+
+        public static void playGame(int row, int col) {
+            tree.getRound(col, row).forceRandomWinner();
+            List<TournamentRoundDTO> temp = new List<TournamentRoundDTO>();
+            foreach (List<TournamentRound> layer in tree.getTree()) {
+                foreach(TournamentRound r in layer) {
+                    temp.Add(r.createDTO());
+                }
+            }
+            visualSingleton.updateRounds(temp.ToArray());
         }
     }
 }

@@ -61,6 +61,10 @@ namespace Tournament.Client {
                 AdminUpdateManager.startSpectateGame(preGameRoomID);
         }
         private void adminRightClick() {
+            if (TournamentTest.isTraining) {
+                TournamentTest.playGame(id.row, id.col);
+                return;
+            }
             if (state == RoundState.Lobby) {
                 if (serverRound.canStartGame())
                     AdminRunningTournamentManager.startRoundGame(id);

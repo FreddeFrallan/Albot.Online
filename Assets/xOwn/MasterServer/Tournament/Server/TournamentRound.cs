@@ -104,11 +104,13 @@ namespace Tournament.Server {
         }
 
         //******************************* TODO
-        private void forceRandomWinner() {
-            Debug.LogError("No humans forcing random bot win, NOT YET IMPLEMENTED");
+        public void forceRandomWinner() {
+            int randomPlayer = getRandomWinner();
+            setGameOver(players[randomPlayer]);
         }
         private int getRandomWinner() {return (Random.Range(0, 100) > 50) ? 0 : 1;}
         public void setGameOver(TournamentPlayer winner) {
+            winner.isWinning = true;
             setState(RoundState.Over);
             score.winner = winner.info.username;
             if (nextRound != null)
