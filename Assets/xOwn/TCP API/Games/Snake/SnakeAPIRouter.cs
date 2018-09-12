@@ -35,10 +35,10 @@ namespace TCP_API.Snake {
             return activateSimulateMove(jObj, (b, p, e) => {return SnakeAPILogic.simulateMove(b, p, e, false);});
         }
         private APIMsgConclusion handleSimulatePlayerMove(JSONObject jObj) {
-            return activateSimulateMove(jObj, (b, p, e) => {return SnakeAPILogic.simulateSingleMove(b, p, false, false);});
+            return activateSimulateMove(jObj, (b, p, e) => {return SnakeAPILogic.simulateSingleMove(b, p, true, false);});
         }
         private APIMsgConclusion handleSimulateEnemyMove(JSONObject jObj) {
-            return activateSimulateMove(jObj, (b, p, e) => {return SnakeAPILogic.simulateSingleMove(b, e, true, false);});
+            return activateSimulateMove(jObj, (b, p, e) => {return SnakeAPILogic.simulateSingleMove(b, e, false, false);});
         }
 
         private APIMsgConclusion activateSimulateMove(JSONObject jObj, Func<Board, string, string, SimulatedMove> simMove) {
