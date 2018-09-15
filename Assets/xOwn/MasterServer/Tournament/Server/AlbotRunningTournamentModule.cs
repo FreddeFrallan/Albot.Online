@@ -34,8 +34,12 @@ namespace Barebones.MasterServer {
 
         private void updateRound(string tournamentID, RoundID roundID) {
             RunningTournamentGame game;
-            if (findGame(tournamentID, out game))
+            if (findGame(tournamentID, out game)) {
+                Debug.LogError("Updating " + tournamentID + " for round " + roundID.col + "." + roundID.row);
                 game.updateRound(roundID);
+            }
+            else
+                Debug.LogError("Did not find game: " + tournamentID + " for round " + roundID.col + "." + roundID.row);
         }
 
         public void closeTournament(string roomID) {

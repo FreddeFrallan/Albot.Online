@@ -118,5 +118,10 @@ namespace Tournament.Server {
         }
 
 
+        public static void setNewRoundIDs(List<List<TournamentRound>> tree) {
+            for (int row = 0; row < tree.Count; row++)
+                for (int col = 0; col < tree[row].Count; col++)
+                    tree[row][col].id = new RoundID() { col = col, row = row };
+        }
     }
 }

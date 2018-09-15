@@ -15,6 +15,7 @@ namespace AdminUI {
         private static AdminRunningTournamentManager singleton;
         private VisualTournamentTree currentTree;
         private TournamentInfoMsg tournamentInfo;
+        private List<TournamentTreeUpdate> allUpdates = new List<TournamentTreeUpdate>();
         private bool runningTournament = false, spectating = false;
         private RoundID currentGame;
 
@@ -30,9 +31,9 @@ namespace AdminUI {
 
             if (Input.GetKeyDown(KeyCode.Escape)) {
                 if (spectating) {
-                    print(gameObject.name);
                     AdminUIManager.requestGotoState(ClientUI.ClientUIStates.PlayingTournament, () => {
-                        AdminRunningTournamentManager.onTournamentStarted(tournamentInfo);
+                        spectating = false;
+                        initVisualTree(tournamentInfo);
                     });
                 }
             }
@@ -58,17 +59,33 @@ namespace AdminUI {
         }
         #endregion
 
+        public static void gotTournamentUpdate(TournamentInfoMsg msg) { singleton.tournamentInfo = msg; }
         public static void onStartSpectating() { singleton.spectating = true;}
         public static bool isAdmin() { return singleton != null; }
         public static void startRoundGame(RoundID id) { singleton.startGame(id); }
         public static void startRoundLobby(RoundID id) { singleton.openRoundLobby(id); }
-        private void handleTournamentUpdate(IIncommingMessage rawMsg) {currentTree.updateRounds(rawMsg.Deserialize<TournamentTreeUpdate>().rounds);}
+        private void handleTournamentUpdate(IIncommingMessage rawMsg) {
+            TournamentTreeUpdate update = rawMsg.Deserialize<TournamentTreeUpdate>();
+            print("Updates");
+            foreach (TournamentRoundDTO r in update.rounds)
+                print(r.ID.col + "." + r.ID.row+ "  :" + r.state);
+
+            currentTree.updateRounds(rawMsg.Deserialize<TournamentTreeUpdate>().rounds);
+            singleton.allUpdates.Add(rawMsg.Deserialize<TournamentTreeUpdate>());
+        }
         public static void onTournamentStarted(TournamentInfoMsg tournamentInfo) {
             singleton.tournamentInfo = tournamentInfo;
-            singleton.currentTree = GameObject.FindGameObjectWithTag("GameController").GetComponent<VisualTournamentTree>();
-            singleton.currentTree.init(tournamentInfo.players, ServerUtils.tournamentInfoToGameSpecs(tournamentInfo), tournamentInfo.doubleElimination);
+            singleton.allUpdates.Clear();
             singleton.runningTournament = true;
+
+            initVisualTree(tournamentInfo);
         }
 
+        private static void initVisualTree(TournamentInfoMsg tournamentInfo) {
+            singleton.currentTree = GameObject.FindGameObjectWithTag("GameController").GetComponent<VisualTournamentTree>();
+            singleton.currentTree.init(tournamentInfo.players, ServerUtils.tournamentInfoToGameSpecs(tournamentInfo), tournamentInfo.doubleElimination);
+            foreach (TournamentTreeUpdate u in singleton.allUpdates)
+                singleton.currentTree.updateRounds(u.rounds);
+        }
     }
 }

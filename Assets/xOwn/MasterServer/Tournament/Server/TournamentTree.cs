@@ -42,7 +42,7 @@ namespace Tournament.Server {
         private void resetRoundIDs() {
             for (int col = 0; col < treeStructure.Count; col++)
                 for (int row = 0; row < treeStructure[col].Count; row++)
-                    treeStructure[col][row].id = new RoundID() { col = col, row = row };
+                    treeStructure[col][row].setNewId(col, row);
         }
 
         public void playGame(int col, int row) {treeStructure[col][row].startGame();}

@@ -11,7 +11,6 @@ public class TCPMessageQueue{
 
 	//Could possibly be more optimized later, trying to not check for null every msg, might be benefitical
 	public static void addMessage(string message, int playerID){
-        Debug.Log("TCP IN: " + message);
 		message = message.Trim ();
 		ReceivedLocalMessage newMsg = new ReceivedLocalMessage (message, playerID);
 		messages.Add (newMsg);

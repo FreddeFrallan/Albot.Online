@@ -130,6 +130,10 @@ namespace Tournament.Server {
             if(theTournament != null)
                 theTournament.updateRound(id);
         }
+        public void setNewId(int col, int row) {
+            id = new RoundID() { col = col, row = row };
+            this.gameSpecs.tournamentRoundID = id;
+        }
         public void setNextLoserGame(TournamentRound nextRound) {this.nextLoserRound = nextRound; }
         public void setNextGame(TournamentRound nextRound) { this.nextRound = nextRound; }
         public void setServerVariables(IPeer admin, RunningTournamentGame runningGame) {
