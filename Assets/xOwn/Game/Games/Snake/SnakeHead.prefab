@@ -21,7 +21,7 @@ GameObject:
   - component: {fileID: 4745785237172076}
   - component: {fileID: 120124720191528048}
   - component: {fileID: 114772085987930536}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: TailPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -39,7 +39,7 @@ GameObject:
   - component: {fileID: 33417303550472014}
   - component: {fileID: 23553531892598220}
   - component: {fileID: 114638114224808920}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: SnakeHead
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -84,8 +84,8 @@ MeshRenderer:
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
+  m_LightProbeUsage: 0
+  m_ReflectionProbeUsage: 3
   m_RenderingLayerMask: 4294967295
   m_Materials:
   - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
@@ -234,6 +234,6 @@ LineRenderer:
     numCapVertices: 0
     alignment: 0
     textureMode: 0
-    generateLightingData: 0
+    generateLightingData: 1
   m_UseWorldSpace: 1
   m_Loop: 0
