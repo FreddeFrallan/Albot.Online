@@ -15,7 +15,7 @@ namespace AdminUI {
         private static AdminRunningTournamentManager singleton;
         private VisualTournamentTree currentTree;
         private TournamentInfoMsg tournamentInfo;
-        private bool runningTournament = false;
+        private bool runningTournament = false, spectating = false;
         private RoundID currentGame;
 
         private void Start() {
@@ -24,6 +24,22 @@ namespace AdminUI {
         }
 
 
+        private void Update() {
+            if (runningTournament == false)
+                return;
+
+            if (Input.GetKeyDown(KeyCode.Escape)) {
+                if (spectating) {
+                    print(gameObject.name);
+                    AdminUIManager.requestGotoState(ClientUI.ClientUIStates.PlayingTournament, () => {
+                        AdminRunningTournamentManager.onTournamentStarted(tournamentInfo);
+                    });
+                }
+            }
+        }
+
+
+        #region Rounds
         private void openRoundLobby(RoundID id) {
             if (runningTournament == false)
                 return;
@@ -32,7 +48,6 @@ namespace AdminUI {
                 tournamentID = tournamentInfo.tournamentID, roundID = id
             });
         }
-
         private void startGame(RoundID id) {
             if (runningTournament == false)
                 return;
@@ -41,7 +56,9 @@ namespace AdminUI {
                 tournamentID = tournamentInfo.tournamentID, roundID = id
             });
         }
+        #endregion
 
+        public static void onStartSpectating() { singleton.spectating = true;}
         public static bool isAdmin() { return singleton != null; }
         public static void startRoundGame(RoundID id) { singleton.startGame(id); }
         public static void startRoundLobby(RoundID id) { singleton.openRoundLobby(id); }

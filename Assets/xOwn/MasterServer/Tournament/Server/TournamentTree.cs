@@ -26,7 +26,7 @@ namespace Tournament.Server {
             treeStructure = TournamentTreeGenerator.generateTreeStructure(layers, gameSpecs);
             TournamentTreeGenerator.addBots(treeStructure, this.players);
 
-            if (doubleElimination) {
+            if (doubleElimination && players.Count >= 4) {
                 losersTree = TournamentTreeGenerator.generateLoserBrackets(treeStructure, gameSpecs);
                 for (int i = 0; i < losersTree.Count; i++)// Add losers bracket to treeStructure
                     treeStructure.Add(losersTree[losersTree.Count - 1 - i]);

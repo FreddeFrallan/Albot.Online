@@ -36,7 +36,6 @@ namespace Tournament {
                 visualTree.init(tree.getPlayerOrder(), new PreGameSpecs(), true);
                 List<List<TournamentRound>> losersTree = tree.getLosersTree();
             }
-
         }
 
         private List<TournamentPlayer> createFakePlayers(int size) {

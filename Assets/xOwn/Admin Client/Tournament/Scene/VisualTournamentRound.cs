@@ -57,8 +57,10 @@ namespace Tournament.Client {
 
         #region Admin
         private void adminLeftClick() {
-            if (state == RoundState.Lobby || state == RoundState.Playing)
+            if (state == RoundState.Lobby || state == RoundState.Playing) {
+                AdminRunningTournamentManager.onStartSpectating();
                 AdminUpdateManager.startSpectateGame(preGameRoomID);
+            }
         }
         private void adminRightClick() {
             if (TournamentTest.isTraining) {

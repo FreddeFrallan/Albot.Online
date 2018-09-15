@@ -51,10 +51,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f4cb439243992949b9b12a35c4760c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AlbotVersion: 0.61b
+  AlbotVersion: 0.62b
   LogLevel: 3
   ReadMasterServerAddressFromCmd: 1
-  ServerIp: 127.0.0.1
+  ServerIp: 139.162.231.108
   ServerPort: 5001
   ConnectOnStart: 1
   MinTimeToConnect: 0.5
