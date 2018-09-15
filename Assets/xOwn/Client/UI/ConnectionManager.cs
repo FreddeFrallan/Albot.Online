@@ -65,7 +65,7 @@ namespace AlbotServer{
 
 
 						//Invoke event on newly added player
-						if(onPlayerJoined != null)
+						if(onPlayerJoined != null) 
 							onPlayerJoined.Invoke (c.players[c.players.Count-1]);
 					}
 					workingConnections.Add (r);

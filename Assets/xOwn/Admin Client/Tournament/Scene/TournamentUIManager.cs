@@ -10,9 +10,11 @@ namespace Tournament.Client {
         private Camera tournamentCamera;
         private TournamentUIObject lastSelected;
         public float camSpeed = 1f;
+        public float scrollSpeed = 0.1f;
 
         void Update() {
             keyBoardControlls();
+            mouseControlls();
             if (Input.GetMouseButtonDown(0) && getSelectedObject())
                 lastSelected.onLeftClick();
             if (Input.GetMouseButtonDown(1) && getSelectedObject())
@@ -32,6 +34,11 @@ namespace Tournament.Client {
 
         private void moveCamera(float x, float y, float speed) {
             transform.Translate(new Vector3(x, y, 0) * camSpeed * Time.deltaTime);
+        }
+
+        private void mouseControlls() {
+            tournamentCamera.orthographicSize -= Input.mouseScrollDelta.y * scrollSpeed;
+            tournamentCamera.orthographicSize = Mathf.Clamp(tournamentCamera.orthographicSize, 1, 50);
         }
 
         #region MouseControlls

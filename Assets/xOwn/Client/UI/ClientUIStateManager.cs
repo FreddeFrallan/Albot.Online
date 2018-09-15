@@ -27,7 +27,6 @@ namespace ClientUI{
 			singelton = this;
 			SceneManager.LoadScene (singelton.lobbyScene.SceneName);
             initStateToScenes();
-
         }
         
         private void initStateToScenes() {
@@ -84,11 +83,12 @@ namespace ClientUI{
 				
 				if (ClientUIOverlord.currentState != ClientUIStates.LoginMenu) {
 					AlbotDialogBox.activateButton (() => {}, ClientUI.DialogBoxType.MasterServerConnLost, "Connection to master server was lost!", "Close");
-
+                    /*
 					if (logingOut == false)
 						requestLogout ();
 					else
 						logingOut = false;
+                     */
 				}
 			}				
 		}

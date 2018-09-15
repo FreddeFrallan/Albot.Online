@@ -23,9 +23,8 @@ namespace Game{
 		}
 
 		protected virtual void initHandlers(){
-			connectionToServer.RegisterHandler ((short)ServerCommProtocl.PlayerJoinedGameRoom, handlePlayerJoinedRoom);
-			connectionToServer.RegisterHandler ((short)ServerCommProtocl.PlayerLeftGameRoom, handlePlayerLeftRoom);
-            connectionToServer.RegisterHandler((short)ServerCommProtocl.Ping, handlePing);
+            connectionToServer.RegisterHandler((short)ServerCommProtocl.PlayerJoinedGameRoom, handlePlayerJoinedRoom);
+            connectionToServer.RegisterHandler((short)ServerCommProtocl.PlayerLeftGameRoom, handlePlayerLeftRoom);
         }
 		public abstract GameType getGameType();
 		protected NetworkConnection serverConnection;
@@ -44,9 +43,13 @@ namespace Game{
 
 			base.OnStartAuthority();
 			initHandlers ();
-			ClientReadyMsg msg = new ClientReadyMsg (){players = ClientPlayersHandler.generatePlayersInfoArray()};
-			connectionToServer.Send ((short)ServerCommProtocl.ClientReadyChannel, msg);
-		}
+        }
+
+        private IEnumerator sendGameServerReadyMsg() {
+            yield return new WaitForSeconds(0.5f);
+            ClientReadyMsg msg = new ClientReadyMsg() { players = ClientPlayersHandler.generatePlayersInfoArray() };
+            connectionToServer.Send((short)ServerCommProtocl.ClientReadyChannel, msg);
+        }
 
 
 		protected IEnumerator findAndInitRenderer<T>(Action<T> found) where T : Component{
@@ -200,7 +203,7 @@ namespace Game{
 			localGameUI.initPlayerSlot (p.color, p.username, p.iconNumber);
 		}
 
-        public virtual void handlePing(NetworkMessage msg) {TCPLocalConnection.sendMessage("PING Response");}
+        
         #endregion
     }
 		
