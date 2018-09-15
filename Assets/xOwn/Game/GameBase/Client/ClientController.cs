@@ -43,10 +43,11 @@ namespace Game{
 
 			base.OnStartAuthority();
 			initHandlers ();
+            StartCoroutine(sendGameServerReadyMsg());
         }
 
         private IEnumerator sendGameServerReadyMsg() {
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(UnityEngine.Random.Range(0.1f, 0.5f));
             ClientReadyMsg msg = new ClientReadyMsg() { players = ClientPlayersHandler.generatePlayersInfoArray() };
             connectionToServer.Send((short)ServerCommProtocl.ClientReadyChannel, msg);
         }

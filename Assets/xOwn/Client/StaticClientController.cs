@@ -15,8 +15,6 @@ namespace Game {
         private bool broadcasting = false, playingGame = false;
 
         private void Start() {
-            connectionToServer.RegisterHandler((short)ServerCommProtocl.PlayerJoinedGameRoom, handlePlayerJoinedGameRoom);
-            connectionToServer.RegisterHandler((short)ServerCommProtocl.PlayerLeftGameRoom, handlePlayerLeftGameRoom);
             connectionToServer.RegisterHandler((short)ServerCommProtocl.Ping, handlePing);
             ClientUIOverlord.onUIStateChanged += UIStateChanged;
         }
