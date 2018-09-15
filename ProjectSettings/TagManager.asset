@@ -26,7 +26,7 @@ TagManager:
   - Camera
   - CameraConstraints
   - Ignore Light
-  - 
+  - GameObjectLight
   - 
   - 
   - 
