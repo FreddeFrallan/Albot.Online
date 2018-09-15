@@ -9,7 +9,8 @@ namespace Snake{
 	public class SnakeHead : MonoBehaviour{
 
         public GameObject tailPrefab;
-		private AnimatedLineRenderer tailRenderer;
+        public SnakeExplosion snakeExploder;
+        private AnimatedLineRenderer tailRenderer;
 		private List<Vector3> targetPos = new List<Vector3>();
 		private Vector3 nextTarget, oldPos, delta;
         private List<Vector3> queuePoints = new List<Vector3>();
@@ -80,5 +81,9 @@ namespace Snake{
         }
 
 		public void addTargetPos(Vector3 pos){targetPos.Add (pos);}
+
+        public void explodeSnake() {
+            StartCoroutine(snakeExploder.SplitMesh(true));
+        }
 	}
 }

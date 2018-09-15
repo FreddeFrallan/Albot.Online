@@ -76,7 +76,12 @@ namespace Snake{
 			}
 		}
 
-	}
+        public void explodePlayer(int playerIndex) {
+            players[playerIndex].explodeSnake();
+        }
+
+
+    }
 
 
 }

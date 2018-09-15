@@ -84,16 +84,15 @@ namespace Snake{
                 handleBoardUpdate(state);
         }
 
-        private void handleAdminGameOver(BoardUpdate state) {
+        public void handleAdminGameOver(BoardUpdate state) {
             gameOver = true;
-            if(state.winnerColor == PlayerColor.None) {
-                displayCrash(GameUtils.pos2DToVec2(state.blueCoords[0]));
-                displayCrash(GameUtils.pos2DToVec2(state.redCoords[0]));
-            }
-            else if(state.winnerColor == PlayerColor.Red)
-                displayCrash(GameUtils.pos2DToVec2(state.blueCoords[0]));
+            if (state.winnerColor == PlayerColor.None) {
+                smoothRenderer.explodePlayer(0);
+                smoothRenderer.explodePlayer(1);
+            } else if (state.winnerColor == PlayerColor.Red)
+                smoothRenderer.explodePlayer(1);
             else
-                displayCrash(GameUtils.pos2DToVec2(state.redCoords[0]));
+                smoothRenderer.explodePlayer(0);
         }
     }
 
