@@ -27,7 +27,7 @@ namespace SnakeBot {
                 ).ToList();
             }
 
-            return bestMoves[rand.Next(0, bestMoves.Count - 1)].dir;
+            return bestMoves[rand.Next(bestMoves.Count)].dir;
         }
 
         static List<MoveScore> CalcMoveScores(Board board) {
