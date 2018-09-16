@@ -144,6 +144,9 @@ namespace Tournament.Server {
         }
         public void setToTournamentDTO(TournamentRoundDTO dto) {
             players = dto.players.Select(p => new TournamentPlayer() { info = p.info, isReady = p.isReady}).ToList();
+            if(dto.state == RoundState.Over) 
+                players.Find(p => p.info.username == dto.winner).isWinning = true;
+
             score = dto.score;
             state = dto.state;
             preGameRoomID = dto.preGameID;
