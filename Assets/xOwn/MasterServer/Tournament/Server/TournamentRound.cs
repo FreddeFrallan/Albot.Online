@@ -116,6 +116,7 @@ namespace Tournament.Server {
             winner.isWinning = true;
             setState(RoundState.Over);
             score.winner = winner.info.username;
+            winnerUsername = winner.info.username;
 
             if (nextRound != null)
                 nextRound.addPlayer(winner);
@@ -144,8 +145,11 @@ namespace Tournament.Server {
         }
         public void setToTournamentDTO(TournamentRoundDTO dto) {
             players = dto.players.Select(p => new TournamentPlayer() { info = p.info, isReady = p.isReady}).ToList();
-            if(dto.state == RoundState.Over) 
-                players.Find(p => p.info.username == dto.winner).isWinning = true;
+            if(dto.state == RoundState.Over) {
+                try {
+                    players.Find(p => p.info.username == dto.winner).isWinning = true;
+                } catch {  }
+            } 
 
             score = dto.score;
             state = dto.state;
