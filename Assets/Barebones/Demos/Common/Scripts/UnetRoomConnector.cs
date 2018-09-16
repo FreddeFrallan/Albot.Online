@@ -148,9 +148,10 @@ public class UnetRoomConnector : RoomConnector
             yield return null;
 		}
         // At this point, we're no longer connected
-		if (DisconnectedScene.IsSet ()  && showDissconnectMsg)
+		if (DisconnectedScene.IsSet ()  && showDissconnectMsg) {
 			AlbotDialogBox.activateButton (() => { ClientUIStateManager.requestGotoState(ClientUIStates.GameLobby); },
                 DialogBoxType.GameServerConnLost, "Connection to the gameserver was lost!", "Return to lobby");
+        }
     }
 
 

@@ -19,6 +19,7 @@ namespace Tournament {
         public GameScore score;
         public RoundID ID;
         public string preGameID;
+        public string winner;
     }
     public struct TournamentPlayerDTO {
         public PlayerInfo info;

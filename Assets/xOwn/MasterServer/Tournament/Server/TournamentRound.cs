@@ -26,6 +26,7 @@ namespace Tournament.Server {
         private IPeer admin, extraHost;
         private bool isServer = false;
         private RunningTournamentGame theTournament;
+        private string winnerUsername = "";
 
         private RoundState state = RoundState.Empty;
         public RoundID id;
@@ -172,7 +173,7 @@ namespace Tournament.Server {
                 isReady = state == RoundState.Lobby ? getPlayerPreGameReady(p) : true
             }).ToArray();
 
-            return new TournamentRoundDTO() {players = pDTO, state = this.state, ID = id, score = score,preGameID = roomID};
+            return new TournamentRoundDTO() {players = pDTO, state = this.state, ID = id, score = score,preGameID = roomID, winner = winnerUsername};
         }
         private bool getPlayerPreGameReady(TournamentPlayer p) {
             if (p.getIsNPC())
