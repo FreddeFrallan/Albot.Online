@@ -66,10 +66,6 @@ namespace AdminUI {
         public static void startRoundLobby(RoundID id) { singleton.openRoundLobby(id); }
         private void handleTournamentUpdate(IIncommingMessage rawMsg) {
             TournamentTreeUpdate update = rawMsg.Deserialize<TournamentTreeUpdate>();
-            print("Updates");
-            foreach (TournamentRoundDTO r in update.rounds)
-                print(r.ID.col + "." + r.ID.row+ "  :" + r.state);
-
             currentTree.updateRounds(rawMsg.Deserialize<TournamentTreeUpdate>().rounds);
             singleton.allUpdates.Add(rawMsg.Deserialize<TournamentTreeUpdate>());
         }

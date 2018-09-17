@@ -18,7 +18,7 @@ namespace ClientUI{
 
 		public List<Button> buttonsBoundToHavingBot;
 		public static ClientUIOverlord singleton;
-		public GameObject loginMenu, loginWindow, gameLobby, gameListWindow, preGameWindow, lobbyBrowser;
+		public GameObject loginMenu, loginWindow, gameLobby, gameListWindow, preGameWindow, lobbyBrowser, preTournamentLobby;
 		public GameLobbyUI lobbyUI;
 		public MenuBar menuBar;
 		public ClientUserPanelUI userPanel;
@@ -75,11 +75,11 @@ namespace ClientUI{
 			switch (state) {
             case ClientUIStates.LobbyBrowser:
                 setMenuPanels(false, true, false);
-                setLobbyPanels(false, false, true);
+                setLobbyPanels(false, true, false);
                 break;
             case ClientUIStates.GameLobby:
 				setMenuPanels (false, true, false);
-				setLobbyPanels (true, false);
+				setLobbyPanels (true, false, false);
 				currentAcountInfo = Msf.Client.Auth.AccountInfo;
 				break;
 			case ClientUIStates.PreGame:
@@ -91,6 +91,9 @@ namespace ClientUI{
 				setLobbyPanels (false, false, false);
 				break;
             case ClientUIStates.PreTournament:
+                setMenuPanels(false, false, false);
+                setLobbyPanels(false, false, true);
+                break;
             case ClientUIStates.PlayingTournament:
             case ClientUIStates.PlayingGame:
 				setMenuPanels (false, false, false);
@@ -108,10 +111,6 @@ namespace ClientUI{
 		}
 
 
-
-
-
-
 		public static void dissconnectFromGameRoom(){
 			if(FindObjectOfType<NetworkManager>() != null)
 				AlbotNetworkManager.singleton.StopClient ();
@@ -125,10 +124,10 @@ namespace ClientUI{
 				singleton.lobbyUI.closeLobby ();
 		}
 
-		//Pre game lobby has been moved to PreGameBaseLobby
-		private static void setLobbyPanels(bool gameList, bool preGame, bool lobbyBrowser = false){
+        private static void setLobbyPanels(bool gameList, bool lobbyBrowser = false, bool preTournament = false){
 			singleton.gameListWindow.SetActive (gameList);
             singleton.lobbyUI.setLobbyBrowserState(lobbyBrowser);
+            singleton.preTournamentLobby.SetActive(preTournament);
         }
 
 		private void onLoggedIn(){setUIState (ClientUIStates.GameLobby);}

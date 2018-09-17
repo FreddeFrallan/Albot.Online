@@ -29,17 +29,16 @@ namespace ClientUI{
         private void handleCreatedGameResponse(ResponseStatus status, IIncommingMessage rawMsg) {
             if (Msf.Helper.serverResponseSuccess(status, rawMsg) == false)
                 return;
-            joineLobbyGame(new GamesListUiItem() { roomType = GameInfoType.PreGame, GameId = rawMsg.AsString() });
+            joinLobbyGame(new GamesListUiItem() { roomType = GameInfoType.PreGame, GameId = rawMsg.AsString() });
         }
         #endregion
 
 
         #region Joining
         public static void handleJoinPreGame(GameInfoType roomType, string roomID) { singleton.joinPreGame(roomType, roomID); }
-        public void joineLobbyGame(GamesListUiItem game) { joinPreGame(game.roomType, game.GameId); }
+        public void joinLobbyGame(GamesListUiItem game) { joinPreGame(game.roomType, game.GameId); }
         public void joinPreGame(GameInfoType roomType, string roomID){
             PreGameJoinRequest joinRequest = getJoinRequest(roomType, roomID);
-            //print("Joining PreGame: " + roomID);
 
             if(roomType == GameInfoType.PreGame)
 			    Msf.Connection.SendMessage((short)ServerCommProtocl.RequestJoinPreGame, joinRequest, handleJoinPreGameMsg);

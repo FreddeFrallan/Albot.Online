@@ -19,6 +19,7 @@ namespace ClientUI{
 		public PreGamePlayerSlot[] playerSlots;
 		public Button startButton;
 		public TMP_Dropdown p2Settings;
+        public GameObject quitButton;
 		public LoginTCPUI loginTCPUI;
 
         protected bool isAdmin;
@@ -40,6 +41,7 @@ namespace ClientUI{
 			this.currentPlayers = roomInfo.players;
 			this.gameImage.sprite = gameSprite;
             this.gameTitle.SetText(roomInfo.specs.type.ToString());
+            this.quitButton.SetActive(roomInfo.specs.isInTournament == false);
             isAdmin = roomInfo.specs.hostName == ClientUIOverlord.getCurrentAcountInfo().Username;
 
             setPlayerSlots (roomInfo.players);

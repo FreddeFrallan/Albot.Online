@@ -37,7 +37,7 @@ namespace ClientUI{
 		
 		private void UIStateChanged(ClientUIStates state){
 			logoutButton.gameObject.SetActive(state != ClientUIStates.LoginMenu);
-			gameLobbyButton.gameObject.SetActive(state == ClientUIStates.PlayingGame);
+			gameLobbyButton.gameObject.SetActive(state == ClientUIStates.PlayingGame || state == ClientUIStates.PlayingTournament);
 		}
 	}
 

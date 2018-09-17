@@ -70,7 +70,7 @@ namespace ClientUI{
 			GamesListUiItem selected = GetSelectedItem();
 			if (selected == null)
 				return;
-			gameCreator.joineLobbyGame (selected);
+			gameCreator.joinLobbyGame (selected);
 		}
 			
 		public void newGameSelected(bool isTraining){
