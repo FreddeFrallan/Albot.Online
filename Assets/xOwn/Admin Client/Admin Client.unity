@@ -979,7 +979,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   portNumber: {fileID: 0}
-  errorText: {fileID: 0}
+  infoText: {fileID: 0}
+  errorColor: {r: 0, g: 0, b: 0, a: 0}
+  connectingColor: {r: 0, g: 0, b: 0, a: 0}
   startButton: {fileID: 842355231}
   stopButton: {fileID: 1402339973}
   abortText: {fileID: 0}
@@ -6612,7 +6614,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   portNumber: {fileID: 0}
-  errorText: {fileID: 0}
+  infoText: {fileID: 0}
+  errorColor: {r: 0, g: 0, b: 0, a: 0}
+  connectingColor: {r: 0, g: 0, b: 0, a: 0}
   startButton: {fileID: 468740103}
   stopButton: {fileID: 1809305863}
   abortText: {fileID: 0}
@@ -9299,6 +9303,7 @@ MonoBehaviour:
   - {fileID: 137927673}
   startButton: {fileID: 1538682014}
   p2Settings: {fileID: 0}
+  quitButton: {fileID: 0}
   loginTCPUI: {fileID: 2108351316}
 --- !u!222 &336226592
 CanvasRenderer:
@@ -24133,7 +24138,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 11, y: -7.8000336}
+  m_AnchoredPosition: {x: 11, y: -7.800049}
   m_SizeDelta: {x: -26, y: -48}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &847140684
@@ -29001,6 +29006,7 @@ MonoBehaviour:
   - {fileID: 916374179}
   startButton: {fileID: 193533009}
   p2Settings: {fileID: 0}
+  quitButton: {fileID: 0}
   loginTCPUI: {fileID: 31189309}
 --- !u!222 &1013461170
 CanvasRenderer:
@@ -50411,7 +50417,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   portNumber: {fileID: 0}
-  errorText: {fileID: 0}
+  infoText: {fileID: 0}
+  errorColor: {r: 0, g: 0, b: 0, a: 0}
+  connectingColor: {r: 0, g: 0, b: 0, a: 0}
   startButton: {fileID: 169020821}
   stopButton: {fileID: 314306453}
   abortText: {fileID: 0}
@@ -58527,7 +58535,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   portNumber: {fileID: 0}
-  errorText: {fileID: 0}
+  infoText: {fileID: 0}
+  errorColor: {r: 0, g: 0, b: 0, a: 0}
+  connectingColor: {r: 0, g: 0, b: 0, a: 0}
   startButton: {fileID: 1688135967}
   stopButton: {fileID: 1337985854}
   abortText: {fileID: 0}

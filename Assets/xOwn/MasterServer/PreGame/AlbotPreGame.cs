@@ -90,7 +90,10 @@ namespace AlbotServer{
         #endregion
 
         #region Slots
-        private void setplayerSlotEmpty(int slotID){playerSlots[slotID].info.type = PreGameSlotType.Empty;}
+        private void setplayerSlotEmpty(int slotID){
+            playerSlots[slotID].info.type = PreGameSlotType.Empty;
+            playerSlots[slotID].info.isReady = false;
+        }
         private void changePlayerSlot(int slotID, PreGameSlotType newType, PlayerInfo newInfo, PreGamePeer newPeer, bool newIsReady){
             removeOldPeerFromSlot(slotID, newPeer);
 
@@ -128,6 +131,9 @@ namespace AlbotServer{
                 changePlayerSlot(slot.slotID, slot.type, slot.playerInfo, getMatchingPeer(peer.Id), getIsPreReady(slot.type, localPeer));
             }
 
+            Debug.LogError("Slot update: " + slot.slotID + " - " + slot.type);
+            foreach (PreGamePlayerSlot info in playerSlots)
+                Debug.LogError("Current" + info.info.slotID + " - " + info.info.type + " " + info.info.isReady);
             broadcastUpdate();
         }
 

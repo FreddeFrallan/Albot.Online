@@ -46,8 +46,9 @@ namespace Game{
             StartCoroutine(sendGameServerReadyMsg());
         }
 
+        //HotFix
         private IEnumerator sendGameServerReadyMsg() {
-            yield return new WaitForSeconds(UnityEngine.Random.Range(0.1f, 0.5f));
+            yield return new WaitForSeconds(UnityEngine.Random.Range(0.4f, 0.5f));
             ClientReadyMsg msg = new ClientReadyMsg() { players = ClientPlayersHandler.generatePlayersInfoArray() };
             connectionToServer.Send((short)ServerCommProtocl.ClientReadyChannel, msg);
         }
@@ -121,7 +122,6 @@ namespace Game{
 
 	
 		protected virtual void readTCPMsg (ReceivedLocalMessage inMsg){
-            Debug.Log("IN: " +  inMsg.message);
             APIMsgConclusion outMsg = apiRouter.handleIncomingMsg(inMsg.message);
 
             if (outMsg.target == MsgTarget.Server){
@@ -198,13 +198,13 @@ namespace Game{
 		}
 		public virtual void handlePlayerJoinedRoom(NetworkMessage msg){
 			PlayerInfoMsg readyMsg = msg.ReadMessage<PlayerInfoMsg> ();
-			PlayerInfo p = readyMsg.player;
-            currentPlayers.Add(p.color, p);
+            PlayerInfo p = readyMsg.player;
+            if (currentPlayers.ContainsKey(p.color)) //Apperently sometimes the server sends duplicate messages
+                return;
 
+            currentPlayers.Add(p.color, p);
 			localGameUI.initPlayerSlot (p.color, p.username, p.iconNumber);
 		}
-
-        
         #endregion
     }
 		
