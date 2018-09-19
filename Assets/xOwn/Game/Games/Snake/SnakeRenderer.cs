@@ -12,7 +12,7 @@ namespace Snake{
 		public GameObject bgBrick, collisionBlock, gridContainer;
 		public Material redHead, redBody, blueHead, blueBody;
 
-		private float blockSize = 1.05f;
+		private float blockSize = 1.02f;
 		private SnakeBlock[,] blocks;
 		private bool isInit = false;
         private int gridSize;
