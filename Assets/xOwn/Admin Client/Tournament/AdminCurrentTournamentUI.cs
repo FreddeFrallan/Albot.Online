@@ -22,7 +22,6 @@ namespace AdminUI {
 
         public void handlePreTournamentUpdate(IIncommingMessage rawMsg) {
             TournamentInfoMsg info = rawMsg.Deserialize<TournamentInfoMsg>();
-            print("Got Players :" + info.players.Length);
             showList(info.players);
         }
 

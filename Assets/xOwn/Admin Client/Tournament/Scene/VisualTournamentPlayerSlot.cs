@@ -35,24 +35,23 @@ namespace Tournament.Client {
 
         private void setBackgroundColor(TournamentPlayer player, RoundState state) {
             switch (state) {
-            case RoundState.Empty: setColor(emptyColor); break;
-            case RoundState.Idle: setColor(idleColor); break;
-            case RoundState.Playing: setColor(emptyColor); break;
-            case RoundState.Over:
-            if (player.isWinning) {
-                setColor(overWonColor);
-            } else {
-                setColor(overLostColor);
-            }
-            break;
+                case RoundState.Empty: setColor(emptyColor); break;
+                case RoundState.Idle: setColor(idleColor); break;
+                case RoundState.Playing: setColor(emptyColor); break;
+                case RoundState.Over:
+                if (player.isWinning) {
+                    setColor(overWonColor);
+                } else {
+                    setColor(overLostColor);
+                }
+                break;
 
-            case RoundState.Lobby:
-            if (player != null && player.isReady)
-                setColor(lobbyReadyColor);
-            else
-                setColor(lobbyNotReadyColor);
-            break;
-
+                case RoundState.Lobby:
+                if (player != null && player.isReady)
+                    setColor(lobbyReadyColor);
+                else
+                    setColor(lobbyNotReadyColor);
+                break;
             }
         }
 

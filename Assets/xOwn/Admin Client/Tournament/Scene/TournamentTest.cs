@@ -55,7 +55,7 @@ namespace Tournament {
                     temp.Add(r.createDTO());
                 }
             }
-            visualSingleton.updateRounds(temp.ToArray());
+            visualSingleton.updateRounds(temp.ToArray(), true);
         }
     }
 }

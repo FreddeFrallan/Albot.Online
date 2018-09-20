@@ -55,7 +55,6 @@ namespace AdminUI{
                 onLoadActions.Add(onLoad);
 
             singleton.setUIState(newState);
-            print(newState);
             if (SceneManager.GetActiveScene().name != statesToScenes[newState])
                 SceneManager.LoadScene(statesToScenes[newState]);
         }

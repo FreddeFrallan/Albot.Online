@@ -50,7 +50,8 @@ namespace ClientUI {
         public static void reOpenTournament() {
             ClientUIStateManager.requestGotoState(ClientUIStates.PlayingTournament, () => {
                 initCurrentTree(storedInitMsg);
-                storedUpdates.ForEach(u => currentTree.updateRounds(u.rounds));
+                storedUpdates.ForEach(u => currentTree.updateRounds(u.rounds, false));
+                currentTree.renderVisualTree();
             });
         }
         #endregion
@@ -84,8 +85,8 @@ namespace ClientUI {
         private static void handleTreeUpdate(IIncommingMessage rawMsg) {addNewUpdate(rawMsg.Deserialize<TournamentTreeUpdate>());}
         private static void addNewUpdate(TournamentTreeUpdate update) {
             storedUpdates.Add(update);
-            if(ClientUIOverlord.currentState == ClientUIStates.PlayingTournament)
-                currentTree.updateRounds(update.rounds);
+            if (ClientUIOverlord.currentState == ClientUIStates.PlayingTournament)
+                currentTree.updateRounds(update.rounds, true);
         }
     }
 

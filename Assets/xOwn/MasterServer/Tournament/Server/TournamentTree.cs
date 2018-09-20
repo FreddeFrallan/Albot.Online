@@ -82,6 +82,7 @@ namespace Tournament.Server {
         public PlayerInfo info;
         public bool isReady;
         public bool isWinning = false;
+        public int slotIndex;
 
         public TournamentPlayer(bool isNPC = false, int botNumber = 0) {
             if (isNPC) {

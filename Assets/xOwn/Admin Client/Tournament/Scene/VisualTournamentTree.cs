@@ -24,8 +24,10 @@ namespace Tournament.Client {
 
         private void generateTree(PlayerInfo[] playerOrder, PreGameSpecs gameSpecs, bool doubleElimination) {
             List<TournamentPlayer> players = new List<TournamentPlayer>();
-            foreach(PlayerInfo p in playerOrder)
-                players.Add(new TournamentPlayer() {info = p});
+            for(int i = 0; i < playerOrder.Length; i+= 2) {
+                players.Add(new TournamentPlayer() {info = playerOrder[i], slotIndex = 0});
+                players.Add(new TournamentPlayer() { info = playerOrder[i+1], slotIndex = 1});
+            }
 
             tournament = new TournamentTree(players, gameSpecs, false, doubleElimination);
             renderVisualTree();
@@ -33,10 +35,11 @@ namespace Tournament.Client {
 
 
 
-        public void updateRounds(TournamentRoundDTO[] rounds) {
+        public void updateRounds(TournamentRoundDTO[] rounds, bool doDisplay) {
             foreach (TournamentRoundDTO r in rounds)
                 tournament.getRound(r.ID).setToTournamentDTO(r);
-            renderVisualTree();
+            if(doDisplay)
+                renderVisualTree();
         }
 
         #region Rendering

@@ -23,6 +23,7 @@ namespace Tournament {
     }
     public struct TournamentPlayerDTO {
         public PlayerInfo info;
+        public int slotIndex;
         public bool isReady;
     }
 

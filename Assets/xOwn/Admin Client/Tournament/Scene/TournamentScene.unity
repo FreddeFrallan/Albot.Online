@@ -280,7 +280,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   visualTree: {fileID: 1168714215}
-  amountOfPlayers: 16
+  amountOfPlayers: 4
 --- !u!1 &807452572
 GameObject:
   m_ObjectHideFlags: 0

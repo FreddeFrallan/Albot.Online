@@ -5,6 +5,7 @@ using AlbotServer;
 using Tournament.Server;
 using AdminUI;
 using System;
+using System.Linq;
 
 namespace Tournament.Client {
 
@@ -28,7 +29,16 @@ namespace Tournament.Client {
             preGameRoomID = serverRound.preGameRoomID;
             setPlayerSlots();
             initClicks();
+            initPlayerSlots();
         }
+
+        private void initPlayerSlots() {
+            if (players.Where(p => p.slotIndex == 0).ToList().Count > 1)
+                players[1].slotIndex = 1;
+            if (players.Where(p => p.slotIndex == 1).ToList().Count > 1)
+                players[0].slotIndex = 0;
+        }
+
 
         private void initClicks() {
             if (AdminRunningTournamentManager.isAdmin() || TournamentTest.isTraining) {
@@ -40,8 +50,8 @@ namespace Tournament.Client {
         }
 
         private void setPlayerSlots() {
-            for (int i = 0; i < players.Count; i++)
-                playerSlots[i].setPlayer(players[i], state);
+            foreach(TournamentPlayer p in players)
+                playerSlots[p.slotIndex].setPlayer(p, state);
         }
 
 

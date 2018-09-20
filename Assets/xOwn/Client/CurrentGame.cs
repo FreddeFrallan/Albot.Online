@@ -33,6 +33,7 @@ namespace ClientUI {
             currentlyPlayingGame = true;
             setupLocalPlayers(msg.slots);
             gameConnector.onJoinStartedGame(msg);
+            AlbotDialogBox.removeAllPopups();
         }
 
         private static void setupLocalPlayers(PreGameSlotInfo[] slots) {
@@ -90,7 +91,6 @@ namespace ClientUI {
 
         public static void restartCurrentGame() {
             UnetRoomConnector.shutdownCurrentConnection();
-            AlbotDialogBox.removeAllPopups();
             Msf.Connection.SendMessage((short)ServerCommProtocl.RestartTrainingGame, gameSpecs.roomID, Msf.Helper.handleErrorResponse);
         }
         #endregion

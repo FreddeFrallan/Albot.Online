@@ -18,6 +18,7 @@ namespace Tournament.Server {
 
         private PreGameSpecs gameSpecs;
         private List<TournamentPlayer> players = new List<TournamentPlayer>();
+        private Dictionary<string, int> playerSlotIndex = new Dictionary<string, int>();
         private GameScore score = new GameScore() {wins = new int[] {0, 0 }, draws = 0, roundsCounter = 0 };
         private GameWinRules rules = new GameWinRules() { winScore = 1, playUntilWinner = true, maxRounds = 3};
         private bool playingUntilWinner = true;
@@ -27,6 +28,7 @@ namespace Tournament.Server {
         private bool isServer = false;
         private RunningTournamentGame theTournament;
         private string winnerUsername = "";
+        private int nextWinGameSlotIndex, nextLoseGameSlotIndex;
 
         private RoundState state = RoundState.Empty;
         public RoundID id;
@@ -104,11 +106,9 @@ namespace Tournament.Server {
                 setGameOver(players[getRandomWinner()]);
         }
 
-        //******************************* TODO
         public void forceRandomWinner() {
             int randomPlayer = getRandomWinner();
             setGameOver(players[randomPlayer]);
-
         }
         private List<TournamentPlayer> getLosers(TournamentPlayer winner) { return players.Where(p => p != winner).ToList(); }
         private int getRandomWinner() {return (Random.Range(0, 100) > 50) ? 0 : 1;}
@@ -119,9 +119,9 @@ namespace Tournament.Server {
             winnerUsername = winner.info.username;
 
             if (nextRound != null)
-                nextRound.addPlayer(winner);
+                nextRound.addPlayer(winner, nextWinGameSlotIndex);
             if(nextLoserRound != null) 
-                getLosers(winner).ForEach(p => nextLoserRound.addPlayer(p));
+                getLosers(winner).ForEach(p => nextLoserRound.addPlayer(p, nextLoseGameSlotIndex));
 
         }
         #endregion
@@ -136,15 +136,21 @@ namespace Tournament.Server {
             id = new RoundID() { col = col, row = row };
             this.gameSpecs.tournamentRoundID = id;
         }
-        public void setNextLoserGame(TournamentRound nextRound) {this.nextLoserRound = nextRound; }
-        public void setNextGame(TournamentRound nextRound) { this.nextRound = nextRound; }
+        public void setNextLoserGame(TournamentRound nextRound, int nextLoseGameSlotIndex) {
+            this.nextLoserRound = nextRound;
+            this.nextLoseGameSlotIndex = nextLoseGameSlotIndex;
+        }
+        public void setNextGame(TournamentRound nextRound, int nextGameSlotIndex) {
+            this.nextRound = nextRound;
+            this.nextWinGameSlotIndex = nextGameSlotIndex;
+        }
         public void setServerVariables(IPeer admin, RunningTournamentGame runningGame) {
             isServer = true;
             this.admin = admin;
             theTournament = runningGame;
         }
         public void setToTournamentDTO(TournamentRoundDTO dto) {
-            players = dto.players.Select(p => new TournamentPlayer() { info = p.info, isReady = p.isReady}).ToList();
+            players = dto.players.Select(p => new TournamentPlayer() { info = p.info, isReady = p.isReady, slotIndex = p.slotIndex}).ToList();
             if(dto.state == RoundState.Over) {
                 try {
                     players.Find(p => p.info.username == dto.winner).isWinning = true;
@@ -156,7 +162,14 @@ namespace Tournament.Server {
             preGameRoomID = dto.preGameID;
         }
 
-        public void addPlayer(TournamentPlayer player) {
+        public void addPlayer(TournamentPlayer player, int id = -1) {
+            try {
+                if (id == -1)
+                    playerSlotIndex.Add(player.info.username, players.Count);
+                else
+                    playerSlotIndex.Add(player.info.username, id);
+            } catch { }
+
             players.Add(player);
             if (player.getIsNPC())
                 setHasPossibleBotGame();
@@ -177,7 +190,8 @@ namespace Tournament.Server {
             string roomID = state == RoundState.Lobby || state == RoundState.Playing ? thePregame.specs.roomID : "";
             TournamentPlayerDTO[] pDTO = players.Select(p => new TournamentPlayerDTO() {
                 info = p.info,
-                isReady = state == RoundState.Lobby ? getPlayerPreGameReady(p) : true
+                isReady = state == RoundState.Lobby ? getPlayerPreGameReady(p) : true,
+                slotIndex = playerSlotIndex[p.info.username]
             }).ToArray();
 
             return new TournamentRoundDTO() {players = pDTO, state = this.state, ID = id, score = score,preGameID = roomID, winner = winnerUsername};
