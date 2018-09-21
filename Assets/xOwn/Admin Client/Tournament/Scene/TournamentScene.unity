@@ -266,8 +266,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tournamentCamera: {fileID: 615574642}
-  camSpeed: 12
-  scrollSpeed: 0.1
+  camSpeed: 20
+  scrollSpeed: 0.2
 --- !u!114 &615574645
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -100,9 +100,9 @@ namespace Snake{
                 smoothRenderer.explodePlayer(0);
                 smoothRenderer.explodePlayer(1);
             } else if (state.winnerColor == PlayerColor.Red)
-                smoothRenderer.explodePlayer(1);
-            else
                 smoothRenderer.explodePlayer(0);
+            else
+                smoothRenderer.explodePlayer(1);
         }
     }
 
