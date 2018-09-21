@@ -140,6 +140,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d352d978ec2972f41b909170a6f1bcf8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  triangleMaterial: {fileID: 13400000, guid: 8372198fdc0c4d1488aaa940bf9b0b88, type: 2}
 --- !u!114 &114772085987930536
 MonoBehaviour:
   m_ObjectHideFlags: 1

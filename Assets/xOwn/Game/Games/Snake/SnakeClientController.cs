@@ -129,21 +129,27 @@ namespace Snake{
 				return;
 
             addFinalUpdate(infoMsg.winnerColor);
+            /* OLD Code
 			foreach (int[] crash in infoMsg.crashPos)
 				localRenderer.displayCrash (new Vector2(crash[0], crash[1]));
-
+            */
             gameOver();
             CurrentGame.gameOver(getGameOverText(infoMsg.winnerColor));
         }
 
         private void addFinalUpdate(PlayerColor winColor) {
             BoardState finalState;
-            if (winColor == PlayerColor.None)
+            PlayerColor looser;
+            if (winColor == PlayerColor.None) {
                 finalState = BoardState.draw;
-            else
+                looser = PlayerColor.None;
+            } else {
                 finalState = (winColor == PlayerColor.Blue ? BoardState.playerWon : BoardState.enemyWon);
+                looser = (winColor == PlayerColor.Blue ? PlayerColor.Red : PlayerColor.Blue);
+            }
 
             addLocalBoardUpdate(lastBlocked, lastBlueDir, lastRedDir, lastBluePos, lastRedPos, finalState);
+            localRenderer.explodeLoser(looser);
         }
 
 

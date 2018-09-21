@@ -52,6 +52,16 @@ namespace Snake{
 			Instantiate (collisionBlock, spawnPos, Quaternion.identity);
 		}
 
+        public void explodeLoser(PlayerColor loser) {
+            if (loser == PlayerColor.None) {
+                smoothRenderer.explodePlayer(0);
+                smoothRenderer.explodePlayer(1);
+            } else if (loser == PlayerColor.Red)
+                smoothRenderer.explodePlayer(1);
+            else
+                smoothRenderer.explodePlayer(0);
+        }
+
 		private Position2D setBlockCoords(Vector2 coord, ref Position2D extraCoord){
 			if (coord.x < 0)
                 extraCoord.x = -1;

@@ -5,6 +5,8 @@ using System.Collections.Generic;
 
 namespace Snake {
     public class SnakeExplosion : MonoBehaviour {
+        [SerializeField]
+        public PhysicMaterial triangleMaterial;
 
         public IEnumerator SplitMesh(bool destroy) {
 
@@ -33,7 +35,7 @@ namespace Snake {
             Vector3[] verts = M.vertices;
             Vector3[] normals = M.normals;
             Vector2[] uvs = M.uv;
-            for (int submesh = 0; submesh < M.subMeshCount; submesh++) {
+            for (int submesh = 0; submesh < M.subMeshCount; submesh += 25) {
 
                 int[] indices = M.GetTriangles(submesh);
 
@@ -61,10 +63,12 @@ namespace Snake {
                     GO.transform.rotation = transform.rotation;
                     GO.AddComponent<MeshRenderer>().material = materials[submesh];
                     GO.AddComponent<MeshFilter>().mesh = mesh;
-                    GO.AddComponent<BoxCollider>();
-                    Vector3 explosionPos = new Vector3(transform.position.x + Random.Range(-0.5f, 0.5f), transform.position.y + Random.Range(0f, 0.5f), transform.position.z + Random.Range(-0.5f, 0.5f));
-                    GO.AddComponent<Rigidbody>().AddExplosionForce(Random.Range(300, 500), explosionPos, 5);
-                    Destroy(GO, 5 + Random.Range(0.0f, 5.0f));
+                    GO.AddComponent<BoxCollider>().material = triangleMaterial;
+                    Vector3 explosionPos = new Vector3(transform.position.x + Random.Range(-0.25f, 0f), transform.position.y + Random.Range(0f, 0.25f), transform.position.z + Random.Range(-0.25f, 0.25f));
+                    Rigidbody rBody = GO.AddComponent<Rigidbody>();
+                    rBody.collisionDetectionMode = CollisionDetectionMode.Continuous;
+                    rBody.AddExplosionForce(Random.Range(250, 450), explosionPos, 3);
+                    Destroy(GO, 1 + Random.Range(0.0f, 1.0f));
                 }
             }
 
