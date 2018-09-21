@@ -41,8 +41,8 @@ namespace Tournament.Server {
         }
 
         #region Gameplay
-        public void initAndInvite() {
-            if (state != RoundState.Idle && hasAllPlayers() == false)
+        public void initAndInvite(bool forceRestart) {
+            if (forceRestart == false && (state != RoundState.Idle && hasAllPlayers() == false))
                 return;
 
             thePregame = AlbotPreGameModule.createTournamentGame(gameSpecs, admin);

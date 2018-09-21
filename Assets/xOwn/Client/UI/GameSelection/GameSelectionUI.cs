@@ -4,7 +4,7 @@ using Barebones.Networking;
 using Barebones.Utils;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
+using System.Linq;
 using System;
 using Barebones.MasterServer;
 using AlbotServer;
@@ -28,13 +28,13 @@ namespace ClientUI{
         // Use this for initialization
         protected virtual void Awake(){
 			localSingleton = this;
-			_items = new GenericUIList<GameInfoPacket>(ItemPrefab.gameObject, LayoutGroup);
+			_items = new GenericUIList<GameInfoPacket>(ItemPrefab.gameObject, LayoutGroup, ItemPrefab.transform.parent);
 			ClientUIOverlord.onUIStateChanged += (ClientUIStates newState) => {if (newState == ClientUIStates.GameLobby)resetSelection ();};
 			Connection.SetHandler ((short)ServerCommProtocl.LobbyGameStats, handleGameStatsUpdate);
 		}
 			
         public void Setup(IEnumerable<GameInfoPacket> data){
-            _items.Generate<GamesListUiItem>(data, (packet, item) => { item.Setup(packet); });
+            _items.Generate<GamesListUiItem>(data, (packet, item) => {item.Setup(packet, OnJoinGameClick);});
             UpdateGameJoinButton();
         }
 

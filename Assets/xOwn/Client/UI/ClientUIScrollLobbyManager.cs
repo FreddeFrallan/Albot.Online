@@ -38,7 +38,8 @@ namespace ClientUI {
         private GameObject getLastChild() {return transform.GetChild(transform.childCount - 1).gameObject;}
         private void setHeight(float h) {
             Rect r = theRect.rect;
-            theRect.sizeDelta = new Vector2(r.width, h);
+            theRect.offsetMax = new Vector2(0, theRect.offsetMax.y);
+            theRect.sizeDelta = new Vector2(theRect.sizeDelta.x, h);
         }
     }
 }

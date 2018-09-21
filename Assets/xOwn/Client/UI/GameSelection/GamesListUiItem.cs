@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System;
 
 namespace Barebones.MasterServer{
     /// <summary>
@@ -20,8 +21,13 @@ namespace Barebones.MasterServer{
         public string UnknownMapName = "Unknown";
 
         public string GameId { get; set; }
-        public bool IsSelected { get; private set; }
         public bool IsLobby { get; private set; }
+
+        //Double click
+        public bool IsSelected { get; private set; }
+        private float lastSelectionTime, doubleClickInterval = 0.5f;
+        private Action doubleClickAction;
+
 
         public bool IsPasswordProtected{
             get { return RawData.IsPasswordProtected; }
@@ -30,6 +36,7 @@ namespace Barebones.MasterServer{
         // Use this for initialization
         private void Awake(){
             BgImage = GetComponent<Image>();
+            currentColor = defaultColor;
             SetIsSelected(false);
         }
 
@@ -38,13 +45,14 @@ namespace Barebones.MasterServer{
             BgImage.color = isSelected ? currentColor[1] : currentColor[0];
         }
 
-        public void Setup(GameInfoPacket data){
+        public void Setup(GameInfoPacket data, Action doubleClickAction = null){
             RawData = data;
             IsLobby = data.infoType == GameInfoType.Lobby;
             roomType = data.infoType;
             Name.text = data.Name;
             GameId = data.Id;
             initBackgroundColor(data.infoType);
+            this.doubleClickAction = doubleClickAction;
 
 
             if (data.MaxPlayers > 0)
@@ -56,8 +64,20 @@ namespace Barebones.MasterServer{
                 ? data.Properties[MsfDictKeys.MapName] : UnknownMapName;
         }
 
+        public void onDoubleClick() {
+            if (doubleClickAction != null)
+                doubleClickAction();
+        }
+
         public void OnClick(){
+            checkForDoubleClick();
+            lastSelectionTime = Time.time;
             ListView.Select(this);
+        }
+
+        private void checkForDoubleClick() {
+            if (IsSelected && Time.time - lastSelectionTime <= doubleClickInterval)
+                onDoubleClick();
         }
 
         private void initBackgroundColor(GameInfoType type) {

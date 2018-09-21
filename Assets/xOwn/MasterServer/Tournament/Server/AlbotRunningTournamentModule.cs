@@ -22,7 +22,7 @@ namespace Barebones.MasterServer {
             TournamentPreGameInfo info = rawMsg.Deserialize<TournamentPreGameInfo>();
             RunningTournamentGame game;
             if (findGame(info.tournamentID, out game, rawMsg) && SpectatorAuthModule.existsAdmin(rawMsg.Peer))
-                game.startRoundPreGame(info.roundID);
+                game.startRoundPreGame(info.roundID, info.forceRestart);
         }
 
         private void handleRoundStarted(IIncommingMessage rawMsg) {

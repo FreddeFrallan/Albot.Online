@@ -41,12 +41,12 @@ namespace AdminUI {
 
 
         #region Rounds
-        private void openRoundLobby(RoundID id) {
+        private void openRoundLobby(RoundID id, bool forceRestart = false) {
             if (runningTournament == false)
                 return;
 
             Msf.Connection.SendMessage((short)CustomMasterServerMSG.tournamentRoundPreStarted, new TournamentPreGameInfo() {
-                tournamentID = tournamentInfo.tournamentID, roundID = id
+                tournamentID = tournamentInfo.tournamentID, roundID = id, forceRestart = forceRestart
             });
         }
         private void startGame(RoundID id) {
@@ -64,6 +64,7 @@ namespace AdminUI {
         public static bool isAdmin() { return singleton != null; }
         public static void startRoundGame(RoundID id) { singleton.startGame(id); }
         public static void startRoundLobby(RoundID id) { singleton.openRoundLobby(id); }
+        public static void forceRestartRoundLobby(RoundID id) { singleton.openRoundLobby(id, true); }
         private void handleTournamentUpdate(IIncommingMessage rawMsg) {
             TournamentTreeUpdate update = rawMsg.Deserialize<TournamentTreeUpdate>();
             singleton.allUpdates.Add(update);

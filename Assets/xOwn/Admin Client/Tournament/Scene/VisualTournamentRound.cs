@@ -77,6 +77,10 @@ namespace Tournament.Client {
                 TournamentTest.playGame(id.col, id.row);
                 return;
             }
+
+            if (panicCommand())
+                return;
+
             if (state == RoundState.Lobby) {
                 if (serverRound.canStartGame())
                     AdminRunningTournamentManager.startRoundGame(id);
@@ -84,7 +88,26 @@ namespace Tournament.Client {
             else if (state == RoundState.Idle && serverRound.hasAllPlayers())
                 AdminRunningTournamentManager.startRoundLobby(id);
         }
+
+        //Allows for special commands that can be used by holding one of these keys down while right clicking.
+        private bool panicCommand() {
+            if (Input.GetKey(KeyCode.X)) {//Cool force restart
+                AdminRunningTournamentManager.forceRestartRoundLobby(id);
+                return true;
+            }
+
+            if (Input.GetKey(KeyCode.Alpha1)) {
+
+                return true;
+            }
+            if (Input.GetKey(KeyCode.Alpha2)) {
+
+                return true;
+            }
+            return false;
+        }
         #endregion
     }
+
 
 }

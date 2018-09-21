@@ -45,7 +45,8 @@ namespace ClientUI{
         }
         public static void requestGotoState(ClientUIStates newState, string targetScene, Action onCompleteAction = null) {
             if (ClientUIOverlord.currentState == newState && ClientUIOverlord.currentState != ClientUIStates.PlayingGame) {
-                onCompleteAction();
+                if(onCompleteAction != null)
+                    onCompleteAction();
                 return;
             }
 

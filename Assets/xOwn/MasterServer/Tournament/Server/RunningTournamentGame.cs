@@ -24,7 +24,7 @@ namespace Tournament.Server {
         }
 
         #region Starting Games
-        public void startRoundPreGame(RoundID roundID) {gameTree.getRound(roundID).initAndInvite();}
+        public void startRoundPreGame(RoundID roundID, bool forceRestart) {gameTree.getRound(roundID).initAndInvite(forceRestart);}
         public void startRound(RoundID roundID) {gameTree.getRound(roundID).startGame();}
         #endregion
 

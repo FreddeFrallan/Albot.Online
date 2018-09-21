@@ -37,6 +37,7 @@ namespace Tournament {
 
     public class TournamentPreGameInfo : MessageBase {
         public string tournamentID;
+        public bool forceRestart; //Should not be here
         public RoundID roundID;
     }
 }

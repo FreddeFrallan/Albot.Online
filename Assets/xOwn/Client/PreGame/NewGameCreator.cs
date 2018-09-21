@@ -59,6 +59,9 @@ namespace ClientUI{
 			bool isAdmin = playerInfo.Username == msg.players [0].playerInfo.username;
             ClientUIStateManager.requestGotoState(ClientUIStates.PreGame);
 
+            //Kill old TCP Connection
+            TCPLocalConnection.stopServer();
+
 			preGameLobby.initPreGameLobby (currentMap.picture, msg);
 		}
         #endregion
