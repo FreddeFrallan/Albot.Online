@@ -23,7 +23,6 @@ public class SpectatorAuthModule : ServerModuleBehaviour {
 	//Should probebly be encrpyted later on
 	private void handleLogin(IIncommingMessage msg){
 		string password = msg.AsString ();
-		Debug.LogError (password);
 		if (password != ADMIN_PASSWORD) {
 			msg.Respond ("Wrong Password!", ResponseStatus.Invalid);
 			return;

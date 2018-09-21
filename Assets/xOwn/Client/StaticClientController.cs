@@ -25,8 +25,8 @@ namespace Game {
 
 
         public static void subscribePlayerJoined(Action<NetworkMessage> handler) {
-            Debug.LogError(handler);
-            Debug.LogError(singleton.storedPlayerJoined);
+            //Debug.LogError(handler);
+            //Debug.LogError(singleton.storedPlayerJoined);
             singleton.subscribeHandler(handler, singleton.storedPlayerJoined);
         }
         public static void subscribePlayerLeft(Action<NetworkMessage> handler) { singleton.subscribeHandler(handler, singleton.storedPlayerLeft); }

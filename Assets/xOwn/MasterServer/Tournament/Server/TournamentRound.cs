@@ -114,15 +114,14 @@ namespace Tournament.Server {
         private int getRandomWinner() {return (Random.Range(0, 100) > 50) ? 0 : 1;}
         public void setGameOver(TournamentPlayer winner) {
             winner.isWinning = true;
-            setState(RoundState.Over);
             score.winner = winner.info.username;
             winnerUsername = winner.info.username;
+            setState(RoundState.Over);
 
             if (nextRound != null)
                 nextRound.addPlayer(winner, nextWinGameSlotIndex);
             if(nextLoserRound != null) 
                 getLosers(winner).ForEach(p => nextLoserRound.addPlayer(p, nextLoseGameSlotIndex));
-
         }
         #endregion
 

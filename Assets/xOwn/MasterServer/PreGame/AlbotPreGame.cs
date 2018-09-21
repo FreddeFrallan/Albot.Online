@@ -131,9 +131,6 @@ namespace AlbotServer{
                 changePlayerSlot(slot.slotID, slot.type, slot.playerInfo, getMatchingPeer(peer.Id), getIsPreReady(slot.type, localPeer));
             }
 
-            Debug.LogError("Slot update: " + slot.slotID + " - " + slot.type);
-            foreach (PreGamePlayerSlot info in playerSlots)
-                Debug.LogError("Current" + info.info.slotID + " - " + info.info.type + " " + info.info.isReady);
             broadcastUpdate();
         }
 

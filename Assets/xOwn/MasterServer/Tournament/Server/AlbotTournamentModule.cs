@@ -62,7 +62,7 @@ namespace Barebones.MasterServer {
             if (tournament.addPlayer(rawMsg.Peer, msg.joiningPlayer)) {
                 rawMsg.Respond(msg.roomID, ResponseStatus.Success);
                 addPlayerToPeerToTournaments(rawMsg.Peer, tournament);
-                Debug.LogError("Adding player: " + rawMsg.Peer.Id + " to tournament: " + tournament.getRoomID());
+                //Debug.LogError("Adding player: " + rawMsg.Peer.Id + " to tournament: " + tournament.getRoomID());
             }
             else
                 rawMsg.Respond("Could not join game", ResponseStatus.Failed);

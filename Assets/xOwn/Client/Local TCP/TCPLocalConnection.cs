@@ -116,23 +116,23 @@ class TCPLocalConnection{
 	private static void checkCurrentConnection(){
 		try{
 			if(connectionClient == null || client == null){
-				Debug.Log("No good TCP connection");
+				//Debug.Log("No good TCP connection");
 				stopServer();
 				return;
 			}
 			if(client.IsConnected == false){
-				Debug.Log ("Stop because Cool");
+				//Debug.Log ("Stop because Cool");
 				stopServer();
 				return;
 			}
 			if(connectionClient.Connected == false){
-				Debug.Log ("Stop because null ref");
+				//Debug.Log ("Stop because null ref");
 				stopServer();
 				return;
 			}
 		}
 		catch{
-			Debug.Log ("Stop because Crash");
+			//Debug.Log ("Stop because Crash");
 			stopServer();
 		}
 	}

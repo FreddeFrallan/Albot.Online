@@ -93,8 +93,8 @@ namespace TCP_API.Snake {
             //Debug.Log("Generated simulate move response: \n" + newJBoard.Print(true) + "\n");
             //JSONObject newJBoard = jResponse.GetField(Constants.JProtocol.board);
             Board newBoard = new Board(newJBoard);
-            startBoard.printBoard();
-            newBoard.printBoard();
+           // startBoard.printBoard();
+           // newBoard.printBoard();
 
             Assert.True(SnakeTestUtils.compareBoards(expected, newBoard));
         }

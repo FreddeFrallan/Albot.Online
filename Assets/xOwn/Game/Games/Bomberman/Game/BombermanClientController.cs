@@ -119,7 +119,7 @@ namespace Bomberman{
 
                 string gameOverString = TCP_API.APIStandardConstants.Fields.gameOver;
 				string gameOverMsg;
-				Debug.LogError ("Winner: " + msg.winnerColor);
+				//Debug.LogError ("Winner: " + msg.winnerColor);
 				if (msg.winnerColor == Game.PlayerColor.None) {
 					gameOverMsg = "It's a draw!";
 					TCPLocalConnection.sendMessage (gameOverString + ": 0");
