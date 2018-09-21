@@ -29,6 +29,7 @@ namespace Tournament.Client {
             players = serverRound.getPlayers();
             state = serverRound.getState();
             preGameRoomID = serverRound.preGameRoomID;
+            initPlayerSlotTypes();
             setPlayerSlots();
             initClicks();
             initPlayerSlots();
@@ -48,6 +49,12 @@ namespace Tournament.Client {
             }
             else {
                 leftClick = clientLeftClick; rightClick = clientRightClick;
+            }
+        }
+
+        private void initPlayerSlotTypes() {
+            foreach (VisualTournamentPlayerSlot p in playerSlots) {
+                p.setRoundType(type);
             }
         }
 
