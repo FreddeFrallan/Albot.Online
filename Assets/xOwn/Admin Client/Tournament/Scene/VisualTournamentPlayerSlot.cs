@@ -42,7 +42,13 @@ namespace Tournament.Client {
                     setColor(TournamentColors.empty, false);
                 }
                 break;
-                case RoundState.Idle: setColor(TournamentColors.idle, false); break;
+                case RoundState.Idle:
+                if (slotType == RoundType.final)
+                    setColor(TournamentColors.overOverGoldTint, true);
+                else {
+                    setColor(TournamentColors.idle, false);
+                }
+                break;
                 case RoundState.Playing: setColor(TournamentColors.playing, false); break;
                 case RoundState.Over:
                 if (player.isWinning) {
