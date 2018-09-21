@@ -13,7 +13,8 @@ public class LocalBotConnectionStatusUi : MonoBehaviour {
     public Image dotImage;
 	public Image waitingImage;
 	public Image connectedImage;
-	public Text text;
+    public Image disconnectedImage;
+    public Text text;
 	public static LocalBotConnectionStatusUi instance;
 
 
@@ -36,34 +37,38 @@ public class LocalBotConnectionStatusUi : MonoBehaviour {
         print(currentStatus);
         switch (status) {
             case ConnectionStatus.Connected:
-                toggleWaitingImage(false);
+                toggleImages(false, true, false);
                 if (instance.dotImage != null)
                     instance.dotImage.color = ClientConnColors.OnlineColor;
                 break;
             case ConnectionStatus.Disconnected:
             case ConnectionStatus.None:
-                toggleWaitingImage(true);
+                toggleImages(false, false, true);
                 if (instance.dotImage != null)
                     instance.dotImage.color = ClientConnColors.OfflineColor;
                 break;
             case ConnectionStatus.Connecting:
-                toggleWaitingImage(true);
+                toggleImages(true, false, false);
                 if (instance.dotImage != null)
                     instance.dotImage.color = ClientConnColors.ConnectingColor;
                 break;
             default:
-                toggleWaitingImage(true);
+                toggleImages(true, false, false);
                 if (instance.dotImage != null)
                     instance.dotImage.color = ClientConnColors.UnknownColor;
                 break;
         }
     }
 
-    public void toggleWaitingImage(bool onOff) {
-        if (instance.waitingImage != null && instance.connectedImage != null) {
-            instance.waitingImage.enabled = onOff;
-            instance.connectedImage.enabled = !onOff;
-        }
+    public void toggleImages(bool waitImg, bool connImg, bool dcImg) {
+        if (instance.waitingImage != null)
+            instance.waitingImage.enabled = waitImg;
+
+        if (instance.connectedImage != null) 
+            instance.connectedImage.enabled = connImg;
+
+        if (instance.disconnectedImage != null)
+            instance.disconnectedImage.enabled = dcImg;
     }
 
 	public void toggleExtendedInfo(){
