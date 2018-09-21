@@ -110,6 +110,18 @@ namespace Tournament.Server {
             int randomPlayer = getRandomWinner();
             setGameOver(players[randomPlayer]);
         }
+        public void forceIndexWinner(int index) {
+            try {
+                foreach (string username in playerSlotIndex.Keys) { 
+                    if (playerSlotIndex[username] == index) {
+                        setGameOver(players.Find(p => p.info.username == username));
+                        return;
+                    }
+                }
+
+                setGameOver(players[index]);
+            } catch { }
+        }
         private List<TournamentPlayer> getLosers(TournamentPlayer winner) { return players.Where(p => p != winner).ToList(); }
         private int getRandomWinner() {return (Random.Range(0, 100) > 50) ? 0 : 1;}
         public void setGameOver(TournamentPlayer winner) {

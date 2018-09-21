@@ -106,13 +106,14 @@ namespace Tournament.Client {
             }
 
             if (Input.GetKey(KeyCode.Alpha1)) {
-
+                AdminRunningTournamentManager.forceIndexWinner(id, 0);
                 return true;
             }
             if (Input.GetKey(KeyCode.Alpha2)) {
-
+                AdminRunningTournamentManager.forceIndexWinner(id, 1);
                 return true;
             }
+
             return false;
         }
         #endregion

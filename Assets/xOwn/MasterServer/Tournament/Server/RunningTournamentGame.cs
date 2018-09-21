@@ -41,6 +41,10 @@ namespace Tournament.Server {
             gameInfo.connectedPeers.ForEach(p => p.SendMessage((short)CustomMasterServerMSG.runningTournamentUpdate, updateMsg));
             gameInfo.admin.SendMessage((short)CustomMasterServerMSG.runningTournamentUpdate, updateMsg);
         }
+
+        public void forceIndexWinner(RoundID roundID, int index) {
+            gameTree.getRound(roundID).forceIndexWinner(index);
+        }
         #endregion
 
         private void playerDissconnected(IPeer peer) {

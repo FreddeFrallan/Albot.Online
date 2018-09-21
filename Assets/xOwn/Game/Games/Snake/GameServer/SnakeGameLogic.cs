@@ -7,7 +7,7 @@ using System;
 namespace Snake{
 
 	public class SnakeGameLogic : MonoBehaviour {
-		public static readonly float refreshRate = 5f;
+		public static readonly float refreshRate = 3f;
         public const int GRID_SIZE = 10;
 
         private System.Random rand = new System.Random();

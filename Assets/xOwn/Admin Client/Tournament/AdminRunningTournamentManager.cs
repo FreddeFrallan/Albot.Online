@@ -85,5 +85,11 @@ namespace AdminUI {
                 singleton.currentTree.updateRounds(u.rounds, false);
             singleton.currentTree.renderVisualTree();
         }
+
+        public static void forceIndexWinner(RoundID id, int index) {
+            Msf.Connection.SendMessage((short)CustomMasterServerMSG.tournamentRoundForceWinner, new TournamentForceWinnerMessage() {
+                tournamentID = singleton.tournamentInfo.tournamentID, roundID = id, winIndex = index
+            });
+        }
     }
 }

@@ -68,7 +68,6 @@ namespace Tournament.Client {
                 float startY = -rowHeight / 2;
 
                 for (int i = 0; i < serverTree[col].Count; i++) {
-                    print("Layer: " + serverTree[col].Count);
                     Vector3 spawnPos = new Vector3(col * colSpacing, startY + yIncrement * i, 0);
                     GameObject tempObj = Instantiate(gamePrefab, spawnPos, Quaternion.identity);
 

@@ -16,6 +16,8 @@ namespace Barebones.MasterServer {
             singleton = this;
             server.SetHandler((short)CustomMasterServerMSG.tournamentRoundPreStarted, handlePreGameStarted);
             server.SetHandler((short)CustomMasterServerMSG.tournamentRoundStarted, handleRoundStarted);
+            server.SetHandler((short)CustomMasterServerMSG.tournamentRoundForceWinner, handleForeceRoundWinner);
+            
         }
 
         private void handlePreGameStarted(IIncommingMessage rawMsg) {
@@ -48,6 +50,13 @@ namespace Barebones.MasterServer {
             Debug.LogError("Close tournament is not implemented");
         }
         
+
+        public void handleForeceRoundWinner(IIncommingMessage rawMsg) {
+            TournamentForceWinnerMessage info = rawMsg.Deserialize<TournamentForceWinnerMessage>();
+            RunningTournamentGame game;
+            if (findGame(info.tournamentID, out game, rawMsg) && SpectatorAuthModule.existsAdmin(rawMsg.Peer))
+                game.forceIndexWinner(info.roundID, info.winIndex);
+        }
 
 
         private bool findGame(string roomID, out RunningTournamentGame game, IIncommingMessage rawMsg = null, string error = "Could not find game: ") {

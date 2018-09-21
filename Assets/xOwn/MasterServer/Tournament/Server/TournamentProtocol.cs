@@ -40,4 +40,10 @@ namespace Tournament {
         public bool forceRestart; //Should not be here
         public RoundID roundID;
     }
+
+    public class TournamentForceWinnerMessage : MessageBase {
+        public string tournamentID;
+        public int winIndex; //Should not be here
+        public RoundID roundID;
+    }
 }
