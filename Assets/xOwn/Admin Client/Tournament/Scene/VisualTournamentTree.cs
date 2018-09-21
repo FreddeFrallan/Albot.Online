@@ -59,6 +59,8 @@ namespace Tournament.Client {
             }
 
 
+            bool passedFinal = false;
+            int singleLayerCounter = 0;
             for (int col = 0; col < serverTree.Count; col++) {
                 float yIncrement = layerSizeToYIncrement[serverTree[col].Count];
                 List<VisualTournamentRound> visualCol = new List<VisualTournamentRound>();
@@ -66,15 +68,29 @@ namespace Tournament.Client {
                 float startY = -rowHeight / 2;
 
                 for (int i = 0; i < serverTree[col].Count; i++) {
+                    print("Layer: " + serverTree[col].Count);
                     Vector3 spawnPos = new Vector3(col * colSpacing, startY + yIncrement * i, 0);
                     GameObject tempObj = Instantiate(gamePrefab, spawnPos, Quaternion.identity);
 
                     VisualTournamentRound game = tempObj.GetComponent<VisualTournamentRound>();
-                    game.init(serverTree[col][i]);
+                    game.init(serverTree[col][i], calcRoundType(passedFinal, singleLayerCounter));
                     visualCol.Add(game);
+
+                    if (serverTree[col].Count == 1 && passedFinal == false) {
+                        singleLayerCounter++;
+                        if(singleLayerCounter == 2)
+                            passedFinal = true;
+                    }
                 }
                 tree.Add(visualCol);
             }
+        }
+
+
+        private RoundType calcRoundType(bool passedFinal, int singleLayerCounter) {
+            if (passedFinal) return RoundType.loser;
+            if (singleLayerCounter == 1) return RoundType.final;
+            return RoundType.normal;
         }
 
         private void clearOldTree() {

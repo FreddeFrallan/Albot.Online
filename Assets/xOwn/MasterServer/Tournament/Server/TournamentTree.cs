@@ -105,4 +105,10 @@ namespace Tournament.Server {
         Empty,
         Over,
     }
+
+    public enum RoundType {
+        normal,
+        final,
+        loser
+    }
 }

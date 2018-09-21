@@ -15,14 +15,16 @@ namespace Tournament.Client {
         private List<VisualTournamentPlayerSlot> playerSlots;
         [SerializeField]
         private RoundState state = RoundState.Empty;
+        public RoundType type = RoundType.normal;
         private RoundID id;
         private List<TournamentPlayer> players;
         private TournamentRound serverRound;
         private Action leftClick, rightClick;
         private string preGameRoomID;
 
-        public void init(TournamentRound serverRound) {
+        public void init(TournamentRound serverRound, RoundType type) {
             this.serverRound = serverRound;
+            this.type = type;
             id = serverRound.getGameID();
             players = serverRound.getPlayers();
             state = serverRound.getState();
