@@ -10,8 +10,9 @@ public class LocalBotConnectionStatusUi : MonoBehaviour {
 	public static ConnectionStatus currentStatus = ConnectionStatus.Disconnected;
 	public ClientConnectionStatusUi ClientConnColors;
 
-	public Image image;
-	public Image extendedImage;
+    public Image dotImage;
+	public Image waitingImage;
+	public Image connectedImage;
 	public Text text;
 	public static LocalBotConnectionStatusUi instance;
 
@@ -32,40 +33,37 @@ public class LocalBotConnectionStatusUi : MonoBehaviour {
 
 	private void UpdateStatusView(ConnectionStatus status){
 		currentStatus = status;
-
-        switch (status){
+        print(currentStatus);
+        switch (status) {
             case ConnectionStatus.Connected:
-				if (instance.image != null)
-					instance.image.color = ClientConnColors.OnlineColor;
-			
-				//instance.text.color = ClientConnColors.OnlineColor;
-				//instance.text.text = "Connected";
+                toggleWaitingImage(false);
+                if (instance.dotImage != null)
+                    instance.dotImage.color = ClientConnColors.OnlineColor;
                 break;
             case ConnectionStatus.Disconnected:
-			case ConnectionStatus.None:
-				if (instance.image != null) 
-					instance.image.color = ClientConnColors.OfflineColor;
-			
-				//instance.text.color = ClientConnColors.OfflineColor;
-				//instance. text.text = "Offline";
+            case ConnectionStatus.None:
+                toggleWaitingImage(true);
+                if (instance.dotImage != null)
+                    instance.dotImage.color = ClientConnColors.OfflineColor;
                 break;
             case ConnectionStatus.Connecting:
-				if (instance.image != null) 
-					instance.image.color = ClientConnColors.ConnectingColor;
-			
-				//instance.text.color = ClientConnColors.ConnectingColor;
-				//instance.text.text = "Connecting";
+                toggleWaitingImage(true);
+                if (instance.dotImage != null)
+                    instance.dotImage.color = ClientConnColors.ConnectingColor;
                 break;
             default:
-				if (instance.image != null) 
-					instance.image.color = ClientConnColors.UnknownColor;
-			
-				//instance.text.color = ClientConnColors.UnknownColor;
-				//instance.text.text = "Unknown";
+                toggleWaitingImage(true);
+                if (instance.dotImage != null)
+                    instance.dotImage.color = ClientConnColors.UnknownColor;
                 break;
         }
+    }
 
-		instance.extendedImage.color = instance.image.color;
+    public void toggleWaitingImage(bool onOff) {
+        if (instance.waitingImage != null && instance.connectedImage != null) {
+            instance.waitingImage.enabled = onOff;
+            instance.connectedImage.enabled = !onOff;
+        }
     }
 
 	public void toggleExtendedInfo(){
