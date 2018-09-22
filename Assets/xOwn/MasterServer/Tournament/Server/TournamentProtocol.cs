@@ -43,7 +43,11 @@ namespace Tournament {
 
     public class TournamentForceWinnerMessage : MessageBase {
         public string tournamentID;
-        public int winIndex; //Should not be here
+        public int winIndex; 
         public RoundID roundID;
+    }
+
+    public class TournamentReconnectPlayer : MessageBase {
+        public string tournamentID, username;
     }
 }

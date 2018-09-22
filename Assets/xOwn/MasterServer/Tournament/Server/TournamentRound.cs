@@ -186,6 +186,11 @@ namespace Tournament.Server {
                 setHasPossibleBotGame();
             setState(RoundState.Idle);
         }
+
+        public void replacePlayer(string username, IPeer newPeer) {
+            foreach(TournamentPlayer p in players.Where(p => p.info.username == username))
+                p.peer = newPeer;
+        }
         #endregion
 
         #region Getters

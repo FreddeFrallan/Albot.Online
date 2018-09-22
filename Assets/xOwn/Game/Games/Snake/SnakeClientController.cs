@@ -128,11 +128,10 @@ namespace Snake{
 			if (infoMsg.gameOver == false || isGameOver)
 				return;
 
+            /* OLD Code */
             addFinalUpdate(infoMsg.winnerColor);
-            /* OLD Code
 			foreach (int[] crash in infoMsg.crashPos)
 				localRenderer.displayCrash (new Vector2(crash[0], crash[1]));
-            */
             gameOver();
             CurrentGame.gameOver(getGameOverText(infoMsg.winnerColor));
         }

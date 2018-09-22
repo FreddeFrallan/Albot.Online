@@ -15,6 +15,7 @@ public class AlbotAuthModule : ServerModuleBehaviour {
 	public delegate void AuthEventHandler(IUserExtension account);
 	public event AuthEventHandler LoggedIn;
 	private SpectatorAuthModule spectatorModule;
+    public static Dictionary<string, IPeer> tempActiveUsers = new Dictionary<string, IPeer>();
 
 	public override void Initialize (IServer server){
 		Debug.LogError ("Init costum AuthModule");
@@ -91,7 +92,13 @@ public class AlbotAuthModule : ServerModuleBehaviour {
 		// Finalize login
 		FinalizeLogin(extension, user);
 		msg.Respond(infoPacket.ToBytes(), ResponseStatus.Success);
-	}
+
+        //Temp King tournament
+        if (tempActiveUsers.ContainsKey(user.username) == false)
+            tempActiveUsers.Add(user.username, msg.Peer);
+        else
+            tempActiveUsers[user.username] = msg.Peer;
+    }
 
 	private bool generateAcountData(UserInfo storedInfo, out IAccountData accountData){
 		var db = Msf.Server.DbAccessors.GetAccessor<IAuthDatabase>();

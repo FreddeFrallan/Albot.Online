@@ -99,10 +99,16 @@ namespace Snake{
             if (state.winnerColor == PlayerColor.None) {
                 smoothRenderer.explodePlayer(0);
                 smoothRenderer.explodePlayer(1);
-            } else if (state.winnerColor == PlayerColor.Red)
+                displayCrash(GameUtils.pos2DToVec2(state.blueCoords[0]));
+                displayCrash(GameUtils.pos2DToVec2(state.redCoords[0]));
+            } else if (state.winnerColor == PlayerColor.Red) {
+                displayCrash(GameUtils.pos2DToVec2(state.blueCoords[0]));
                 smoothRenderer.explodePlayer(0);
-            else
+            }
+            else {
+                displayCrash(GameUtils.pos2DToVec2(state.redCoords[0]));
                 smoothRenderer.explodePlayer(1);
+            }
         }
     }
 

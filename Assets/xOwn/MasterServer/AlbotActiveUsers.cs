@@ -35,6 +35,14 @@ public class AlbotActiveUsers{
 		}
 	}
 
+    public static IPeer GetActiveUser(string username) {
+        foreach (UserAcount u in users.Keys)
+            if (u.username == username)
+                return users[u].peer;
+
+        return null;
+    }
+
 	private class ActiveUser{
 		public UserAcount userAcount;
 		public IPeer peer;

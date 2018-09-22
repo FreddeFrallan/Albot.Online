@@ -18,6 +18,7 @@ namespace Snake{
         private int lastPointsAdded = 5;
 
         private Material snakeMaterial;
+        private bool isExploded = false;
 
 		public void init(Material m){
 			nextTarget = transform.position;
@@ -70,6 +71,9 @@ namespace Snake{
 			
 			
 		public void interpolateBetweenPos(float procentCovered){
+            if (isExploded)
+                return;
+
 			transform.position = oldPos + delta*procentCovered;
             enqueuePos(transform.position);
         }
@@ -86,6 +90,7 @@ namespace Snake{
             for (int i = transform.childCount - 1; i >= 0; i--)
                 transform.GetChild(i).transform.parent = null;
             StartCoroutine(snakeExploder.SplitMesh(true));
+            isExploded = true;
         }
 	}
 }

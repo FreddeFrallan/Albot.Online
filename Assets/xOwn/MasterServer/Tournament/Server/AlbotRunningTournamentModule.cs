@@ -17,7 +17,7 @@ namespace Barebones.MasterServer {
             server.SetHandler((short)CustomMasterServerMSG.tournamentRoundPreStarted, handlePreGameStarted);
             server.SetHandler((short)CustomMasterServerMSG.tournamentRoundStarted, handleRoundStarted);
             server.SetHandler((short)CustomMasterServerMSG.tournamentRoundForceWinner, handleForeceRoundWinner);
-            
+            server.SetHandler((short)CustomMasterServerMSG.tournamentRoundReconnectPlayer, handleReconnectPlayer);
         }
 
         private void handlePreGameStarted(IIncommingMessage rawMsg) {
@@ -56,6 +56,13 @@ namespace Barebones.MasterServer {
             RunningTournamentGame game;
             if (findGame(info.tournamentID, out game, rawMsg) && SpectatorAuthModule.existsAdmin(rawMsg.Peer))
                 game.forceIndexWinner(info.roundID, info.winIndex);
+        }
+
+        public void handleReconnectPlayer(IIncommingMessage rawMsg) {
+            TournamentReconnectPlayer info = rawMsg.Deserialize<TournamentReconnectPlayer>();
+            RunningTournamentGame game;
+            if (findGame(info.tournamentID, out game, rawMsg) && SpectatorAuthModule.existsAdmin(rawMsg.Peer))
+                game.reconnectPlayer(info.username);
         }
 
 

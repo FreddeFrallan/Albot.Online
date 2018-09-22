@@ -14,6 +14,7 @@ namespace Tournament.Client {
         [SerializeField]
         private TextMeshPro text;
         private RoundType slotType;
+        public string username;
 
         private void Awake() {
             setBackgroundColor(null, RoundState.Empty);
@@ -21,6 +22,7 @@ namespace Tournament.Client {
 
         public void setPlayer(TournamentPlayer player, RoundState state) {
             text.text = player.info.username;
+            username = player.info.username;
             setBackgroundColor(player, state);
         }
 

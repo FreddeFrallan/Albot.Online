@@ -86,10 +86,19 @@ namespace AdminUI {
             singleton.currentTree.renderVisualTree();
         }
 
+
+        #region Panic commands
         public static void forceIndexWinner(RoundID id, int index) {
             Msf.Connection.SendMessage((short)CustomMasterServerMSG.tournamentRoundForceWinner, new TournamentForceWinnerMessage() {
                 tournamentID = singleton.tournamentInfo.tournamentID, roundID = id, winIndex = index
             });
         }
+
+        public static void reConnectPlayer(string username) {
+            Msf.Connection.SendMessage((short)CustomMasterServerMSG.tournamentRoundReconnectPlayer, new TournamentReconnectPlayer() {
+                tournamentID = singleton.tournamentInfo.tournamentID, username = username,
+            });
+        }
+        #endregion
     }
 }

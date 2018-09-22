@@ -105,6 +105,16 @@ namespace Tournament.Client {
                 return true;
             }
 
+
+            if (Input.GetKey(KeyCode.Alpha3)) {//Reconnect top player in round
+                AdminRunningTournamentManager.reConnectPlayer(playerSlots[0].username);
+                return true;
+            }
+            if (Input.GetKey(KeyCode.Alpha4)) {//Reconnect bot player in round
+                AdminRunningTournamentManager.reConnectPlayer(playerSlots[1].username);
+                return true;
+            }
+
             if (Input.GetKey(KeyCode.Alpha1)) {
                 AdminRunningTournamentManager.forceIndexWinner(id, 0);
                 return true;

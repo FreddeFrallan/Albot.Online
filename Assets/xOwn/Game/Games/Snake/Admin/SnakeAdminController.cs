@@ -29,7 +29,7 @@ namespace AdminUI{
 
 			List<string> extracted = logHistory.ToList ();
 			extracted.RemoveAt (0);
-			addLogMove ( extracted.ToArray ());
+			addLogMove (extracted.ToArray ());
 		}
 
 
@@ -59,8 +59,6 @@ namespace AdminUI{
 		private void parseNormalMove(string msg){
 			foreach (string s2 in msg.Split('#')) {
 				string[] words = s2.Split (' ');
-
-
 				playerHistory [extractPlayerIndex (words [0])].addPosition (int.Parse (words [1]), int.Parse (words [2]), int.Parse (words [3]));
 			}
 		}

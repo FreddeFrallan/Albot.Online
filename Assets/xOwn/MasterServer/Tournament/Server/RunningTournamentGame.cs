@@ -41,9 +41,22 @@ namespace Tournament.Server {
             gameInfo.connectedPeers.ForEach(p => p.SendMessage((short)CustomMasterServerMSG.runningTournamentUpdate, updateMsg));
             gameInfo.admin.SendMessage((short)CustomMasterServerMSG.runningTournamentUpdate, updateMsg);
         }
+        #endregion
 
+        #region Panic Commands
         public void forceIndexWinner(RoundID roundID, int index) {
             gameTree.getRound(roundID).forceIndexWinner(index);
+        }
+
+        public void reconnectPlayer(string username) {
+            if (AlbotAuthModule.tempActiveUsers.ContainsKey(username) == false) {
+                Debug.LogError("Could not find " + username);
+                return;
+            }
+
+            IPeer p = AlbotAuthModule.tempActiveUsers[username];
+            gameTree.traverseRounds(r => r.replacePlayer(username, p));
+            Debug.LogError("Replaced " + username);
         }
         #endregion
 
