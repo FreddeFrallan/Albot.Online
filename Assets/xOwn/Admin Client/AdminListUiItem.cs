@@ -53,12 +53,13 @@ namespace AdminUI{
 
 			isPreGame = bool.Parse (data.Properties [MsfDictKeys.IsPreGame]);
 
+            /*
 			if (data.MaxPlayers > 0)
 				Online.text = string.Format("{0}/{1}", data.OnlinePlayers, data.MaxPlayers);
 			else
 				Online.text = data.OnlinePlayers.ToString();
-
-			MapName.text = data.Properties.ContainsKey(MsfDictKeys.MapName) ? data.Properties[MsfDictKeys.MapName] : UnknownMapName;
+             */
+            MapName.text = "Snake";//data.Properties.ContainsKey(MsfDictKeys.MapName) ? data.Properties[MsfDictKeys.MapName] : UnknownMapName;
 		}
 
 		public void OnClick(){
