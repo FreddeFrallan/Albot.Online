@@ -9,7 +9,8 @@ using System;
 		public AgentOverlord overlord;
 		public GameObject bgTile, obsticale, dropPoint, item, playerObj;
 		public GameObject backgroundParent;
-		private List<GameObject> spawnedMap = new List<GameObject>();
+        public Light itemLight;
+        private List<GameObject> spawnedMap = new List<GameObject>();
 		private Player thePlayer;
 
 		public static int boardSize = 8, moveCounter = 0;
@@ -77,11 +78,20 @@ using System;
 					blockedSquares.Add(new int[]{x, y});
 				}
 				else if(s == "I"){
-					spawnedMap.Add(Instantiate(item, spawnPos, Quaternion.identity));
+                    GameObject itemCopy = Instantiate(item, spawnPos + new Vector3(0, 0, 0.999f), Quaternion.identity);
+                    GameObject itemLightObj = new GameObject("Item Light");
+                    itemLightObj.transform.position = spawnPos + new Vector3(0, 0, 0);
+                    Light lightCopy = itemLightObj.AddComponent<Light>();
+                    lightCopy.type = itemLight.type;
+                    lightCopy.color = itemLight.color;
+                    lightCopy.intensity = itemLight.intensity;
+                    lightCopy.range = itemLight.range;
+                    itemLightObj.transform.parent = itemCopy.transform;
+                    spawnedMap.Add(itemCopy);
 					pickups++;
 				}
 				else if(s == "D")
-					spawnedMap.Add(Instantiate(dropPoint, spawnPos + new Vector3(0, 0, 0.25f), Quaternion.identity));
+					spawnedMap.Add(Instantiate(dropPoint, spawnPos + new Vector3(0, 0, 0.6f), Quaternion.identity));
 				else if(s == "P"){
 					spawnedMap.Add(Instantiate(playerObj, spawnPos, playerObj.transform.rotation));
 					thePlayer = spawnedMap[spawnedMap.Count-1].GetComponent<Player>();
