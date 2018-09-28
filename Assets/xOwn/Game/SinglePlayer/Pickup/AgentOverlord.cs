@@ -24,6 +24,7 @@ using TMPro;
 		void Start () {
 			togglePressed ();
 			setMoveSpeed ();
+            TCPLocalConnection.startServer(4000);
 			SinglePlayerGameMaster.init (takeInput, () => {});
 		}
 			
