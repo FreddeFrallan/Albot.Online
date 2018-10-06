@@ -95,7 +95,13 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/xOwn/Game/Games/SpeedRunner/GameServer/SpeedRunnerGameServer.unity
     guid: 5e473cd4bd9146b48bdc23e3bad30a0e
-  - enabled: 1
+  - enabled: 0
     path: Assets/xOwn/Game/SinglePlayer/TwitterMonteCarlo/TwitterEstimate.unity
     guid: cf427cbd7fcdcf848ac89c96e77478c0
+  - enabled: 0
+    path: Assets/xOwn/Admin Client/Stats/StatsScene.unity
+    guid: 1ac32ec58cfc446408840e8160ea8081
+  - enabled: 1
+    path: Assets/xOwn/Admin Client/Stats/Test.unity
+    guid: 6ef7160dab0e63b4f9109814b1fbfe3b
   m_configObjects: {}
