@@ -1,7 +1,8 @@
 {
     "name": "AlbotAssembly",
     "references": [
-        "Unity.TextMeshPro"
+        "Unity.TextMeshPro",
+        "BarChart"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [],
