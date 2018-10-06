@@ -5,7 +5,7 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
+  - enabled: 1
     path: Assets/xOwn/Admin Client/Admin Client.unity
     guid: ed61a98dfd8f05f47b1bcea526d970fa
   - enabled: 0
@@ -14,16 +14,16 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/xOwn/GameServer/GameServer.unity
     guid: e9e3296b16dd2e743b20e4560f894d67
-  - enabled: 0
+  - enabled: 1
     path: Assets/xOwn/Client/Client.unity
     guid: 278cccfb06cfb5c4fbb0adadefe0b45b
-  - enabled: 0
+  - enabled: 1
     path: Assets/xOwn/Client/EmptyScene.unity
     guid: 1074226f102b85747b20623feb0316b9
   - enabled: 0
     path: Assets/xOwn/Admin Client/Tournament/Scene/TournamentScene.unity
     guid: cb679749f990bda4682739ee9f518ee1
-  - enabled: 0
+  - enabled: 1
     path: Assets/xOwn/Game/Games/Connect4/Connect4Game.unity
     guid: 597ec1fce0a578f45bdff75cc5cf89e3
   - enabled: 0
@@ -71,7 +71,7 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/xOwn/Game/Games/Brakethrough/Admin/BreakthroughAdmin.unity
     guid: ec882b171ee17714a97a4e30ec4dab4c
-  - enabled: 0
+  - enabled: 1
     path: Assets/xOwn/Game/Games/Snake/SnakeGame.unity
     guid: e4e090c27bc36c1458fd98a342d49d04
   - enabled: 0

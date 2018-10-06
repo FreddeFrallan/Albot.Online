@@ -40,7 +40,12 @@ namespace UserData {
             return new UserLoginEntry() { time = loginTime, username = username, duration = (logoutTime - loginTime) };
         }
 
-        public UserLoginEntry[] getAllLoginEntries() { return loginColl.FindAll().ToArray(); }
+        public UserLoginEntryStruct[] getAllLoginEntries() {
+            List<UserLoginEntryStruct> temp = new List<UserLoginEntryStruct>();
+            foreach(UserLoginEntry u in loginColl.FindAll())
+                temp.Add(new UserLoginEntryStruct() { time = u.time, username = u.username, duration = u.duration });
+            return temp.ToArray();
+        }
         #endregion
 
 
@@ -51,7 +56,12 @@ namespace UserData {
                 new GameStartedEntry() {gameID = gameCounter++, time = time, gameType = gameType, players = players });
         }
 
-        public GameStartedEntry[] getAllPlayedGames() {return startedGamesColl.FindAll().ToArray();}
+        public GameStartedStruct[] getAllPlayedGames() {
+            List<GameStartedStruct> temp = new List<GameStartedStruct>();
+            foreach (GameStartedEntry u in startedGamesColl.FindAll())
+                temp.Add(new GameStartedStruct() { time = u.time, gameID = u.gameID, gameType = u.gameType, players = u.players});
+            return temp.ToArray();
+        }
         #endregion
     }
 

@@ -79,7 +79,5 @@ namespace AlbotServer {
     }
 
 
-    public class LoginDataODT : MessageBase { public UserLoginEntry[] entries; }
-    public class PlayedGamesDataODT : MessageBase {public GameStartedEntry[] entries;}
 
 }

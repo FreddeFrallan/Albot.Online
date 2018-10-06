@@ -147,5 +147,6 @@ namespace ClientUI{
         PlayingTournament,
         PreGame,
 		PlayingGame,
+        Stats,
 	}
 }

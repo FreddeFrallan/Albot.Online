@@ -19,7 +19,7 @@ namespace AdminUI{
 		public delegate void AdminUIStateChanged(ClientUIStates newState);
         private static Dictionary<ClientUIStates, string> statesToScenes = new Dictionary<ClientUIStates, string>();
 
-        public SceneField tournamentScene, lobbyScene;
+        public SceneField tournamentScene, lobbyScene, statsScene;
 
 		void Start () {
 			singleton = this;
@@ -33,6 +33,7 @@ namespace AdminUI{
             statesToScenes.Add(ClientUIStates.GameLobby, lobbyScene.SceneName);
             statesToScenes.Add(ClientUIStates.LobbyBrowser, lobbyScene.SceneName);
             statesToScenes.Add(ClientUIStates.PlayingTournament, tournamentScene.SceneName);
+            statesToScenes.Add(ClientUIStates.Stats, statsScene.SceneName);
         }
 
 
@@ -83,6 +84,7 @@ namespace AdminUI{
 				break;
 
             case ClientUIStates.PlayingTournament:
+            case ClientUIStates.Stats:
                 singleton.setPanelStates(false, false);
             break;
             }

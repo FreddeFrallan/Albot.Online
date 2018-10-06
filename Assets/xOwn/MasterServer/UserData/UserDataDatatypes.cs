@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using UnityEngine.Networking;
 
 namespace UserData {
 
@@ -12,6 +13,7 @@ namespace UserData {
         public static readonly string GameStartedCollection = "StartedGames";
     }
 
+    #region UserLogin
     public class UserLoginEntry {
         [BsonId]
         public long time { get; set; }
@@ -19,6 +21,15 @@ namespace UserData {
         public long duration { get; set; }
     }
 
+    public struct UserLoginEntryStruct {
+        public long time;
+        public string username;
+        public long duration;
+    }
+    #endregion
+
+
+    #region GameStarted
     public class GameStartedEntry {
         [BsonId]
         public long gameID { get; set; }
@@ -27,5 +38,14 @@ namespace UserData {
         public string players { get; set; }
     }
 
+    public struct GameStartedStruct {
+        public long gameID { get; set; }
+        public long time { get; set; }
+        public string gameType { get; set; }
+        public string players { get; set; }
+    }
+    #endregion
+    public class LoginDataODT : MessageBase { public UserLoginEntryStruct[] entries; }
+    public class PlayedGamesDataODT : MessageBase { public GameStartedStruct[] entries; }
 
 }
