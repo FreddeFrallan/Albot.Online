@@ -171,6 +171,7 @@ namespace AlbotServer{
         public bool isPlayerReady(int id) { return getMatchingPeer(id).isReady; }
 		public bool canGameStart(){return playerSlots.All (x => x.info.isReady);}
         public PreGameSlotInfo[] getPlayerSlots() { return playerSlots.Select(p => p.info).ToArray(); }
+        public PlayerInfo[] getPlayerInfo() { return playerSlots.Select(p => p.info.playerInfo).ToArray();}
 		public bool containsPeer(IPeer peer){ lock (playerLock) return connectedPeers.Any(p => p.peer.Id == peer.Id); }
         public bool isAdmin(IPeer peer) { return admin.Id == peer.Id; }
         public bool isHost(IPeer peer) { return host != null && host.Id == peer.Id; }

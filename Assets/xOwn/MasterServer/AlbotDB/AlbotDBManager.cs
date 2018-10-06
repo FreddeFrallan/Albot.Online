@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using LiteDB;
 using System.Linq;
+using AlbotServer;
 
 namespace AlbotDB{
 	
@@ -126,6 +127,8 @@ namespace AlbotDB{
 					savedUser.isLoggedIn = false;
 					updateLoginInfo (savedUser);
 				}
+
+                UserDataModule.userLogedOut(oldUser.username);
 			}
 		}
 

@@ -1,6 +1,8 @@
 {
     "name": "AlbotEditorAssembly",
-    "references": [],
+    "references": [
+        "BarChart"
+    ],
     "optionalUnityReferences": [
         "TestAssemblies"
     ],

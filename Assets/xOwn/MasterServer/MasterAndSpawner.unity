@@ -965,7 +965,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 264, y: -11}
+  m_AnchoredPosition: {x: 150, y: -33}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &516117732
@@ -1658,41 +1658,9 @@ Prefab:
       propertyPath: m_RootOrder
       value: 4
       objectReference: {fileID: 0}
-    - target: {fileID: 114828096234389054, guid: e1aa3e135ac5ebf4596926c6bfeec4f1,
-        type: 2}
-      propertyPath: tournamentModule
-      value: 
-      objectReference: {fileID: 1573233242}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e1aa3e135ac5ebf4596926c6bfeec4f1, type: 2}
   m_IsPrefabAsset: 0
---- !u!114 &1573233242 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 114196069569534038, guid: e1aa3e135ac5ebf4596926c6bfeec4f1,
-    type: 2}
-  m_PrefabInternal: {fileID: 1573233241}
-  m_Script: {fileID: 11500000, guid: 2f5249e34b869d042ad308109a0e3da3, type: 3}
---- !u!4 &1573233243 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4944834096443888, guid: e1aa3e135ac5ebf4596926c6bfeec4f1,
-    type: 2}
-  m_PrefabInternal: {fileID: 1573233241}
---- !u!1 &1573233244 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1350506662320346, guid: e1aa3e135ac5ebf4596926c6bfeec4f1,
-    type: 2}
-  m_PrefabInternal: {fileID: 1573233241}
---- !u!114 &1573233245
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1573233244}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 248e02001cece8e4dab8712da29241c1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1702668780
 GameObject:
   m_ObjectHideFlags: 0
@@ -2231,7 +2199,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 88, y: -11}
+  m_AnchoredPosition: {x: 50, y: -33}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2010855641
@@ -2253,48 +2221,6 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
---- !u!1 &2070872848
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 1038275805413024, guid: e1aa3e135ac5ebf4596926c6bfeec4f1,
-    type: 2}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2070872849}
-  - component: {fileID: 2070872850}
-  m_Layer: 0
-  m_Name: RunningTournamentModule
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2070872849
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 4374743387771026, guid: e1aa3e135ac5ebf4596926c6bfeec4f1,
-    type: 2}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 2070872848}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 1573233243}
-  m_RootOrder: 14
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2070872850
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 2070872848}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 77d602553609b81488a6d7d01d93df6a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &2085121441
 GameObject:
   m_ObjectHideFlags: 0

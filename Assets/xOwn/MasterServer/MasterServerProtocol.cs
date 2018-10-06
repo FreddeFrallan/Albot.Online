@@ -36,6 +36,10 @@ public enum CustomMasterServerMSG {
     tournamentRoundStarted,
     tournamentRoundForceWinner,
     tournamentRoundReconnectPlayer,
+
+    //Player Data
+    requestLoginData,
+    requestGamesData,
 }
 
 

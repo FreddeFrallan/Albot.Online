@@ -147,8 +147,10 @@ namespace AlbotServer {
             game.onpreGameStarted();
             game.getPeers().ForEach(p => { p.SendMessage((short)ServerCommProtocl.GameRoomInvite, msg); });
 
-            if(rawMsg != null)
+            if(rawMsg != null) {
                 rawMsg.Respond(ResponseStatus.Success);
+                UserDataModule.onGameStarted(game);
+            }
         }
 
         private void handleRestartGame(IIncommingMessage rawMsg) {

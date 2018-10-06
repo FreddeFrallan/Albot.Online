@@ -59,6 +59,22 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &1162462272859512
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4019237402683820}
+  - component: {fileID: 114285133566753852}
+  m_Layer: 0
+  m_Name: UserDataCollector
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!1 &1186218715717790
 GameObject:
   m_ObjectHideFlags: 0
@@ -130,6 +146,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4944834096443888}
   - component: {fileID: 114492666368134954}
+  - component: {fileID: 114206831892739016}
   m_Layer: 0
   m_Name: MasterServer
   m_TagString: Untagged
@@ -281,6 +298,22 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &1990833753541070
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4929541297135540}
+  - component: {fileID: 114321343951022718}
+  m_Layer: 0
+  m_Name: RunningTournamentModule
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!4 &4009263566649138
 Transform:
   m_ObjectHideFlags: 1
@@ -293,6 +326,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 4944834096443888}
   m_RootOrder: 13
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &4019237402683820
+Transform:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1162462272859512}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4944834096443888}
+  m_RootOrder: 15
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4024821957473928
 Transform:
@@ -491,6 +537,19 @@ Transform:
   m_Father: {fileID: 4944834096443888}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &4929541297135540
+Transform:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1990833753541070}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4944834096443888}
+  m_RootOrder: 14
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4944834096443888
 Transform:
   m_ObjectHideFlags: 1
@@ -515,6 +574,8 @@ Transform:
   - {fileID: 4374743387771026}
   - {fileID: 4132288768437556}
   - {fileID: 4009263566649138}
+  - {fileID: 4929541297135540}
+  - {fileID: 4019237402683820}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -541,6 +602,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f5249e34b869d042ad308109a0e3da3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &114206831892739016
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1350506662320346}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 248e02001cece8e4dab8712da29241c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114220112692722624
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -560,6 +632,28 @@ MonoBehaviour:
   MinChannelNameLength: 2
   MaxChannelNameLength: 25
   LogLevel: 4
+--- !u!114 &114285133566753852
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1162462272859512}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26d8d04951f7b9e4583aa5d8b39f5374, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &114321343951022718
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1990833753541070}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77d602553609b81488a6d7d01d93df6a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114444376522864680
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -662,6 +756,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a2ef0b7185e68c478ea5a869e258829, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tournamentModule: {fileID: 114196069569534038}
 --- !u!114 &114831944614804570
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -674,8 +769,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   matchMakerModule: {fileID: 114444376522864680}
-  preGameModule: {fileID: 114963688631775058}
-  roomsModule: {fileID: 114748273571039444}
 --- !u!114 &114906350193746768
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -6,7 +6,7 @@ using Barebones.Networking;
 using AlbotDB;
 using AlbotServer;
 using ClientUI;
-
+using UserData;
 
 //Framework starts from 32000, so we can use anything from 0 - 32000 ^^
 
@@ -38,6 +38,7 @@ public class AlbotAuthModule : ServerModuleBehaviour {
 	private void handleDissconnectedPeer(IPeer peer){
 		if (spectatorModule.playerDissconnected (peer))
 			return;
+
 		AlbotDBManager.onPlayerDissconnected (peer.Id);
 	}
 		
@@ -92,6 +93,7 @@ public class AlbotAuthModule : ServerModuleBehaviour {
 		// Finalize login
 		FinalizeLogin(extension, user);
 		msg.Respond(infoPacket.ToBytes(), ResponseStatus.Success);
+        UserDataModule.onUserLogedIn(user.username);
 
         //Temp King tournament
         if (tempActiveUsers.ContainsKey(user.username) == false)
