@@ -34,16 +34,8 @@ namespace AdminUI{
 
         #region Stats
         public void onStatsPressed() {
-            Msf.Connection.SendMessage((short)CustomMasterServerMSG.requestLoginData, (s, r) => {
-                print(s);
-                
-                LoginDataODT odt = r.Deserialize<LoginDataODT>();
-                print(odt.entries.Length);
-                foreach (UserLoginEntryStruct l in odt.entries) {
-                    print(l.username + " " + l.time);
-                }
-            });
-            //AdminUIManager.requestGotoState(ClientUIStates.Stats);
+            
+            AdminUIManager.requestGotoState(ClientUIStates.Stats);
             setActive(false);
         }
         #endregion
