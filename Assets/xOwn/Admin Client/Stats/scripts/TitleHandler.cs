@@ -9,7 +9,7 @@ public class TitleHandler : MonoBehaviour {
 
     public Text title;
 
-    private string baseText = "Amount of logins ";
+    private string baseText = "Logins ";
     
 
 	void Start () {

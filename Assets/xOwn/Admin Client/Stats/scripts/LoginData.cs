@@ -13,22 +13,21 @@ public class LoginData : MonoBehaviour {
 
     public TitleHandler titleHandler;
     public GraphChart loginsByDate, loginsByMonth, loginsByYear;
-    private GraphChart currentChart;
+    public Button buttonByDay, buttonByMonth, buttonByYear, buttonNext, buttonPrevious;
 
+    private GraphChart currentChart;
     private string dataCategory = "Logins";
     private List<DateTime> loginTimeStamps = new List<DateTime>();
-
-    public Button buttonByDay, buttonByMonth, buttonByYear;
+    private int timeOffset = 0;
+    
 
     void Start() {
-        Button btnDay = buttonByDay.GetComponent<Button>();
-        Button btnMonth = buttonByMonth.GetComponent<Button>();
-        Button btnYear = buttonByYear.GetComponent<Button>();
-        btnDay.onClick.AddListener(showByDate);
+        buttonByDay.onClick.AddListener(showByDate);
         buttonByMonth.onClick.AddListener(showByMonth);
         buttonByYear.onClick.AddListener(showByYear);
+        buttonNext.onClick.AddListener(delegate { timeStep(true); });
+        buttonPrevious.onClick.AddListener(delegate { timeStep(false); });
 
-        //Make more generic
         fixTimeLabels();
 
         currentChart = loginsByDate;
@@ -36,24 +35,27 @@ public class LoginData : MonoBehaviour {
     }
 
     public void showByDate() {
-        titleHandler.setDate(DateTime.Now.Date.ToString("yyyy/MM/dd"));
-        switchToChart(loginsByDate);
+        switchChart(loginsByDate);
     }
     public void showByMonth() {
-        titleHandler.setDate(DateTime.Now.Date.ToString("yyyy/MM"));
-        switchToChart(loginsByMonth);
+        switchChart(loginsByMonth);
     }
     public void showByYear() {
-        titleHandler.setDate(DateTime.Now.Year.ToString());
-        switchToChart(loginsByYear);
+        switchChart(loginsByYear);
     }
-    private void switchToChart(GraphChart chart) {
+    private void switchChart(GraphChart chart) {
         if (chart != currentChart) {
+            timeOffset = 0;
             currentChart.gameObject.SetActive(false);
             chart.gameObject.SetActive(true);
             currentChart = chart;
-            updateDataPoints();
+            updateData();
         }
+    }
+    private void timeStep(bool forward) {
+        timeOffset += forward ? 1 : -1;
+
+        updateData();
     }
 
     // For one day
@@ -82,29 +84,36 @@ public class LoginData : MonoBehaviour {
 
     // Queries the server for data
     private void fetchLoginData() {
-
+        TimeZone zone = TimeZone.CurrentTimeZone;
         Msf.Connection.SendMessage((short)CustomMasterServerMSG.requestLoginData, (status, response) => {
             if (status == ResponseStatus.Success) {
                 foreach (UserLoginEntryStruct l in response.Deserialize<LoginDataODT>().entries) {
-                    loginTimeStamps.Add(new DateTime(l.time));
+                    loginTimeStamps.Add(zone.ToLocalTime(new DateTime(l.time)));
                 }
             }
-            updateDataPoints();
+            updateData();
         });
         
     }
 
-    private void updateDataPoints() {
+    private void updateData() {
         currentChart.DataSource.StartBatch();
         currentChart.DataSource.ClearCategory(dataCategory);
 
         List<DataPoint> dataPoints;
-        if (currentChart == loginsByDate)
-            dataPoints = calculateFreqByHour(getLoginsByDate(DateTime.Now.Date));
-        else if(currentChart == loginsByMonth)
-            dataPoints = calculateFreqByDay(getLoginsByMonth(2018, DateTime.Now.Month));
-        else
-            dataPoints = calculateFreqByMonth(getLoginsByYear(2018));
+        if (currentChart == loginsByDate) {
+            DateTime date = DateTime.Now.AddDays(timeOffset).Date;
+            dataPoints = calculateFreqByHour(getLoginsByDate(date));
+            titleHandler.setDate(date.ToString("yyyy/MM/dd"));
+        } else if (currentChart == loginsByMonth) {
+            DateTime date = DateTime.Now.AddMonths(timeOffset);
+            dataPoints = calculateFreqByDay(getLoginsByMonth(date.Year, date.Month));
+            titleHandler.setDate(date.ToString("yyyy/MM"));
+        } else {
+            DateTime date = DateTime.Now.AddYears(timeOffset);
+            dataPoints = calculateFreqByMonth(getLoginsByYear(date.Year + timeOffset));
+            titleHandler.setDate(date.ToString("yyyy"));
+        }
 
         foreach (DataPoint p in dataPoints) 
             currentChart.DataSource.AddPointToCategory(dataCategory, p.x, p.y);
@@ -113,8 +122,11 @@ public class LoginData : MonoBehaviour {
     }
 
     private void fixTimeLabels() {
-        for (int i = 0; i <= 9; i++)
+        for (int i = 0; i <= 9; i++) {
             loginsByDate.HorizontalValueToStringMap.Add(i, "0" + i.ToString());
+            loginsByMonth.HorizontalValueToStringMap.Add(i, "0" + i.ToString());
+            loginsByYear.HorizontalValueToStringMap.Add(i, "0" + i.ToString());
+        }
     }
 
     private List<DateTime> getLoginsByDate(DateTime date) {
@@ -133,15 +145,4 @@ public class LoginData : MonoBehaviour {
         public double x, y;
     }
 
-    /*
-    //List<int> testList = simulateLoginHours(500);//new List<int> { 1, 1,1,1,1,1, 3, 23 };
-    //List<DataPoint> dataPoints = calculateHourFreqPairs(testList);
-    private List<int> simulateLoginHours(int n) {
-        List<int> logins = new List<int>();
-        System.Random rand = new System.Random();
-        for (int i = 0; i < n; i++)
-            logins.Add(rand.Next(0, 24));
-        return logins;
-    }
-    */
 }

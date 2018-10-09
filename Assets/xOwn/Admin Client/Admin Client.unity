@@ -58927,12 +58927,12 @@ Prefab:
     - target: {fileID: 114509298780526028, guid: 377b961bdc153854193d9d2ce0d03f25,
         type: 2}
       propertyPath: ServerIp
-      value: 127.0.01
+      value: 139.162.231.108
       objectReference: {fileID: 0}
     - target: {fileID: 114509298780526028, guid: 377b961bdc153854193d9d2ce0d03f25,
         type: 2}
       propertyPath: ServerPort
-      value: 5001
+      value: 5000
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 377b961bdc153854193d9d2ce0d03f25, type: 2}
@@ -60214,8 +60214,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 91.5, y: 23.249985}
-  m_SizeDelta: {x: 183, y: 46.5}
+  m_AnchoredPosition: {x: 60, y: 23.249985}
+  m_SizeDelta: {x: 120, y: 46.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2143486162
 MonoBehaviour:

@@ -10,6 +10,7 @@ public class AdminPhoneSettings : MonoBehaviour {
             return;
 
         Screen.orientation = ScreenOrientation.Landscape;
-	}
+        Screen.sleepTimeout = SleepTimeout.NeverSleep;
+    }
 	
 }
