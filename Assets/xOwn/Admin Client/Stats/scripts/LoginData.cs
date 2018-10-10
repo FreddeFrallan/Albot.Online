@@ -9,6 +9,7 @@ using UserData;
 using Barebones.Networking;
 using UnityEngine.UI;
 
+
 public class LoginData : MonoBehaviour {
 
     public TitleHandler titleHandler;
@@ -17,7 +18,9 @@ public class LoginData : MonoBehaviour {
 
     private GraphChart currentChart;
     private string dataCategory = "Logins";
-    private List<DateTime> loginTimeStamps = new List<DateTime>();
+    private List<UserSession> allSessions = new List<UserSession>();
+    private List<UserSession> currentSessions = new List<UserSession>(); // Sessions being shown atm
+    //private List<DateTime> loginTimeStamps = new List<DateTime>();
     private int timeOffset = 0;
     
 
@@ -58,27 +61,41 @@ public class LoginData : MonoBehaviour {
         updateData();
     }
 
+    public string getSessionsString(int x) {
+        string res = "";
+        if (currentChart == loginsByDate) {
+            foreach (UserSession us in currentSessions.Where(s => s.login.Hour == x))
+                res += us.ToString() + "\n";
+        } else if(currentChart == loginsByMonth) {
+            foreach (UserSession us in currentSessions.Where(s => s.login.Day == x))
+                res += us.ToString() + "\n";
+        } else
+            foreach (UserSession us in currentSessions.Where(s => s.login.Month == x))
+                res += us.ToString() + "\n";
+        return res;
+    }
+
     // For one day
-    private List<DataPoint> calculateFreqByHour(List<DateTime> dates) {
+    private List<DataPoint> calculateFreqByHour(List<UserSession> sessions) {
         List<DataPoint> points = new List<DataPoint>();
         for(int i = 0; i <= 23; i++) // Optimize with group by to achieve a speedup of up to 24
-            points.Add(new DataPoint() { x = i, y = dates.Where(d => d.Hour == i).Count() });
+            points.Add(new DataPoint() { x = i, y = sessions.Where(s => s.login.Hour == i).Count() });
         return points;
     }
 
     // For one month
-    private List<DataPoint> calculateFreqByDay(List<DateTime> dates) {
+    private List<DataPoint> calculateFreqByDay(List<UserSession> dates) {
         List<DataPoint> points = new List<DataPoint>();
         for (int i = 1; i <= 31; i++)
-            points.Add(new DataPoint() { x = i, y = dates.Where(d => d.Day == i).Count() });
+            points.Add(new DataPoint() { x = i, y = dates.Where(d => d.login.Day == i).Count() });
         return points;
     }
 
     // For one year
-    private List<DataPoint> calculateFreqByMonth(List<DateTime> dates) {
+    private List<DataPoint> calculateFreqByMonth(List<UserSession> dates) {
         List<DataPoint> points = new List<DataPoint>();
         for (int i = 1; i <= 12; i++)
-            points.Add(new DataPoint() { x = i, y = dates.Where(d => d.Month == i).Count() });
+            points.Add(new DataPoint() { x = i, y = dates.Where(d => d.login.Month == i).Count() });
         return points;
     }
 
@@ -88,7 +105,12 @@ public class LoginData : MonoBehaviour {
         Msf.Connection.SendMessage((short)CustomMasterServerMSG.requestLoginData, (status, response) => {
             if (status == ResponseStatus.Success) {
                 foreach (UserLoginEntryStruct l in response.Deserialize<LoginDataODT>().entries) {
-                    loginTimeStamps.Add(zone.ToLocalTime(new DateTime(l.time)));
+                    //loginTimeStamps.Add(zone.ToLocalTime(new DateTime(l.time)));
+                    allSessions.Add(new UserSession() {
+                        username = l.username,
+                        login = zone.ToLocalTime(new DateTime(l.time)),
+                        duration = new DateTime(l.duration)
+                    });
                 }
             }
             updateData();
@@ -103,15 +125,15 @@ public class LoginData : MonoBehaviour {
         List<DataPoint> dataPoints;
         if (currentChart == loginsByDate) {
             DateTime date = DateTime.Now.AddDays(timeOffset).Date;
-            dataPoints = calculateFreqByHour(getLoginsByDate(date));
+            dataPoints = calculateFreqByHour(getSessionsByDate(date));
             titleHandler.setDate(date.ToString("yyyy/MM/dd"));
         } else if (currentChart == loginsByMonth) {
             DateTime date = DateTime.Now.AddMonths(timeOffset);
-            dataPoints = calculateFreqByDay(getLoginsByMonth(date.Year, date.Month));
+            dataPoints = calculateFreqByDay(getSessionsByMonth(date.Year, date.Month));
             titleHandler.setDate(date.ToString("yyyy/MM"));
         } else {
             DateTime date = DateTime.Now.AddYears(timeOffset);
-            dataPoints = calculateFreqByMonth(getLoginsByYear(date.Year + timeOffset));
+            dataPoints = calculateFreqByMonth(getSessionsByYear(date.Year + timeOffset));
             titleHandler.setDate(date.ToString("yyyy"));
         }
 
@@ -129,20 +151,34 @@ public class LoginData : MonoBehaviour {
         }
     }
 
-    private List<DateTime> getLoginsByDate(DateTime date) {
-        return loginTimeStamps.Where(x => x.Date == date.Date).ToList();
+    private List<UserSession> getSessionsByDate(DateTime date) {
+        currentSessions = allSessions.Where(x => x.login.Date == date.Date).ToList();
+        return currentSessions;
+        //return loginTimeStamps.Where(x => x.Date == date.Date).ToList();
     }
 
-    private List<DateTime> getLoginsByMonth(int year, int month) {
-        return loginTimeStamps.Where(x => x.Month == month && x.Year == year).ToList();
+    private List<UserSession> getSessionsByMonth(int year, int month) {
+        currentSessions = allSessions.Where(x => x.login.Month == month && x.login.Year == year).ToList();
+        return currentSessions;
     }
 
-    private List<DateTime> getLoginsByYear(int year) {
-        return loginTimeStamps.Where(x => x.Year == year).ToList();
+    private List<UserSession> getSessionsByYear(int year) {
+        currentSessions = allSessions.Where(x => x.login.Year == year).ToList();
+        return currentSessions;
     }
 
     private struct DataPoint {
         public double x, y;
+    }
+
+    private struct UserSession {
+        public DateTime login, duration;
+        public string username;
+
+        public override string ToString() {
+            string durationString = duration.ToString("HHmmss").Insert(6, "s").Insert(4, "m").Insert(2, "h");
+            return username + ":    " + login.ToString("yyyy/MM/dd|HH:mm:ss") + ", " + durationString;
+        }
     }
 
 }
