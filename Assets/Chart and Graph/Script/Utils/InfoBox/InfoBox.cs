@@ -13,19 +13,21 @@ namespace ChartAndGraph
         public GraphChartBase[] GraphChart;
         public Text infoText;
         public float holdThreshold = 1f;
-        public ScrollRect scrollView;
-        public Button canvasButton;
+        public ScrollRect scrollViewLogins, scrollViewGames;
+        public Button canvasButtonLogins, canvasButtonGames;
 
         private float holdDuration = 0f;
         private bool isHeld = false, eventTriggered = false;
-        private GameObject sessionPopup;
+        private GameObject infoPopupLogins, infoPopupGames;
         private int x = 0;
         
 
         void Start() {
             HookChartEvents();
-            canvasButton.onClick.AddListener(canvasButtonClicked);
-            sessionPopup = scrollView.transform.parent.gameObject;
+            canvasButtonLogins.onClick.AddListener(canvasLoginButtonClicked);
+            canvasButtonGames.onClick.AddListener(canvasGamesButtonClicked);
+            infoPopupLogins = scrollViewLogins.transform.parent.gameObject;
+            infoPopupGames = scrollViewGames.transform.parent.gameObject;
         }
 
 
@@ -40,34 +42,29 @@ namespace ChartAndGraph
                 if (!eventTriggered && holdDuration > holdThreshold) {
                     //canvasButton.gameObject.SetActive(true);
                     //scrollView.gameObject.SetActive(true);
-                    sessionPopup.SetActive(true);
+                    popup();
                     eventTriggered = true;
                 }
             }
+        }
+
+        private void popup() {
+            if (infoPopupLogins.transform.parent.gameObject.activeSelf)
+                infoPopupLogins.SetActive(true);
+            if (infoPopupGames.transform.parent.gameObject.activeSelf)
+                infoPopupGames.SetActive(true);
         }
 
         public int getX() {
             return x;
         }
 
-        void canvasButtonClicked() {
-            //scrollView.gameObject.SetActive(false);
-            //canvasButton.gameObject.SetActive(false);
-            sessionPopup.SetActive(false);
+        void canvasLoginButtonClicked() {
+            infoPopupLogins.SetActive(false);
         }
-
-        /*
-        private void hideScrollViewIfClickedOutside() {
-            if(scrollView.gameObject.activeSelf && !isHeld)
-                if (Input.GetMouseButtonDown(0) && scrollView.gameObject.activeSelf &&
-                    !RectTransformUtility.RectangleContainsScreenPoint(
-                        scrollView.gameObject.GetComponent<RectTransform>(),
-                        Input.mousePosition,
-                        Camera.main)) {
-                    scrollView.gameObject.SetActive(false);
-                }
+        void canvasGamesButtonClicked() {
+            infoPopupGames.SetActive(false);
         }
-        */
 
         void GraphClicked(GraphChartBase.GraphEventArgs args)
         {
