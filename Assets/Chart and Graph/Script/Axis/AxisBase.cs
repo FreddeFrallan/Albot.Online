@@ -266,7 +266,7 @@ namespace ChartAndGraph
                     else
                     {
                         toSet = info.TextPrefix + toSet + info.TextSuffix;
-                        Debug.Log("suffix " + info.TextSuffix);
+                        //Debug.Log("suffix " + info.TextSuffix);
                     }
 
                     

@@ -39,10 +39,10 @@ namespace UserData {
     }
 
     public struct GameStartedStruct {
-        public long gameID { get; set; }
-        public long time { get; set; }
-        public string gameType { get; set; }
-        public string players { get; set; }
+        public long gameID;
+        public long time;
+        public string gameType;
+        public string players;
     }
     #endregion
     public class LoginDataODT : MessageBase { public UserLoginEntryStruct[] entries; }

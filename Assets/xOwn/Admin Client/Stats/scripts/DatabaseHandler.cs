@@ -20,34 +20,42 @@ public class DatabaseHandler : MonoBehaviour {
 
 
     // Queries the server for data
+    /*
     public void fetchData(Action callback) {
-        fetchGameData();
-        fetchLoginData(callback);
+        fetchGamesData(callback);
+        //fetchLoginData(callback);
     }
-
-    public void fetchGameData() {
-        TimeZone zone = TimeZone.CurrentTimeZone;
-        Msf.Connection.SendMessage((short)CustomMasterServerMSG.requestGamesData, (status, response) => {
-            if (status == ResponseStatus.Success)
-                foreach (GameStartedStruct l in response.Deserialize<PlayedGamesDataODT>().entries) {
-                    gamesPlayed.Add(new GamePlayed(l.players, "", l.gameType, zone.ToLocalTime(new DateTime(l.time)), l.gameID));
-                    print("Players: " + l.players + "GameType: " + l.gameType);
-                }
-
-            gamesFetched = true;
-        });
-    }
-
+    */
+    
     public void fetchLoginData(Action callback) {
-        TimeZone zone = TimeZone.CurrentTimeZone;
-        Msf.Connection.SendMessage((short)CustomMasterServerMSG.requestLoginData, (status, response) => {
-            if (status == ResponseStatus.Success)
-                foreach (UserLoginEntryStruct l in response.Deserialize<LoginDataODT>().entries)
-                    sessions.Add(new UserSession(l.username, zone.ToLocalTime(new DateTime(l.time)), new DateTime(l.duration)));
+        if (!loginsFetched) {
+            TimeZone zone = TimeZone.CurrentTimeZone;
+            Msf.Connection.SendMessage((short)CustomMasterServerMSG.requestLoginData, (status, response) => {
+                if (status == ResponseStatus.Success)
+                    foreach (UserLoginEntryStruct l in response.Deserialize<LoginDataODT>().entries)
+                        sessions.Add(new UserSession(l.username, zone.ToLocalTime(new DateTime(l.time)), new DateTime(l.duration)));
 
-            loginsFetched = true;
+                loginsFetched = true;
+                callback();
+            });
+        } else
             callback();
-        });
+    }
+
+    public void fetchGamesData(Action callback) {
+        if (!gamesFetched) {
+            TimeZone zone = TimeZone.CurrentTimeZone;
+            Msf.Connection.SendMessage((short)CustomMasterServerMSG.requestGamesData, (status, response) => {
+                if (status == ResponseStatus.Success)
+                    foreach (GameStartedStruct g in response.Deserialize<PlayedGamesDataODT>().entries) {
+                        gamesPlayed.Add(new GamePlayed(g.players, g.gameType, zone.ToLocalTime(new DateTime(g.time)), g.gameID));
+                    }
+
+                gamesFetched = true;
+                callback();
+            });
+        } else
+            callback();
     }
 
     public List<UserSession> getSessionsByDate(DateTime date) {
@@ -61,6 +69,9 @@ public class DatabaseHandler : MonoBehaviour {
     public List<UserSession> getSessionsByYear(int year) {
         return sessions.Where(x => x.startTime.Year == year).ToList();
     }
+    public List<UserSession> getSessions() {
+        return sessions;
+    }
 
     public List<GamePlayed> getGamesByDate(DateTime date) {
         return gamesPlayed.Where(x => x.startTime.Date == date.Date).ToList();
@@ -72,6 +83,10 @@ public class DatabaseHandler : MonoBehaviour {
 
     public List<GamePlayed> getGamesByYear(int year) {
         return gamesPlayed.Where(x => x.startTime.Year == year).ToList();
+    }
+
+    public List<GamePlayed> getGames() {
+        return gamesPlayed;
     }
 
     public abstract class UserData {
@@ -95,19 +110,18 @@ public class DatabaseHandler : MonoBehaviour {
     }
 
     public class GamePlayed : UserData {
-        readonly string username1, username2, gameType;
-        readonly long gameId;
+        public readonly string players, gameType;
+        public readonly long gameId;
 
-        public GamePlayed(string username1, string username2, string gameType, DateTime startTime, long gameId) {
-            this.username1 = username1;
-            this.username2 = username2;
+        public GamePlayed(string players, string gameType, DateTime startTime, long gameId) {
+            this.players = players;
             this.gameType = gameType;
             this.startTime = startTime;
             this.gameId = gameId;
         }
 
         public override string ToString() {
-            return gameType + ": " + username1 + " vs " + username2 + ", Id: " + gameId + ", " + startTime.ToString("yyyy/MM/dd|HH:mm:ss");
+            return gameId + ", " + gameType + ": (" + players + ") " + startTime.ToString("yyyy/MM/dd|HH:mm:ss");
         }
     }
 }
