@@ -17,12 +17,12 @@ namespace TCP_API.Connect4 {
              new int[7] { 0, 0, 0, 0, 0, 1, 0 },
              new int[7] { 0, 0, 0, 0, 1, 0, 0 },
              new int[7] { 0, 0, 0, 1, 0, 0, 0 },
-        "0 0 0 0 0 0 0 " +
-        "0 0 0 0 0 0 0 " +
-        "0 0 0 0 0 0 1 " +
-        "0 0 0 0 0 1 0 " +
-        "0 0 0 0 1 0 0 " +
-        "0 0 0 1 0 0 0 "
+        "[[0,0,0,0,0,0,0]," +
+        "[0,0,0,0,0,0,0]," +
+        "[0,0,0,0,0,0,1]," +
+        "[0,0,0,0,0,1,0]," +
+        "[0,0,0,0,1,0,0]," +
+        "[0,0,0,1,0,0,0]]"
         )]
         [TestCase(
              new int[7] { 0, 0, 0, 0, 0, 0, 0 },
@@ -31,22 +31,26 @@ namespace TCP_API.Connect4 {
              new int[7] { 0, 0, -1, 0, 0, 1, 0 },
              new int[7] { 0, 0, -1, 0, 1, 0, 0 },
              new int[7] { 0, 0, -1, 1, 0, 0, 0 },
-        "0 0 0 0 0 0 0 " +
-        "0 0 0 0 0 0 0 " +
-        "0 0 2 0 0 0 1 " +
-        "0 0 2 0 0 1 0 " +
-        "0 0 2 0 1 0 0 " +
-        "0 0 2 1 0 0 0 "
+        "[[0,0,0,0,0,0,0]," +
+        "[0,0,0,0,0,0,0]," +
+        "[0,0,-1,0,0,0,1]," +
+        "[0,0,-1,0,0,1,0]," +
+        "[0,0,-1,0,1,0,0]," +
+        "[0,0,-1,1,0,0,0]]"
         )]
         public void evaluateParsing(int[] r1, int[] r2, int[] r3, int[] r4, int[] r5, int[] r6, string rawBoard) {
-            string test = Connect4JsonParser.formatBoardMsgFromServer(rawBoard, Game.PlayerColor.Red);
-            JSONObject jObj = new JSONObject(test);
+            //string test = Connect4JsonParser.formatBoardMsgFromServer(rawBoard, Game.PlayerColor.Red);
+
+            JSONObject jBoard = new JSONObject(rawBoard);
             List<int[]> grid = generateGrid(r1, r2, r3, r4, r5, r6);
+            Debug.Log("Json grid: " + jBoard.ToString(true));
 
             for (int y = 0; y < Consts.BOARD_HEIGHT; y++) {
-                JSONObject row = jObj.GetField(Consts.Fields.board).list[y];
-                for (int x = 0; x < Consts.BOARD_WIDTH; x++)
+                //JSONObject row = jBoard.GetField(Consts.Fields.board).list[y];
+                JSONObject row = jBoard.list[y];
+                for (int x = 0; x < Consts.BOARD_WIDTH; x++) {
                     Assert.AreEqual(row.list[x].i, grid[y][x]);
+                }
             }
         }
 

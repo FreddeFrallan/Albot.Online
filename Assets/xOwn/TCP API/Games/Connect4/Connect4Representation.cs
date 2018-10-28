@@ -90,18 +90,21 @@ namespace TCP_API.Connect4{
             bool draw = true;
 
             //Rows
-            for (int y = 0; y < Consts.BOARD_HEIGHT; y++)
+            for (int y = 0; y < Consts.BOARD_HEIGHT; y++) {
+                resetCounters(ref counter, ref last);
                 for (int x = 0; x < Consts.BOARD_WIDTH; x++) {
                     BoardState s = checkNewNumber(grid.list[y].list[x].i, ref counter, ref last, ref draw);
-                    if(s != BoardState.ongoing) {
+                    if (s != BoardState.ongoing) {
                         boardState = s;
                         return;
-                    }    
+                    }
                 }
+            }
 
             //Cols
-            resetCounters(ref counter, ref last);
-            for (int x = 0; x < Consts.BOARD_WIDTH; x++)
+
+            for (int x = 0; x < Consts.BOARD_WIDTH; x++) {
+                resetCounters(ref counter, ref last);
                 for (int y = 0; y < Consts.BOARD_HEIGHT; y++) {
                     BoardState s = checkNewNumber(grid.list[y].list[x].i, ref counter, ref last, ref draw);
                     if (s != BoardState.ongoing) {
@@ -109,6 +112,7 @@ namespace TCP_API.Connect4{
                         return;
                     }
                 }
+            }
 
             //Diags
             foreach(DiagCheck d in diagChecks) {
