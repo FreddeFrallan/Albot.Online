@@ -4,6 +4,7 @@ using UnityEngine;
 using Game;
 using UnityEngine.Networking;
 using AlbotServer;
+using ClientUI;
 
 
 namespace Bomberman{
@@ -20,8 +21,7 @@ namespace Bomberman{
 		public override void initProtocol (CommProtocol protocol){this.protocol = (BombermanProtocol)protocol;}
 		public override void onOutgoingLocalMsg (string msg, PlayerColor color){}
 		public override GameType getGameType (){return GameType.Bomberman;}
-
-		protected override void initHandlers (){
+        protected override void initHandlers (){
 			connectionToServer.RegisterHandler ((short)ServerCommProtocl.PlayerJoinedGameRoom, handlePlayerJoinedRoom);
 			connectionToServer.RegisterHandler ((short)ServerCommProtocl.PlayerLeftGameRoom, handlePlayerLeftRoom);
 			connectionToServer.RegisterHandler ((short)BombermanProtocol.MsgType.playerInit, handleInitSettings);
@@ -117,20 +117,19 @@ namespace Bomberman{
 
 				UnetRoomConnector.shutdownCurrentConnection ();
 
+                string gameOverString = TCP_API.APIStandardConstants.Fields.gameOver;
 				string gameOverMsg;
-				Debug.LogError ("WInner: " + msg.winnerColor);
+				//Debug.LogError ("Winner: " + msg.winnerColor);
 				if (msg.winnerColor == Game.PlayerColor.None) {
 					gameOverMsg = "It's a draw!";
-					TCPLocalConnection.sendMessage ("GameOver: 0");
+					TCPLocalConnection.sendMessage (gameOverString + ": 0");
 				}
 				else {
 					gameOverMsg = msg.winnerColor + " won";
-					TCPLocalConnection.sendMessage ("GameOver: " + (msg.winnerColor == PlayerColor.Blue ? "1" : "-1"));
+					TCPLocalConnection.sendMessage (gameOverString + ": " + (msg.winnerColor == PlayerColor.Blue ? "1" : "-1"));
 				}
-
-				ClientUI.AlbotDialogBox.setGameOver ();
-				ClientUI.AlbotDialogBox.activateButton (ClientUI.ClientUIStateManager.requestGotoGameLobby, ClientUI.DialogBoxType.GameState, gameOverMsg, "Return to lobby", 70, 25);
-			}
+                CurrentGame.gameOver(gameOverMsg);
+            }
 		}
 
 

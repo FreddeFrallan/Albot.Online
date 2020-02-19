@@ -32,8 +32,10 @@ class TCPLocalConnection{
 	private static int lastUsedPort = 0;
 	private static Thread monitorThread;
 
+    private static int sendBufferSize = 2048;
 
-	public static void init(){
+
+    public static void init(){
 		if (isReady)return;
 		ClientUI.ClientUIOverlord.onUIStateChanged += (ClientUI.ClientUIStates newState) => {if(newState == ClientUI.ClientUIStates.GameLobby || newState == ClientUI.ClientUIStates.LoginMenu) stopServer();};
 		monitorThread = new Thread( new ThreadStart(monitorTCPConnection));
@@ -70,17 +72,12 @@ class TCPLocalConnection{
 		}
 	}
 
-	public static void sendMessage(string message){
-		client.sendMessage (message + "\n");
-	}
 
+	public static void sendMessage(string message){client.sendMessage (message + "\n");}
+	public static void restartServer(){MainThread.createTimedAction(() => {startServer (lastUsedPort);}, 0f);}
 	public static LocalConnectionStatus startServer(int port){
 		lastUsedPort = port;
-		LocalConnectionStatus temp = initServer (port);
-		return temp;
-	}
-	public static void restartServer(){
-		MainThread.createTimedAction(() => {startServer (lastUsedPort);}, 0f);
+		return initServer (port);
 	}
 
 	public static LocalConnectionStatus initServer(int port){
@@ -90,7 +87,7 @@ class TCPLocalConnection{
 			}
 			IPAddress localAddr = IPAddress.Parse("127.0.0.1");
 			server = new TcpListener (localAddr, port);
-			server.Start ();
+            server.Start ();
 		}
 		catch(SocketException e){
 			if (e.ErrorCode == 10048)
@@ -99,14 +96,16 @@ class TCPLocalConnection{
 		}
 		catch{return LocalConnectionStatus.otherPortError;}
 
-
 		client = new TcpRemoteClient (server, 1);
 		return LocalConnectionStatus.connecting;
 	}
 
 
 	#region monitor TCP
-	public static void clientConnected(TcpClient c){connectionClient = c;}
+	public static void clientConnected(TcpClient c) {
+        connectionClient = c;
+        c.SendBufferSize = sendBufferSize;
+    }
 	private static void monitorTCPConnection(){
 		while (true) {
 			if (currentState == ConnectionStatus.Connected) 
@@ -117,23 +116,23 @@ class TCPLocalConnection{
 	private static void checkCurrentConnection(){
 		try{
 			if(connectionClient == null || client == null){
-				Debug.Log("No good TCP connection");
+				//Debug.Log("No good TCP connection");
 				stopServer();
 				return;
 			}
 			if(client.IsConnected == false){
-				Debug.Log ("Stop because Cool");
+				//Debug.Log ("Stop because Cool");
 				stopServer();
 				return;
 			}
 			if(connectionClient.Connected == false){
-				Debug.Log ("Stop because null ref");
+				//Debug.Log ("Stop because null ref");
 				stopServer();
 				return;
 			}
 		}
 		catch{
-			Debug.Log ("Stop because Crash");
+			//Debug.Log ("Stop because Crash");
 			stopServer();
 		}
 	}
@@ -175,32 +174,30 @@ public class TcpRemoteClient{
 	private void waitForConnection(){
 		isWaitingForConnection = true;
 		TCPLocalConnection.fireTCPStatusChange (ConnectionStatus.Connecting);
-		client = server.AcceptTcpClient();  
+        client = server.AcceptTcpClient();
+		stream = client.GetStream ();
 
-		TCPLocalConnection.fireTCPStatusChange (ConnectionStatus.Connected);
 		clientConnected = true;
 		TCPLocalConnection.clientConnected (client);
 		isWaitingForConnection = false;
+        TCPLocalConnection.fireTCPStatusChange (ConnectionStatus.Connected);
 	}
 
 	private void listenForMessage(){
-		while (clientConnected == false) {
-			Thread.Sleep (1000);
-		}
-
-		stream = client.GetStream ();
+        while (clientConnected == false) 
+            Thread.Sleep (1000);
+		
 		Byte[] bytes = new Byte[2048*10];
 		String data = null;
 
-		while (closeClient == false) {
+        while (closeClient == false) {
 			int i;
 			data = null;
 
-			while((i = stream.Read(bytes, 0, bytes.Length))!=0) 
-			{   
-				data = System.Text.Encoding.ASCII.GetString(bytes, 0, i);
-				TCPMessageQueue.addMessage (data, id); 
-			}
+			while((i = stream.Read(bytes, 0, bytes.Length))!=0) {   
+				data = Encoding.ASCII.GetString(bytes, 0, i);
+				TCPMessageQueue.addMessage (data, id);
+            }
 
 			Thread.Sleep (100);
 		}
@@ -210,10 +207,10 @@ public class TcpRemoteClient{
 		if (clientConnected == false)
 			return;
 
-		byte[] msg = System.Text.Encoding.ASCII.GetBytes(message);
+		byte[] msg = Encoding.ASCII.GetBytes(message);
 		try{
-			stream.Write(msg, 0, msg.Length);
-		}
+			stream.Write(msg, 0, msg.Length);   
+        }
 		catch{
 			clientConnected = false;
 		}

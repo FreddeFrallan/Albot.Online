@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Barebones.Networking;
 using UnityEngine;
+using System.Linq;
 
 namespace Barebones.MasterServer{
     /// <summary>
@@ -13,10 +14,11 @@ namespace Barebones.MasterServer{
         public Dictionary<string, string> Properties { get; private set; }
         public string CustomArgs { get; private set; }
 
-        public int SpawnId { get; private set; }
+        public string SpawnId { get; private set; }
         public event Action<SpawnStatus> StatusChanged;
 
         private SpawnStatus _status;
+        private List<IPeer> peersInRoom = new List<IPeer>();
 
         public string UniqueCode { get; private set; }
 
@@ -24,13 +26,12 @@ namespace Barebones.MasterServer{
 
         protected List<Action<SpawnTask>> WhenDoneCallbacks;
 
-        public SpawnTask(int spawnId, RegisteredSpawner spawner, Dictionary<string, string> properties, string customArgs) {
-            SpawnId = spawnId;
+        public SpawnTask(string spawnId, RegisteredSpawner spawner, Dictionary<string, string> properties, string customArgs) {
+            this.SpawnId = spawnId;
 
             Spawner = spawner;
             CustomArgs = customArgs;
 			Properties = properties;
-			Debug.LogError(Properties[MsfDictKeys.GameType]);
 
             UniqueCode = Msf.Helper.CreateRandomString(6);
             WhenDoneCallbacks = new List<Action<SpawnTask>>();
@@ -53,6 +54,25 @@ namespace Barebones.MasterServer{
                 if (_status >= SpawnStatus.Finalized || _status < SpawnStatus.None)
                     NotifyDoneListeners();
             }
+        }
+
+
+        //Hardcode tryFix
+        public void onStatusChangedHardcoded(SpawnStatus s) {
+            // Send status update
+            var msg = Msf.Create.Message((short)MsfOpCodes.SpawnRequestStatusChange, new SpawnStatusUpdatePacket() {
+                SpawnId = this.SpawnId,
+                Status = _status
+            });
+            foreach (IPeer p in peersInRoom)
+                p.SendMessage(msg);
+
+            if (_status == SpawnStatus.Finalized)
+                peersInRoom.Clear();
+        }
+        public void AlbotHack(List<IPeer> peersInRoom) {
+            this.peersInRoom = peersInRoom.ToList();
+            StatusChanged += onStatusChangedHardcoded;
         }
 
         /// <summary>

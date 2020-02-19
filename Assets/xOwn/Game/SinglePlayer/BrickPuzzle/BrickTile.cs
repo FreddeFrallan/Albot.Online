@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class BrickTile : MonoBehaviour {
 
-	public Text theText;
-	public Image currentImage;
+    public TextMeshProUGUI theText;
+    public Image currentImage;
 	public bool isMoving = false;
 	public int value;
 	public int[] pos;

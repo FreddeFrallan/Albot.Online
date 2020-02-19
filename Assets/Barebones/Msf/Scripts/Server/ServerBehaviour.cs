@@ -219,7 +219,7 @@ namespace Barebones.MasterServer
         #region Virtual methods
 
         protected virtual void OnPeerConnected(IPeer peer){
-			peer.SendMessage((short)AlbotServer.ServerCommProtocl.CheckCurrentVersion, new AlbotServer.StringMsg(){msg = serverVersion});
+			//peer.SendMessage((short)AlbotServer.ServerCommProtocl.CheckCurrentVersion, new AlbotServer.StringMsg(){msg = serverVersion});
 		}
 
         protected virtual  void OnPeerDisconnected(IPeer peer){}

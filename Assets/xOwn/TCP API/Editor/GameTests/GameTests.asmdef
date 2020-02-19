@@ -1,0 +1,14 @@
+{
+    "name": "TCP_API",
+    "references": [
+        "AlbotAssembly"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false
+}

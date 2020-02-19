@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using Barebones.MasterServer;
 using Game;
 using Barebones.Networking;
+using TMPro;
 
 namespace ClientUI{
 
@@ -14,44 +15,52 @@ namespace ClientUI{
 		public GameConnectorUI gameCreator;
 		public GameSelectionUI gameSelection;
 		public Image gameImage;
+        public TextMeshProUGUI gameTitle;
 		public PreGamePlayerSlot[] playerSlots;
 		public Button startButton;
-		public Dropdown p2Settings;
+		public TMP_Dropdown p2Settings;
+        public GameObject quitButton;
 		public LoginTCPUI loginTCPUI;
-		
-		protected bool isAdmin, isReady = false;
-		protected int roomId, playerId;
+
+        protected bool isAdmin;
+        protected string roomId;
+        protected int playerId;
 		protected GameType type;
-		private PreGamePlayer[] currentPlayers;
+		private PreGameSlotInfo[] currentPlayers;
 
 		protected List<IPacketHandler> handlers = new List<IPacketHandler>();
 
 
-		#region Visuals
-		public virtual void initPreGameLobby(string gameTittle, Sprite gameSprite, PreGamePlayer[] players, bool isAdmin, int roomId, GameType type){
+        #region Visuals
+        public virtual void initPreGameLobby(Sprite gameSprite, PreGameRoomMsg roomInfo){
 			gameObject.SetActive (true);
 			gameCreator.setCurrentPreLobby (this);
 
-			this.type = type;
-			this.roomId = roomId;
-			this.currentPlayers = players;
+			this.type = roomInfo.specs.type;
+			this.roomId = roomInfo.specs.roomID;
+			this.currentPlayers = roomInfo.players;
 			this.gameImage.sprite = gameSprite;
-			setPlayerSlots (players);
+            this.gameTitle.SetText(roomInfo.specs.type.ToString());
+            this.quitButton.SetActive(roomInfo.specs.isInTournament == false);
+            isAdmin = roomInfo.specs.hostName == ClientUIOverlord.getCurrentAcountInfo().Username;
+
+            setPlayerSlots (roomInfo.players);
 			setAdminValues (isAdmin);	
-			extractLocalPlayerSlotId (players);
+			extractLocalPlayerSlotId (roomInfo.players);
 			loginTCPUI.startServerClicked (true);
 			handlers.Add(Msf.Connection.SetHandler ((short)ServerCommProtocl.UpdatePreGame, updatePreGameLobby));
+
+            CurrentGame.setNewCurrentPreGame(roomInfo.specs);
 		}
 			
 	
-		private void setPlayerSlots(PreGamePlayer[] players){
-			for (int i = 0; i < players.Length; i++) {
+		private void setPlayerSlots(PreGameSlotInfo[] players){
+			for (int i = 0; i < players.Length; i++)
 				initUserPanel (players [i], i);
-			}
 		}
-		private void initUserPanel(PreGamePlayer p, int index){
+		private void initUserPanel(PreGameSlotInfo p, int index){
 			if (p.type != PreGameSlotType.Empty)
-				playerSlots [index].setUserPanel (p.info.iconNumber, p.info.username, p.isReady);
+				playerSlots [index].setUserPanel (p.playerInfo.iconNumber, p.playerInfo.username, p.isReady);
 			else 
 				playerSlots [index].startClearPanel ();
 		}
@@ -65,23 +74,30 @@ namespace ClientUI{
 		private void setAdminStartButton(){
 			if (isAdmin == false)
 				return;
-			startButton.interactable = new List<PreGamePlayer> (currentPlayers).TrueForAll (x => x.isReady);
+			startButton.interactable = new List<PreGameSlotInfo> (currentPlayers).TrueForAll (x => x.isReady);
 		}
-		private void extractLocalPlayerSlotId(PreGamePlayer[] players){
+		private void extractLocalPlayerSlotId(PreGameSlotInfo[] players){
 			AccountInfoPacket p = ClientUIOverlord.getCurrentAcountInfo ();
 			for (int i = 0; i < players.Length; i++)
-				if (players [i].info.username == p.Username)
+				if (players [i].playerInfo.username == p.Username)
 					playerId = i;
 		}
 		#endregion
 
 
 
-		protected void updatePreGameLobby(IIncommingMessage message){
-			AlbotServer.PreGameRoomMsg msg = message.Deserialize<AlbotServer.PreGameRoomMsg> ();
-			currentPlayers = msg.players;
-			setPlayerSlots (msg.players);
-			setAdminStartButton();
+		protected void updatePreGameLobby(IIncommingMessage rawMsg){
+            //Debug.LogError("Input msg Lenght: " + rawMsg.AsBytes().Length);
+            try {
+                PreGameRoomMsg msg = rawMsg.Deserialize<PreGameRoomMsg> ();
+			    currentPlayers = msg.players;
+			    setPlayerSlots (msg.players);
+			    setAdminStartButton();
+            } catch {
+                Debug.LogError("Could not deserialize msg");
+                return;
+            }
+            
 		}
 		protected void resetPanel(){
 			isAdmin = false;
@@ -91,29 +107,18 @@ namespace ClientUI{
 
 	
 		public void onExitClick(){
-			Msf.Connection.SendMessage((short)ServerCommProtocl.PlayerLeftPreGame, new PlayerInfoMsg());
+			Msf.Connection.SendMessage((short)ServerCommProtocl.PlayerLeftPreGame, roomId);
 			removeHandlers ();
-			ClientUIStateManager.requestGotoGameLobby ();
+            ClientUIStateManager.requestGotoState(ClientUIStates.GameLobby);
 			gameObject.SetActive (false);
 		}
 
-
-		protected void localBotStatusChanged(ConnectionStatus status){
+		protected void locAlbotStatusChanged(ConnectionStatus status){
 			if (ClientUIOverlord.currentState != ClientUIStates.PreGame)
 				return;
 
-			bool preValue = isReady;
-			if (isReady && status != ConnectionStatus.Connected)
-				isReady = false;
-			else if (isReady == false && status == ConnectionStatus.Connected)
-				isReady = true;
-
-			if (preValue != isReady) {
-				Msf.Connection.SendMessage((short)ServerCommProtocl.UpdatePreGame, new PreGameReadyUpdate(){isReady = isReady, roomID = roomId});
-				currentPlayers [playerId].isReady = isReady;
-				setPlayerSlots (currentPlayers);
-				setAdminStartButton();
-			}
+            bool isReady = status == ConnectionStatus.Connected;
+            Msf.Connection.SendMessage((short)ServerCommProtocl.UpdatePreGame, new PreGameReadyUpdate(){isReady = isReady, roomID = roomId});
 		}
 
 		public void removeHandlers(){
@@ -123,10 +128,19 @@ namespace ClientUI{
 		}
 
 
-
 		//Called from "onJoinStartedGame" in GameConnectorUI
 		public virtual void setLocalPreGamePlayers (){ ClientPlayersHandler.resetLocalPLayers ();}
-		abstract public void onStartClick();
-	}
+        public virtual void onStartClick() {Msf.Connection.SendMessage((short)ServerCommProtocl.StartPreGame, roomId, Msf.Helper.handleErrorResponse);}
+
+
+        #region AnneHacks
+
+        public void setPlayerReady(bool value) {
+            currentPlayers[0].isReady = value;
+            setAdminStartButton();
+        }
+
+        #endregion
+    }
 
 }

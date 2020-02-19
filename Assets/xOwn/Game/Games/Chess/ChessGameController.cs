@@ -6,6 +6,7 @@ using AlbotServer;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System;
+using ClientUI;
 
 namespace Chess{
 	public class ChessGameController :  Game.ClientController{
@@ -16,7 +17,7 @@ namespace Chess{
 
 		public override Game.GameType getGameType (){return Game.GameType.Chess;}
 		public override void initProtocol (Game.CommProtocol protocol){this.protocol = (CommProtocol)protocol;}
-		protected override void initHandlers (){
+        protected override void initHandlers (){
 			connectionToServer.RegisterHandler ((short)CommProtocol.MsgType.playerInit, handleInitSettings);
 			connectionToServer.RegisterHandler ((short)CommProtocol.MsgType.gameInfo, handleGameStatus);
 			connectionToServer.RegisterHandler ((short)CommProtocol.MsgType.boardUpdate, requestMove);
@@ -79,7 +80,8 @@ namespace Chess{
 			GameInfo msg = Game.ClientController.Deserialize<GameInfo> (bytes);
 
 			if (msg.gameOver) {
-				TCPLocalConnection.sendMessage ("GameOver");
+                string gameOverString = TCP_API.APIStandardConstants.Fields.gameOver;
+                TCPLocalConnection.sendMessage (gameOverString);
 
 				string gameOverMsg;
 				if (msg.winnerColor == Game.PlayerColor.None)
@@ -87,9 +89,8 @@ namespace Chess{
 				else
 					gameOverMsg = msg.winnerColor == myColor ? "You won!" : "You lost!";
 
-				ClientUI.AlbotDialogBox.setGameOver ();
-				ClientUI.AlbotDialogBox.activateButton (ClientUI.ClientUIStateManager.requestGotoGameLobby,  ClientUI.DialogBoxType.GameState, gameOverMsg, "Return to lobby", 70, 25);
-			}
+                CurrentGame.gameOver(gameOverMsg);
+            }
 		}
 	}
 

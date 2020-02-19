@@ -8,7 +8,7 @@
 public class MsfQuickBuild{
 	/// <summary>
 	/// Have in mind that if you change it, it might take "a while" 
-	/// for the editor to pick up changes 
+	/// for the editor to pick up changes  
 	/// </summary>
 	public static string QuickSetupRoot = "Assets/xOwn/";
 	public static BuildTarget TargetPlatform = BuildTarget.StandaloneWindows;
@@ -42,24 +42,27 @@ public class MsfQuickBuild{
 		var clientScenes = new[]{
 			QuickSetupRoot+ "/Client/Client.unity",
 			QuickSetupRoot+ "/Client/EmptyScene.unity",
+            QuickSetupRoot+ "/Admin Client/Tournament/Scene/TournamentScene.unity",
 			// Add all the game scenes
 			QuickSetupRoot+ "/Game/Games/Connect4/Connect4Game.unity",
-			QuickSetupRoot+ "/Game/Games/BumpTag/BumpTagGame.unity",
-			QuickSetupRoot+ "/Game/Games/Othello/OthelloGame.unity",
+			QuickSetupRoot+"/Game/Games/Snake/SnakeGame.unity",
+			QuickSetupRoot+"/Game/SinglePlayer/BrickPuzzle/BrickPuzzleGame.unity",
+            /*
+            QuickSetupRoot + "/Game/Games/Othello/OthelloGame.unity",
 			QuickSetupRoot+ "/Game/Games/FallingDebris/FallingDebrisGame.unity",
 			QuickSetupRoot+ "/Game/Games/Chess/ChessGame.unity",
 			QuickSetupRoot+ "/Game/Games/Battleships/BattleshipsGame.unity",
 			QuickSetupRoot+"/Game/Games/Soldiers/Game/SoldiersGame.unity",
-			QuickSetupRoot+"/Game/SinglePlayer/BrickPuzzle/BrickPuzzleGame.unity",
 			QuickSetupRoot+"/Game/SinglePlayer/Pickup/PickupGame.unity",
 			QuickSetupRoot+"/Game/SinglePlayer/2048/2048Game.unity", 
 			QuickSetupRoot+"/Game/SinglePlayer/Tower Of Hanoi/TowerOfHanoiGame.unity", 
 			QuickSetupRoot+"/Game/Games/Bomberman/Game/BombermanGame.unity",
 			QuickSetupRoot+"/Game/Games/Brakethrough/BrakethroughGame.unity",
-			QuickSetupRoot+"/Game/Games/Snake/SnakeGame.unity",
 			QuickSetupRoot+"/Game/SinglePlayer/HeapManager/HeapManager.unity",
 			QuickSetupRoot+"/DemoGame/BlockBattleGame.unity",
-		};
+            QuickSetupRoot+"/Game/Games/SpeedRunner/SpeedRunnerGame.unity"
+            */
+        };
 		BuildPipeline.BuildPlayer(clientScenes, path + "/Albot.Online.exe",  target, options);
 	}
 
@@ -74,6 +77,7 @@ public class MsfQuickBuild{
 			QuickSetupRoot+"/Game/Games/Soldiers/Server/SoldiersGameServer.unity",
 			QuickSetupRoot+"/Game/Games/Bomberman/Server/BombermanGameServer.unity",
 			QuickSetupRoot+"/Game/Games/Snake/GameServer/SnakeGameServer.unity",
+            QuickSetupRoot+"/Game/Games/SpeedRunner/GameServer/SpeedRunnerGameServer.unity",
 			//QuickSetupRoot+"/DemoGame/BlockBattleGameServer.unity",
 		};
 		BuildPipeline.BuildPlayer(gameServerScenes, path + "/GameServer" + fileExtension, target, options);
@@ -83,8 +87,9 @@ public class MsfQuickBuild{
 		var gameServerScenes = new[]{
 			QuickSetupRoot+ "/Admin Client/Admin Client.unity",
 			QuickSetupRoot+ "/Client/EmptyScene.unity",
-			QuickSetupRoot+"/Game/Games/Brakethrough/Admin/BreakthroughAdmin.unity",
-			QuickSetupRoot+"/Game/Games/Snake/Admin/SnakeAdmin.unity"
+            QuickSetupRoot+ "/Admin Client/Tournament/Scene/TournamentScene.unity",
+            QuickSetupRoot+"/Game/Games/Brakethrough/Admin/BreakthroughAdmin.unity",
+			QuickSetupRoot+"/Game/Games/Snake/SnakeGame.unity"
 		};
 		BuildPipeline.BuildPlayer(gameServerScenes, path + "/AlbotAdmin" + fileExtension, target, options);
 	}
@@ -117,14 +122,14 @@ public class MsfQuickBuild{
 		BuildAdminClient (path, BuildTarget.StandaloneWindows);
 	}
 
-	[MenuItem("Tools/Msf/Build Master + Spawner %&m", false, 11)]
+	[MenuItem("Tools/Msf/Build Master + Spawner %&n", false, 11)]
 	public static void BuildMasterAndSpawnerMenu(){
 		var path = GetPath();
 		if (!string.IsNullOrEmpty(path))
 			BuildMasterAndSpawner(path, BuildTarget.StandaloneWindows);
 	}
 
-	[MenuItem("Tools/Msf/Build Client %&c", false, 11)]
+	[MenuItem("Tools/Msf/Build Client %&q", false, 11)]
 	public static void BuildClientMenu(){
 		var path = GetPath();
 		if (!string.IsNullOrEmpty(path))

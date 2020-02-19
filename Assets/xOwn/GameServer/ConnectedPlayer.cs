@@ -1,7 +1,9 @@
-﻿using System.Collections;
+﻿using AlbotServer;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
+using Game;
 
 public class ConnectedClient{
 	public NetworkConnection conn;
@@ -18,7 +20,7 @@ public class ConnectedPlayer{
 	public int roomID;
 	public string username;
 	public int iconNumber = -1;
-	public Game.PlayerColor color = Game.PlayerColor.None;
+	public PlayerColor color = PlayerColor.None;
 	public bool isReady = false;
 	
 	public ConnectedPlayer(string username, ConnectedClient client){
@@ -33,5 +35,13 @@ public class ConnectedPlayer{
 		this.iconNumber = iconNumber;
 		this.color = color;
 	}
+
+    //Icon number is added at the MasterServer In the preGame
+    public PlayerInfo getPlayerInfo() {
+        return new PlayerInfo() {
+            username = username,
+            color = color,
+        };
+    }
 }
 

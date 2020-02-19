@@ -28,12 +28,6 @@ namespace AlbotServer{
 		private List<newConnection> newConnQ = new List<newConnection>();
 		private bool playersInited = false;
 
-		void Awake(){
-			Msf.Connection.SetHandler((short)ServerCommProtocl.CheckCurrentVersion, ((Barebones.Networking.IIncommingMessage message) => {
-				Debug.LogError("Got version msg");
-			}));
-		}
-
 		public override void OnStartServer(){
 			Debug.LogError ("Server alive and well!");
 			StartCoroutine (waitForPropertisToLoad ());
@@ -80,6 +74,7 @@ namespace AlbotServer{
 
 			
 		private void initDLLBasedGame(){
+            //Debug.LogError("Initing DLL based game");
 			DllManager.loadServerGameLogic(ref wrapper, ref gameController, ref currentGameType, preGamePlayers);
 		}
 		private IEnumerator turnsTimer(){
@@ -96,13 +91,13 @@ namespace AlbotServer{
 		#region RealTimeGames
 		private void initUnityBasedGame(){
 			DontDestroyOnLoad (gameObject);
-			Debug.LogError ("Starting load wait");
+			//Debug.LogError ("Starting load wait");
 			SceneManager.sceneLoaded += onSceneLoaded;
 			SceneManager.LoadScene (Msf.Args.LoadScene + "Server", LoadSceneMode.Additive);
 		}
 
 		private void onSceneLoaded(Scene newScene, LoadSceneMode mode){
-			Debug.LogError ("Load finished");
+			//Debug.LogError ("Load finished");
 
 			gameController = GameObject.FindGameObjectWithTag ("ServerController").GetComponent<Game.ServerController>().getController();
 			wrapper.init (gameController.getProtocol (), gameController);
@@ -111,7 +106,7 @@ namespace AlbotServer{
 			Action<string> printFunc = DllManager.printMsg;
 			Action<object, int, short> networkMsg = wrapper.sendMsg;
 			gameController.init (printFunc, networkMsg, shutdownGameServer, wrapper, preGamePlayers);
-			AlbotNetworkManager.onClientLeft += wrapper.clientLeft;
+			onClientLeft += wrapper.clientLeft;
 			initManagers ();
 		}
 		#endregion
@@ -120,7 +115,7 @@ namespace AlbotServer{
 
 		public override void OnServerDisconnect(NetworkConnection conn){
 			ConnectedClient c = GameRoomClients.getMatchingClient (conn);
-			Debug.LogError ("Some shit dissconnected yo");
+			//Debug.LogError ("Some shit dissconnected yo");
 
 			if(onClientLeft != null)
 				onClientLeft.Invoke (c);

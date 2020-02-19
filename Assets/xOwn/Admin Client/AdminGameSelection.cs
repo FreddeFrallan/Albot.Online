@@ -10,24 +10,25 @@ using System.Linq;
 using Barebones.MasterServer;
 using AlbotServer;
 using Game;
+using TMPro;
 
 namespace AdminUI{
 
 	public class AdminGameSelection : MonoBehaviour{
 		private GenericUIList<GameInfoPacket> items;
 
-		public Button GameJoinButton;
+        public AdminUpdateManager updateManager;
+        public Button GameJoinButton;
 		public AdminListUiItem ItemPrefab;
 		public LayoutGroup LayoutGroup;
-		public Text currentGames, totalGames;
-		private int selectedID = -1;
+		public TextMeshProUGUI currentGames, totalGames;
+		private string selectedID = "";
 		private bool waitingForPreGame = false;
 
 		// Use this for initialization
 		protected virtual void Awake(){
 			items = new GenericUIList<GameInfoPacket>(ItemPrefab.gameObject, LayoutGroup);
 			Msf.Connection.SetHandler ((short)ServerCommProtocl.LobbyGameStats, handleGameStatsUpdate);
-			Msf.Connection.SetHandler ((short)CustomMasterServerMSG.spectateStatus, handleSpectateInfoMsg);
 		}
 
 		public void Setup(IEnumerable<GameInfoPacket> data){
@@ -56,11 +57,11 @@ namespace AdminUI{
 
 		private void UpdateGameJoinButton(){
 			AdminListUiItem item = GetSelectedItem ();
-			if (item == null && selectedID >= 0) { item = items.FindObject<AdminListUiItem> ((x) => {return x.GameId == selectedID; });
+			if (item == null && string.IsNullOrEmpty(selectedID) == false) { item = items.FindObject<AdminListUiItem> ((x) => {return x.GameId == selectedID; });
 				if (item != null)
 					Select (item);
 				else {
-					selectedID = -1;
+					selectedID = "";
 					GameJoinButton.interactable = false;
 				}
 			}else
@@ -73,23 +74,8 @@ namespace AdminUI{
 			if (selected == null || extractSelectedGameType(selected, ref selectedGameType) == false)
 				return;
 
-			
-			SpectatorSubscriptionsMsg outMsg = new SpectatorSubscriptionsMsg(){broadcastID = selected.GameId, preGame = selected.isPreGame};
-			Msf.Connection.SendMessage ((short)CustomMasterServerMSG.startSpectate, outMsg, ((r, m) => {
-				Debug.LogError("Sub status: " + r + "  message: " + m);
-				if(r != ResponseStatus.Success || m == null)
-					return;
-
-				print("Horray we subscribed to: " + selected.isPreGame);
-				waitingForPreGame = selected.isPreGame;
-				AdminUpdateManager.requestStartSpectate(selected.GameId);
-				if(selected.isPreGame == false){
-					AdminUpdateManager.handleStartLogMsg( m.Deserialize<SpectatorGameLog>());
-					AdminUIManager.requestGotoGame(selectedGameType, AdminUpdateManager.onGameSceneLoaded);
-				}
-
-			}));
-		}
+            AdminUpdateManager.startSpectateGame(selected.GameId);
+        }
 
 
 		private bool extractSelectedGameType(AdminListUiItem item, ref GameType type){
@@ -98,8 +84,7 @@ namespace AdminUI{
 				return false;
 			}
 
-			print ("Game type: " + item.RawData.Properties [MsfDictKeys.GameType]);
-			type = Game.GameUtil.stringToGameType(item.RawData.Properties [MsfDictKeys.GameType]);
+			type = GameUtils.stringToGameType(item.RawData.Properties [MsfDictKeys.GameType]);
 			return type != GameType.None;
 		}
 			
@@ -109,11 +94,7 @@ namespace AdminUI{
 			totalGames.text = msg.totalGamesPlayed.ToString ();
 		}
 
-		private void handleSpectateInfoMsg(IIncommingMessage message){
-			SpectatorInfoMsg infoMsg = message.Deserialize<SpectatorInfoMsg> ();
-			AdminUpdateManager.handleStartLogMsg(new SpectatorGameLog(){gameLog = new string[0]});
-			AdminUIManager.requestGotoGame(infoMsg.gameType, AdminUpdateManager.onGameSceneLoaded);
-		}
+
 
 			
 		private void OnEnable(){if (Msf.Connection.IsConnected) RequestRooms();}

@@ -18,11 +18,11 @@ namespace ClientUI{
 
 		public List<Button> buttonsBoundToHavingBot;
 		public static ClientUIOverlord singleton;
-		public GameObject loginMenu, loginWindow, gameLobby, gameListWindow, preGameWindow;
+		public GameObject loginMenu, loginWindow, gameLobby, gameListWindow, preGameWindow, lobbyBrowser, preTournamentLobby;
 		public GameLobbyUI lobbyUI;
 		public MenuBar menuBar;
 		public ClientUserPanelUI userPanel;
-		public ClientChat clientChat;
+		public ClientChatTMProEnabled clientChat;
 		public GameObject clientLobbySuperParent;
 		public AlbotDialogBox dialogBox;
 		public MainMenu mainMenu;
@@ -73,24 +73,34 @@ namespace ClientUI{
 
 		public static void setUIState(ClientUIStates state){
 			switch (state) {
-			case ClientUIStates.GameLobby:
+            case ClientUIStates.LobbyBrowser:
+                setMenuPanels(false, true, false);
+                setLobbyPanels(false, true, false);
+                break;
+            case ClientUIStates.GameLobby:
 				setMenuPanels (false, true, false);
-				setLobbyPanels (true, false);
+				setLobbyPanels (true, false, false);
 				currentAcountInfo = Msf.Client.Auth.AccountInfo;
 				break;
 			case ClientUIStates.PreGame:
 				setMenuPanels (false, true, false);
-				setLobbyPanels (false, false);
+				setLobbyPanels (false, false, false);
 				break;
 			case ClientUIStates.LoginMenu:
 				setMenuPanels (true, false, false);
-				setLobbyPanels (false, false);
+				setLobbyPanels (false, false, false);
 				break;
-			case ClientUIStates.PlayingGame:
+            case ClientUIStates.PreTournament:
+                setMenuPanels(false, false, false);
+                setLobbyPanels(false, false, true);
+                break;
+            case ClientUIStates.PlayingTournament:
+            case ClientUIStates.PlayingGame:
 				setMenuPanels (false, false, false);
-				setLobbyPanels (false, false);
+				setLobbyPanels (false, false, false);
 				break;
-			}
+            }
+        
 
 			if (state != ClientUIStates.PlayingGame)
 				dissconnectFromGameRoom ();
@@ -99,10 +109,6 @@ namespace ClientUI{
 			if (onUIStateChanged != null)
 				onUIStateChanged.Invoke (state);
 		}
-
-
-
-
 
 
 		public static void dissconnectFromGameRoom(){
@@ -117,11 +123,12 @@ namespace ClientUI{
 			if (lobby == false)
 				singleton.lobbyUI.closeLobby ();
 		}
-		//Pre game lobby has been moved to PreGameBaseLobby
-		private static void setLobbyPanels(bool gameList, bool preGame){
+
+        private static void setLobbyPanels(bool gameList, bool lobbyBrowser = false, bool preTournament = false){
 			singleton.gameListWindow.SetActive (gameList);
-		//	singleton.preGameWindow.SetActive (preGame);
-		}
+            singleton.lobbyUI.setLobbyBrowserState(lobbyBrowser);
+            singleton.preTournamentLobby.SetActive(preTournament);
+        }
 
 		private void onLoggedIn(){setUIState (ClientUIStates.GameLobby);}
 		private void onLoggedOut(){setUIState (ClientUIStates.LoginMenu);}
@@ -135,7 +142,11 @@ namespace ClientUI{
 	public enum ClientUIStates{
 		LoginMenu,
 		GameLobby,
-		PreGame,
+        LobbyBrowser,
+        PreTournament,
+        PlayingTournament,
+        PreGame,
 		PlayingGame,
+        Stats,
 	}
 }

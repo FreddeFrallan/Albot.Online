@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public class Connect4LocalBot : MonoBehaviour {
+public class Connect4LocAlbot : MonoBehaviour {
 
-	private static Connect4LocalBot singleton;
+	private static Connect4LocAlbot singleton;
 	void Awake(){
 		singleton = this;
 	}

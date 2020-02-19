@@ -4,6 +4,7 @@ using UnityEngine;
 using Game;
 using UnityEngine.Networking;
 using AlbotServer;
+using ClientUI;
 
 namespace Soldiers{
 
@@ -39,7 +40,7 @@ namespace Soldiers{
 			RealtimeTCPController.requestBoard (0, true);
 		}
 
-		protected override void initHandlers (){
+        protected override void initHandlers (){
 			connectionToServer.RegisterHandler ((short)SoldiersProtocol.MsgType.playerInit, handleInitSettings);
 			connectionToServer.RegisterHandler ((short)ServerCommProtocl.PlayerJoinedGameRoom, handlePlayerJoinedRoom);
 			connectionToServer.RegisterHandler ((short)ServerCommProtocl.PlayerLeftGameRoom, handlePlayerLeftRoom);
@@ -49,6 +50,8 @@ namespace Soldiers{
 			StartCoroutine (findAndInitRenderer<SoldiersRenderer>((x) => localRenderer = x));
 			StartCoroutine (handleNetworkMsgQueue ());
 			RealtimeTCPController.resetController ();
+
+            TCPMessageQueue.readMsgInstant = readTCPMsg;
 		}
 
 
@@ -108,7 +111,8 @@ namespace Soldiers{
 			GameInfo infoMsg = Game.ClientController.Deserialize<GameInfo> (bytes);;
 
 			if (infoMsg.gameOver) {
-				TCPLocalConnection.sendMessage ("GameOver");
+                string gameOverString = TCP_API.APIStandardConstants.Fields.gameOver;
+                TCPLocalConnection.sendMessage (gameOverString);
 				isGameOver = true;
 				UnetRoomConnector.shutdownCurrentConnection ();
 
@@ -118,9 +122,8 @@ namespace Soldiers{
 				else
 					gameOverMsg = infoMsg.winnerColor + " won";
 
-				ClientUI.AlbotDialogBox.setGameOver ();
-				ClientUI.AlbotDialogBox.activateButton (ClientUI.ClientUIStateManager.requestGotoGameLobby,  ClientUI.DialogBoxType.GameState, gameOverMsg, "Return to lobby", 70, 25);
-			}
+                CurrentGame.gameOver(gameOverMsg);
+            }
 		}
 
 

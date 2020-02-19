@@ -2,108 +2,72 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
-
+using TCP_API.Snake;
+using Game;
+using TCP_API;
 
 namespace Snake{
 
-	public class SnakeTCPFormater : MonoBehaviour {
+	public class SnakeTCPFormater{
 
-		private static int mapSize = 20;
 		private int team;
-		private List<int> freshCoords = new List<int> (), freshCoords2 = new List<int>(), oldCoords = new List<int> ();
-
+		private List<Position2D> freshCoords = new List<Position2D> (), oldCoords = new List<Position2D> ();
 		public SnakeTCPFormater(int team){
-			this.team = team;
-		}
+            this.team = team;
+        }
 
 
-		public void addNewUpdate(List<int> coords, int dir, int enemyDir, int playerPos, int enemyPos){
-			foreach (int c in coords) {
-				if (freshCoords.Any ((x) => x == c) || oldCoords.Any ((x) => x == c))
-					continue;
-				freshCoords.Add (c);
+		public void addNewUpdate(List<Position2D> blocked, int dir, int enemyDir, Position2D playerPos, Position2D enemyPos, BoardState state) {
+			foreach (Position2D c in blocked) {
+				if (oldCoords.Any((p) => GameUtils.comparePos(c, p)))
+                    continue;
+                oldCoords.Add (c);
 			}
-				
-			Game.RealtimeTCPController.gotNewBoard (team, formatBoard(dir, enemyDir, playerPos, enemyPos));
+            RealtimeTCPController.gotNewBoard (team, formatBoard(dir, enemyDir, playerPos, enemyPos, state));
 		}
 
 
-		private string formatBoard(int dir, int enemyDir, int playerPos, int enemyPos){
-			JsonPlayer player = new JsonPlayer (playerPos, dir);
-			JsonPlayer enemy = new JsonPlayer (enemyPos, enemyDir);
+		private string formatBoard(int playerDir, int enemyDir, Position2D playerPos, Position2D enemyPos, BoardState state){
+			SnakePlayer player = decodeSnakePlayer(playerPos, playerDir);
+            SnakePlayer enemy = decodeSnakePlayer(enemyPos, enemyDir);
+            SnakePlayer[] players = new SnakePlayer[]{player, enemy};
+            List<Position2D> blockedCoords = getCurrentBlockedCoords(playerPos, enemyPos);
 
+            JSONObject jBoard = SnakeProtocolEncoder.compressBoard(blockedCoords, players);
+            SnakeProtocolEncoder.addStateField(ref jBoard, state);
 
-			List<int> blockedCoords = new List<int> ();
-			blockedCoords.AddRange (freshCoords);
-			blockedCoords.AddRange (freshCoords2);
+            return jBoard.Print();
+        }
 
-			blockedCoords = removePlayerFromFresh (playerPos, enemyPos, blockedCoords);
-			string blockedString = hardCodeBlockedList (blockedCoords);
+        private List<Position2D> getCurrentBlockedCoords(Position2D playerPos, Position2D enemyPos) {
+            List<Position2D> blockedCoords = new List<Position2D>();
+            blockedCoords.AddRange(oldCoords);
+            blockedCoords = removePlayerFromFresh(playerPos, enemyPos, blockedCoords);
+            return blockedCoords;
+        }
 
-			JSONObject jBoard = new JSONObject ();
-			jBoard.AddField ("Player", new JSONObject(JsonUtility.ToJson (player)));
-			jBoard.AddField ("Enemy", new JSONObject(JsonUtility.ToJson (enemy)));
-
-
-			string playersString = jBoard.Print();
-			playersString = playersString.Substring (0, playersString.Length - 1);
-			playersString += ", \"Blocked\":" + blockedString + "}";
-
-			return playersString;
-		}
-
-
-		private string hardCodeBlockedList(List<int> blockedCoords){
-			string s = "[";
-			for (int i = 0; i < blockedCoords.Count; i++) {
-				s +=  JsonUtility.ToJson (new JsonBlockedPos (blockedCoords[i]));
-				if (i + 1 < blockedCoords.Count)
-					s += ", ";
-			}
-			s += "]";
-			return s;
-		}
-
-
-		public void newBoardSent(){
-			oldCoords.AddRange (freshCoords2);
-			freshCoords2.Clear ();
-			freshCoords2.AddRange (freshCoords);
-			freshCoords.Clear ();
-		}
-
-
-		private List<int> removePlayerFromFresh(int pPos, int ePos, List<int> blockedCoords){
-			blockedCoords = blockedCoords.Where ((pos) => pos != pPos).ToList();
-			blockedCoords = blockedCoords.Where ((pos) => pos != ePos).ToList();
+		private List<Position2D> removePlayerFromFresh(Position2D playerPos, Position2D enemyPos, List<Position2D> blockedCoords){
+			blockedCoords = blockedCoords.Where ((p) => GameUtils.comparePos(p, playerPos) == false && GameUtils.comparePos(p, enemyPos) == false).ToList();
 			return blockedCoords;
 		}
 			
+        private SnakePlayer decodeSnakePlayer(Position2D pos, int dir) {
+            return new SnakePlayer() {
+                x = pos.x, y = pos.y,
+                dir = dirToString(dir)
+            };
+        }
 
-		private class JsonPlayer{
-			public int posX, posY;
-			public string direction;
-			public JsonPlayer(int pos, int dir){
-				this.posX = pos % mapSize;
-				this.posY = mapSize - (pos / mapSize) -1;
-				direction = dirToString(dir);
-			}
-		}
-
-		private class JsonBlockedPos{
-			public int posX, posY;
-			public JsonBlockedPos(int pos){
-				this.posX = pos % mapSize;
-				this.posY = mapSize - (pos / mapSize) - 1;
-			}
-		}
+        private int[] decodeBlockedPos(int pos) {
+            return new int[] { pos % Constants.BOARD_WIDTH, Constants.BOARD_WIDTH - (pos / Constants.BOARD_WIDTH) - 1 };
+        }
 
 
 		private static string dirToString(int dir){
-			if (dir == 0)return "Right";
-			if (dir == 1)return "Up";
-			if (dir == 2)return "Left";
-			else return "Down";
+			if (dir == 0)return "right";
+			if (dir == 1)return "up";
+			if (dir == 2)return "left";
+			else return "down";
 		}
 	}
 

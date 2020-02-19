@@ -12,10 +12,10 @@ namespace Barebones.MasterServer
 
         public delegate void FinalizationDataHandler(Dictionary<string, string> data, string error);
 
-		public static Dictionary<int, SpawnRequestController> _localSpawnRequests;
+		public static Dictionary<string, SpawnRequestController> _localSpawnRequests;
 
         public MsfSpawnersClient(IClientSocket connection) : base(connection){
-            _localSpawnRequests = new Dictionary<int, SpawnRequestController>();
+            _localSpawnRequests = new Dictionary<string, SpawnRequestController>();
         }
 
         /// <summary>
@@ -49,8 +49,8 @@ namespace Barebones.MasterServer
                     return;
                 }
 					
-                var spawnId = response.AsInt();
-                var controller = new SpawnRequestController(spawnId, connection);
+                var spawnId = response.AsString();
+                var controller = new SpawnRequestController(spawnId, connection, "none");
 
                 _localSpawnRequests[controller.SpawnId] = controller;
                 callback.Invoke(controller, null);
@@ -61,7 +61,7 @@ namespace Barebones.MasterServer
         /// Sends a request to abort spawn request, which was not yet finalized
         /// </summary>
         /// <param name="spawnId"></param>
-        public void AbortSpawn(int spawnId){
+        public void AbortSpawn(string spawnId){
             AbortSpawn(spawnId, (successful, error) =>{
                 if (error != null)
                     Logs.Error(error);
@@ -71,14 +71,14 @@ namespace Barebones.MasterServer
         /// <summary>
         /// Sends a request to abort spawn request, which was not yet finalized
         /// </summary>
-        public void AbortSpawn(int spawnId, AbortSpawnHandler callback){
+        public void AbortSpawn(string spawnId, AbortSpawnHandler callback){
             AbortSpawn(spawnId, callback, Connection);
         }
 
         /// <summary>
         /// Sends a request to abort spawn request, which was not yet finalized
         /// </summary>
-        public void AbortSpawn(int spawnId, AbortSpawnHandler callback, IClientSocket connection){
+        public void AbortSpawn(string spawnId, AbortSpawnHandler callback, IClientSocket connection){
             if (!connection.IsConnected) {
                 callback.Invoke(false, "Not connected");
                 return;
@@ -100,7 +100,7 @@ namespace Barebones.MasterServer
         /// </summary>
         /// <param name="spawnId"></param>
         /// <param name="callback"></param>
-        public void GetFinalizationData(int spawnId, FinalizationDataHandler callback){
+        public void GetFinalizationData(string spawnId, FinalizationDataHandler callback){
             GetFinalizationData(spawnId, callback, Connection);
         }
 
@@ -108,7 +108,7 @@ namespace Barebones.MasterServer
         /// Retrieves data, which was given to master server by a spawned process,
         /// which was finalized
         /// </summary>
-        public void GetFinalizationData(int spawnId, FinalizationDataHandler callback, IClientSocket connection){
+        public void GetFinalizationData(string spawnId, FinalizationDataHandler callback, IClientSocket connection){
             if (!connection.IsConnected){
                 callback.Invoke(null, "Not connected");
                 return;
@@ -129,7 +129,7 @@ namespace Barebones.MasterServer
         /// </summary>
         /// <param name="spawnId"></param>
         /// <returns></returns>
-        public SpawnRequestController GetRequestController(int spawnId)
+        public SpawnRequestController GetRequestController(string spawnId)
         {
             SpawnRequestController controller;
             _localSpawnRequests.TryGetValue(spawnId, out controller);

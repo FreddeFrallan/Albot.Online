@@ -11,7 +11,7 @@ public class FallingServerController : Game.ServerController {
 		return daGame;
 	}
 
-	public override void initController (System.Action<string> printFunc, System.Action<object, int, short> sendMsgFunc, System.Action shutdownGameServer, GameWrapper wrapper, List<string> preGamePlayers){
+	public override void initController (Action<string> printFunc, Action<object, int, short> sendMsgFunc, Action shutdownGameServer, GameWrapper wrapper, List<string> preGamePlayers){
 		daGame.init (printFunc, sendMsgFunc, shutdownGameServer, wrapper, preGamePlayers);
 	}
 }

@@ -6,6 +6,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System;
 using UnityEngine.Networking;
 using AlbotServer;
+using ClientUI;
 
 namespace Othello{
 
@@ -16,7 +17,7 @@ namespace Othello{
 
 		#region implemented abstract members of ClientController
 		public override void initProtocol (Game.CommProtocol protocol){this.protocol = (Othello.CommProtocol)protocol;}
-		protected override void initHandlers (){
+        protected override void initHandlers (){
 			connectionToServer.RegisterHandler ((short)CommProtocol.MsgType.playerInit, handleInitSettings);
 			connectionToServer.RegisterHandler ((short)CommProtocol.MsgType.gameInfo, handleGameStatus);
 			connectionToServer.RegisterHandler ((short)CommProtocol.MsgType.boardUpdate, requestMove);
@@ -27,14 +28,19 @@ namespace Othello{
 			connectionToServer.RegisterHandler ((short)ServerCommProtocl.PlayerTimerCommand, handlePlayerTimerCommand);
 			StartCoroutine (findAndInitRenderer<OthelloBoardRenderer>((x) => localRenderer = x));
 			StartCoroutine (handleNetworkMsgQueue ());
-		}
-		public override Game.GameType getGameType (){return Game.GameType.Othello;}
+
+            //Hotfix for Hello World Presentation
+            TCPMessageQueue.readMsgInstant = readTCPMsg;
+        }
+        public override Game.GameType getGameType (){return Game.GameType.Othello;}
 		#endregion
 
 
+        
+
 		//InProgress
 		public override void onOutgoingLocalMsg (string msg, Game.PlayerColor color){
-			sendServerMsg(msg, color, (short)CommProtocol.MsgType.move);
+            sendServerMsg(msg, color, (short)CommProtocol.MsgType.move);
 		}
 
 
@@ -74,7 +80,8 @@ namespace Othello{
 			GameInfo msg = Game.ClientController.Deserialize<GameInfo> (bytes);
 
 			if (msg.gameOver) {
-				TCPLocalConnection.sendMessage ("GameOver");
+                string gameOverString = TCP_API.APIStandardConstants.Fields.gameOver;
+                TCPLocalConnection.sendMessage (gameOverString);
 				gameOver ();
 
 				string gameOverMsg;
@@ -83,9 +90,8 @@ namespace Othello{
 				else
 					gameOverMsg = msg.winnerColor + " won";
 
-				ClientUI.AlbotDialogBox.setGameOver ();
-				ClientUI.AlbotDialogBox.activateButton (ClientUI.ClientUIStateManager.requestGotoGameLobby,  ClientUI.DialogBoxType.GameState, gameOverMsg, "Return to lobby", 70, 25);
-			}
+                CurrentGame.gameOver(gameOverMsg);
+            }
 		}
 		#endregion
 

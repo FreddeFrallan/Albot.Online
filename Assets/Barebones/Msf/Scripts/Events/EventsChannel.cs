@@ -16,8 +16,7 @@ namespace Barebones.MasterServer
 
         private readonly Dictionary<string, List<EventHandler>> _handlers;
 
-        public EventsChannel(string name, bool catchExceptions = false)
-        {
+        public EventsChannel(string name, bool catchExceptions = false){
             _catchExceptions = catchExceptions;
             _handlers = new Dictionary<string, List<EventHandler>>();
             Name = name;
@@ -55,28 +54,23 @@ namespace Barebones.MasterServer
         /// <param name="arg1"></param>
         /// <param name="arg2"></param>
         /// <returns>True if there was at least one listener</returns>
-        public bool Fire(string eventName, object arg1 = null, object arg2 = null)
-        {
+        public bool Fire(string eventName, object arg1 = null, object arg2 = null){
             List<EventHandler> list;
             _handlers.TryGetValue(eventName, out list);
 
             if ((list == null) || (list.Count == 0))
                 return false;
 
-            foreach (var barebonesEventHandler in list)
-            {
-                if (!_catchExceptions)
-                {
+            foreach (var barebonesEventHandler in list){
+                if (!_catchExceptions){
                     barebonesEventHandler.Invoke(arg1, arg2);
                     continue;
                 }
 
-                try
-                {
+                try{
                     barebonesEventHandler.Invoke(arg1, arg2);
                 }
-                catch (Exception e)
-                {
+                catch (Exception e){
                     Logs.Error(e);
                 }
             }

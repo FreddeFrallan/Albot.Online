@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.Networking.NetworkSystem;
 using UnityEngine.SceneManagement;
+using ClientUI;
 
 public class UnetRoomConnector : RoomConnector
 {
@@ -43,7 +44,7 @@ public class UnetRoomConnector : RoomConnector
 	private bool showDissconnectMsg = true;
 
     protected override void Awake(){
-		if (ClientUI.ClientUIOverlord.hasLoaded)
+		if (ClientUIOverlord.hasLoaded)
 			Destroy(this.gameObject);
 		
         base.Awake();
@@ -58,7 +59,7 @@ public class UnetRoomConnector : RoomConnector
 	}
 
     protected virtual void Start(){
-		if (ClientUI.ClientUIOverlord.hasLoaded)return;
+		if (ClientUIOverlord.hasLoaded)return;
 		if (instance != null && instance != this) {
 			Destroy (this.gameObject);
 			return;
@@ -74,10 +75,10 @@ public class UnetRoomConnector : RoomConnector
         // If we currently have a room access 
         // (it might have been set in a previous scene)
         if (RoomAccess != null)
-			if (SceneManager.GetActiveScene().name == RoomAccess.SceneName) // If we're atthe correct scene
+            if (SceneManager.GetActiveScene().name == RoomAccess.SceneName) // If we're atthe correct scene
                 ConnectToGame(RoomAccess);
-			else if (SwitchScenesIfWrongScene) // Switch to correct scene 
-                SceneManager.LoadScene(RoomAccess.SceneName);
+            else if (SwitchScenesIfWrongScene) // Switch to correct scene 
+                ClientUIStateManager.requestGotoState(ClientUIStates.PlayingGame, RoomAccess.SceneName);
     }
 
     public override void ConnectToGame(RoomAccessPacket access){
@@ -86,8 +87,8 @@ public class UnetRoomConnector : RoomConnector
             RoomAccess = access;
 
             // Switch to correct scene 
-            SceneManager.LoadScene(access.SceneName);
-			isConnecting = true;
+            ClientUIStateManager.requestGotoState(ClientUIStates.PlayingGame, access.SceneName);
+            isConnecting = true;
             return;
         }
 		isConnecting = false;
@@ -116,7 +117,7 @@ public class UnetRoomConnector : RoomConnector
 
     protected virtual void OnFailedToConnect(){
         if (ConnectionFailedScene != null)
-            SceneManager.LoadScene(DisconnectedScene.SceneName);
+            ClientUIStateManager.requestGotoState(ClientUIStates.GameLobby);
     }
 
     public IEnumerator WaitForConnection(RoomAccessPacket access){
@@ -148,14 +149,15 @@ public class UnetRoomConnector : RoomConnector
 		}
         // At this point, we're no longer connected
 		if (DisconnectedScene.IsSet ()  && showDissconnectMsg) {
-			ClientUI.AlbotDialogBox.activateButton (ClientUI.ClientUIStateManager.requestGotoGameLobby, ClientUI.DialogBoxType.GameServerConnLost, "Connection to the gameserver was lost!", "Return to lobby");
-		}
+			AlbotDialogBox.activateButton (() => { ClientUIStateManager.requestGotoState(ClientUIStates.GameLobby); },
+                DialogBoxType.GameServerConnLost, "Connection to the gameserver was lost!", "Return to lobby");
+        }
     }
 
 
 	public static void shutdownCurrentConnection(){
 		singleton.showDissconnectMsg = false;
 		try{singleton.NetworkManager.client.Disconnect ();}
-		catch{}
+		catch{ Debug.LogError("Could not dissconnect"); }
 	}
 }

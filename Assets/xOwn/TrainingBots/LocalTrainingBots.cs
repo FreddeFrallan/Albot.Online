@@ -9,7 +9,12 @@ namespace Game{
 
 	public class LocalTrainingBots : MonoBehaviour {
 
-		public static PlayerInfo StandardTrainingBotInfo = new PlayerInfo (){username = "Albot.Online", iconNumber = 77};
+        public static readonly string botName = "Albot.Online";
+        public static readonly int botIconNumber = 1;
+
+		public static PlayerInfo StandardTrainingBotInfo = new PlayerInfo (){username = botName, iconNumber = botIconNumber };
+        public static PlayerInfo StandardTrainingBotInfoCustomName(string name) { return new PlayerInfo() { username = name, iconNumber = botIconNumber }; }
+
 		private static List<BotSetting> botSettings = new List<BotSetting>();
 
 		public static void addBot(GameType type, int selectedBotMode = -1){

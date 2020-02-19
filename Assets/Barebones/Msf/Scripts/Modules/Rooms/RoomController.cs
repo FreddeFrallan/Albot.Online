@@ -16,14 +16,14 @@ namespace Barebones.MasterServer
     {
         public readonly IClientSocket Connection;
 
-        public int RoomId { get; private set; }
+        public string RoomId { get; private set; }
         public RoomOptions Options { get; private set; }
 
         private RoomAccessProvider _accessProvider;
 
         public static BmLogger Logger = Msf.Create.Logger(typeof(RoomController).Name, LogLevel.Warn);
 
-        public RoomController(int roomId, IClientSocket connection, RoomOptions options)
+        public RoomController(string roomId, IClientSocket connection, RoomOptions options)
         {
             Connection = connection;
             RoomId = roomId;

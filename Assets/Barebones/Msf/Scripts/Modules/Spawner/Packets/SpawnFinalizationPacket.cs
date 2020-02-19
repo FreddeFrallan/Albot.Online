@@ -5,7 +5,7 @@ namespace Barebones.MasterServer
 {
     public class SpawnFinalizationPacket : SerializablePacket
     {
-        public int SpawnId;
+        public string SpawnId;
         public Dictionary<string, string> FinalizationData;
 
         public override void ToBinaryWriter(EndianBinaryWriter writer)
@@ -16,7 +16,7 @@ namespace Barebones.MasterServer
 
         public override void FromBinaryReader(EndianBinaryReader reader)
         {
-            SpawnId = reader.ReadInt32();
+            SpawnId = reader.ReadString();
             FinalizationData = reader.ReadDictionary();
         }
     }

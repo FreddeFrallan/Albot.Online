@@ -4,7 +4,7 @@ namespace Barebones.MasterServer
 {
     public class LobbyJoinTeamPacket : SerializablePacket
     {
-        public int LobbyId;
+        public string LobbyId;
         public string TeamName;
 
         public override void ToBinaryWriter(EndianBinaryWriter writer)
@@ -15,7 +15,7 @@ namespace Barebones.MasterServer
 
         public override void FromBinaryReader(EndianBinaryReader reader)
         {
-            LobbyId = reader.ReadInt32();
+            LobbyId = reader.ReadString();
             TeamName = reader.ReadString();
         }
     }

@@ -12,6 +12,13 @@ namespace Barebones.MasterServer{
     /// Automatically connects to master server
     /// </summary>
     public class ConnectionToMaster : MonoBehaviour{
+
+        #region Albot Version
+        [SerializeField]
+        public string AlbotVersion = "0.51b";
+        public static string getAlbotVersion() { return _instance.AlbotVersion; }
+        #endregion
+
         public HelpBox _header = new HelpBox(){
             Text = "This script automatically connects to any server. Most likely, " +
                    "you'll use it to connect to Master server",

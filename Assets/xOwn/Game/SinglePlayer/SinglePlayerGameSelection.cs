@@ -23,7 +23,7 @@ namespace ClientUI{
 
 			ExerciseMapSelection m = getSelectedMap (exerciseDropDown.value);
 			resetSelection ();
-			ClientUIStateManager.requesGotoPreGame ();
+            ClientUIStateManager.requestGotoState(ClientUIStates.PreGame);
 			lobby.initGameLobby (m.Name, m.picture, m.type, m.Scene);
 		}
 

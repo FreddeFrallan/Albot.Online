@@ -9,7 +9,12 @@ namespace Game{
 		protected List<AlbotMessage> currentProtocol = new List<AlbotMessage>();
 		protected List<AlbotMessage> currentHandlers = new List<AlbotMessage>();
 
-		public abstract void init(Action<Object, int, short> sendMsgFunc);
+
+        public void sendPingMsg(int targetID, Game.PlayerColor color) {sendString(targetID, (short)AlbotServer.ServerCommProtocl.Ping, "PING", color);}
+        public void sendString(int targetID, short type, string str, Game.PlayerColor color) {sendMsg(new StringMessage(str, color), targetID, type);}
+
+
+        public abstract void init(Action<Object, int, short> sendMsgFunc);
 		public Type getMatchingType(int id){ return currentProtocol.Find (x => x.id == id).type;}
 		public void subscribeHandler(ConnectedClient target, Action<object, ConnectedClient> func, short msgType, GameWrapper wrapper, Type type = null){
 			if (type == null)
@@ -36,7 +41,8 @@ namespace Game{
 			}
 		}
 
-		[Serializable]
+
+        [Serializable]
 		public class StringMessage{ 
 			public string msg;  
 			public Game.PlayerColor color;

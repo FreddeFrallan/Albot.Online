@@ -10,7 +10,7 @@ namespace Barebones.MasterServer
 	*/
     public class MsfRoomsServer : MsfBaseClient
     {
-        private static Dictionary<int, RoomController> _localCreatedRooms;
+        private static Dictionary<string, RoomController> _localCreatedRooms;
 
         /// <summary>
         /// Maximum time the master server can wait for a response from game server
@@ -30,7 +30,7 @@ namespace Barebones.MasterServer
 
         public MsfRoomsServer(IClientSocket connection) : base(connection)
         {
-            _localCreatedRooms = new Dictionary<int, RoomController>();
+            _localCreatedRooms = new Dictionary<string, RoomController>();
         }
 
         /// <summary>
@@ -73,7 +73,7 @@ namespace Barebones.MasterServer
                     return;
                 }
 
-                var roomId = response.AsInt();
+                var roomId = response.AsString();
 
                 var controller = new RoomController(roomId, Connection, options);
 
@@ -91,7 +91,7 @@ namespace Barebones.MasterServer
         /// <summary>
         /// Sends a request to destroy a room of a given room id
         /// </summary>
-        public void DestroyRoom(int roomId, SuccessCallback callback)
+        public void DestroyRoom(string roomId, SuccessCallback callback)
         {
             DestroyRoom(roomId, callback, Connection);
         }
@@ -99,7 +99,7 @@ namespace Barebones.MasterServer
         /// <summary>
         /// Sends a request to destroy a room of a given room id
         /// </summary>
-        public void DestroyRoom(int roomId, SuccessCallback callback, IClientSocket connection)
+        public void DestroyRoom(string roomId, SuccessCallback callback, IClientSocket connection)
         {
             if (!connection.IsConnected)
             {
@@ -133,7 +133,7 @@ namespace Barebones.MasterServer
         /// <param name="roomId"></param>
         /// <param name="token"></param>
         /// <param name="callback"></param>
-        public void ValidateAccess(int roomId, string token, RoomAccessValidateCallback callback)
+        public void ValidateAccess(string roomId, string token, RoomAccessValidateCallback callback)
         {
             ValidateAccess(roomId, token, callback, Connection);
         }
@@ -141,7 +141,7 @@ namespace Barebones.MasterServer
         /// <summary>
         /// Sends a request to master server, to see if a given token is valid
         /// </summary>
-        public void ValidateAccess(int roomId, string token, RoomAccessValidateCallback callback, IClientSocket connection)
+        public void ValidateAccess(string roomId, string token, RoomAccessValidateCallback callback, IClientSocket connection)
         {
             if (!connection.IsConnected)
             {
@@ -173,7 +173,7 @@ namespace Barebones.MasterServer
         /// <param name="roomId"></param>
         /// <param name="options"></param>
         /// <param name="callback"></param>
-        public void SaveOptions(int roomId, RoomOptions options, SuccessCallback callback)
+        public void SaveOptions(string roomId, RoomOptions options, SuccessCallback callback)
         {
             SaveOptions(roomId, options, callback, Connection);
         }
@@ -181,7 +181,7 @@ namespace Barebones.MasterServer
         /// <summary>
         /// Updates the options of the registered room
         /// </summary>
-        public void SaveOptions(int roomId, RoomOptions options, SuccessCallback callback, IClientSocket connection)
+        public void SaveOptions(string roomId, RoomOptions options, SuccessCallback callback, IClientSocket connection)
         {
             if (!connection.IsConnected)
             {
@@ -213,7 +213,7 @@ namespace Barebones.MasterServer
         /// <param name="roomId"></param>
         /// <param name="peerId"></param>
         /// <param name="callback"></param>
-        public void NotifyPlayerLeft(int roomId, int peerId, SuccessCallback callback)
+        public void NotifyPlayerLeft(string roomId, int peerId, SuccessCallback callback)
         {
             NotifyPlayerLeft(roomId, peerId, callback, Connection);
         }
@@ -221,7 +221,7 @@ namespace Barebones.MasterServer
         /// <summary>
         /// Notifies master server that a user with a given peer id has left the room
         /// </summary>
-        public void NotifyPlayerLeft(int roomId, int peerId, SuccessCallback callback, IClientSocket connection)
+        public void NotifyPlayerLeft(string roomId, int peerId, SuccessCallback callback, IClientSocket connection)
         {
             if (!connection.IsConnected)
             {
@@ -246,7 +246,7 @@ namespace Barebones.MasterServer
         /// </summary>
         /// <param name="roomId"></param>
         /// <returns></returns>
-        public RoomController GetRoomController(int roomId)
+        public RoomController GetRoomController(string roomId)
         {
             RoomController controller;
             _localCreatedRooms.TryGetValue(roomId, out controller);

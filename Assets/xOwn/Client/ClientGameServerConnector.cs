@@ -15,7 +15,6 @@ public class ClientGameServerConnector : NetworkBehaviour {
 
 	private void onGotCurrentGameType(NetworkMessage msg){
 		GameRoomInitMsg response = (GameRoomInitMsg)msg.ReadMessage<GameRoomInitMsg> ();
-		Debug.LogError ("Starting Client, Gametype: " + response.type);
 
 		foreach (ClientController c in GetComponents<ClientController>())
 			c.initController (response.type);

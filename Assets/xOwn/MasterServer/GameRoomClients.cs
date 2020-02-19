@@ -74,8 +74,8 @@ public class GameRoomClients{
 		//Let all the remaining players that p just left.
 		foreach(ConnectedPlayer p in c.players)
 			broadcastPlayerLeftRoom (p);
-		//Tell the Master that a player left the room
-		int roomID = Msf.Server.Rooms.currentRoomID;
+        //Tell the Master that a player left the room
+        string roomID = Msf.Server.Rooms.currentRoomID;
 		Msf.Server.Rooms.NotifyPlayerLeft (roomID, c.peerID, (status, msg) => {});
 
 

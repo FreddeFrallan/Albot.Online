@@ -4,7 +4,7 @@ using Barebones.Networking;
 using Barebones.Utils;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
+using System.Linq;
 using System;
 using Barebones.MasterServer;
 using AlbotServer;
@@ -22,19 +22,19 @@ namespace ClientUI{
 		public NewGameCreator gameCreator;
 		public List<MapSelection> maps;
         protected IClientSocket Connection = Msf.Connection;
-		private int selectedID = -1;
+		private string selectedID = "";
 		public Text currentGames, totalGames;
 
         // Use this for initialization
         protected virtual void Awake(){
 			localSingleton = this;
-			_items = new GenericUIList<GameInfoPacket>(ItemPrefab.gameObject, LayoutGroup);
+			_items = new GenericUIList<GameInfoPacket>(ItemPrefab.gameObject, LayoutGroup, ItemPrefab.transform.parent);
 			ClientUIOverlord.onUIStateChanged += (ClientUIStates newState) => {if (newState == ClientUIStates.GameLobby)resetSelection ();};
 			Connection.SetHandler ((short)ServerCommProtocl.LobbyGameStats, handleGameStatsUpdate);
 		}
 			
         public void Setup(IEnumerable<GameInfoPacket> data){
-            _items.Generate<GamesListUiItem>(data, (packet, item) => { item.Setup(packet); });
+            _items.Generate<GamesListUiItem>(data, (packet, item) => {item.Setup(packet, OnJoinGameClick);});
             UpdateGameJoinButton();
         }
 
@@ -56,21 +56,21 @@ namespace ClientUI{
 
 		private void UpdateGameJoinButton(){
 			GamesListUiItem item = GetSelectedItem ();
-			if (item == null && selectedID >= 0) { item = _items.FindObject<GamesListUiItem> ((x) => {return x.GameId == selectedID; });
+			if (item == null && string.IsNullOrEmpty(selectedID) == false) { item = _items.FindObject<GamesListUiItem> ((x) => {return x.GameId == selectedID; });
 				if (item != null)
 					Select (item);
 				else {
-					selectedID = -1;
+                    selectedID = "";
 					GameJoinButton.interactable = false;
 				}
 			}else
 				GameJoinButton.interactable = GetSelectedItem() != null;
 		}
 		public void OnJoinGameClick(){
-			var selected = GetSelectedItem();
+			GamesListUiItem selected = GetSelectedItem();
 			if (selected == null)
 				return;
-			gameCreator.joinPreGame (selected.GameId);
+			gameCreator.joinLobbyGame (selected);
 		}
 			
 		public void newGameSelected(bool isTraining){
@@ -79,7 +79,7 @@ namespace ClientUI{
 
 			MapSelection selectedMap = getSelectedMap (isTraining ? newTrainingDropdown.value : newGameDropdown.value);
 			resetSelection ();
-			gameCreator.createNewGame (selectedMap, isTraining);
+			gameCreator.createNewGame (selectedMap);
 		}
 		private void handleGameStatsUpdate(IIncommingMessage message){
 			LobbyGameStatsMsg msg = message.Deserialize<LobbyGameStatsMsg> ();

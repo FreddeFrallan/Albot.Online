@@ -3,28 +3,31 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Barebones.MasterServer;
+using TMPro;
 
 namespace ClientUI{
 	public class ClientUserPanelUI : MonoBehaviour {
 
 		[SerializeField]
 		private Image icon;
-		[SerializeField]
-		private Text username = null, timerText = null, scoreText = null;
+        [SerializeField]
+        private TextMeshProUGUI username;
+        [SerializeField]
+        private TextMeshProUGUI timerText = null, scoreText = null;
 		[SerializeField]
 		private Color timerActive = Color.black, timerPaused = Color.black;
 		private TurnTimer turnTimer;
 		private bool timerHasInit = false;
 
 		public void init(){ClientLogin.LoggedIn += onLoggedIn;}
-		private void onLoggedIn(){setUserPanel (int.Parse(Msf.Client.Auth.AccountInfo.Properties["icon"]), Msf.Client.Auth.AccountInfo.Username);}
+		private void onLoggedIn(){setUserPanel (int.Parse(Msf.Client.Auth.AccountInfo.Properties[AlbotDictKeys.icon]), Msf.Client.Auth.AccountInfo.Username);}
 		public void setUserPanel(int iconNumber, string username){
 			this.icon.sprite = ClientIconManager.loadIcon(iconNumber);
 			this.icon.enabled = true;
-			this.username.text = username;
+            this.username.SetText(username);
 		}
 		public void clearPanel(){
-			this.username.text = "";
+            this.username.SetText("");
 			this.icon.enabled = false;
 			if (turnTimer != null) {
 				turnTimer.stopTimer ();
@@ -39,7 +42,9 @@ namespace ClientUI{
 			timerHasInit = true;
 		}
 		public void startTimer(float maxTime){turnTimer.startTimer (maxTime);}
-		public void stopTimer(){turnTimer.stopTimer ();}
+		public void stopTimer(){
+            if(turnTimer != null)
+                turnTimer.stopTimer ();}
 		void Update(){
 			if (timerHasInit)
 				turnTimer.updateTimer ();
@@ -53,9 +58,9 @@ namespace ClientUI{
 		private class TurnTimer{
 			private float currentTime;
 			private bool active = false;
-			private Text timerText;
+			private TextMeshProUGUI timerText;
 			private Color timerActive, timerPaused;
-			public TurnTimer(float maxTime, Color timerActive, Color timerPaused, Text timerText){
+			public TurnTimer(float maxTime, Color timerActive, Color timerPaused, TextMeshProUGUI timerText){
 				this.timerActive = timerActive; this.timerPaused = timerPaused;
 				this.timerText = timerText;
 				timerText.text = Mathf.Round(maxTime).ToString ();

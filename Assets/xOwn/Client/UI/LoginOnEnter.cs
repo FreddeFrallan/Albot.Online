@@ -2,13 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 namespace ClientUI{
 
 	public class LoginOnEnter : MonoBehaviour {
 
 		public Button thisButton;
-		public InputField username, password;
+		public InputField password;
+        public TMP_InputField username;
 
 		private List<bool> focusBuffer = new List<bool>();
 		private int bufferSize = 2;
@@ -20,7 +22,7 @@ namespace ClientUI{
 
 		// Update is called once per frame
 		void Update () {
-			focusBuffer.Add (username.isFocused || password.isFocused);
+			focusBuffer.Add (password.isFocused);
 			focusBuffer.RemoveAt (0);
 
 			if (Input.GetKeyDown (KeyCode.Return)) {

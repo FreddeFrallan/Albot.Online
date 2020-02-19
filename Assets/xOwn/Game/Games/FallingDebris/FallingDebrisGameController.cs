@@ -16,8 +16,7 @@ namespace FallingDebris{
 		protected CommProtocol protocol;
 
 		public override void initProtocol (Game.CommProtocol protocol){this.protocol = (FallingDebris.CommProtocol)protocol;}
-
-		protected override void initHandlers (){
+        protected override void initHandlers (){
 			connectionToServer.RegisterHandler ((short)CommProtocol.MsgType.boardUpdate, handleGameState);
 			connectionToServer.RegisterHandler ((short)CommProtocol.MsgType.playerInit, handleInitSettings);
 			connectionToServer.RegisterHandler ((short)ServerCommProtocl.PlayerJoinedGameRoom, handlePlayerJoinedRoom);

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using LiteDB;
+using System.Linq;
+using AlbotServer;
 
 namespace AlbotDB{
 	
@@ -11,7 +13,12 @@ namespace AlbotDB{
 		private static LiteCollection<UserLoginInformation> userLoginColl;
 		private static LiteCollection<UserInfo> userGameStatColl;
 		private static LiteCollection<UserChatLog> userChatLogColl;
-		private static LiteCollection<ActiveUser> activeUsersColl;
+
+        /*
+         * For some reason we can't store active users with ID 0 ????
+         * Hence the quick fix was to make the key a string instead 
+         */
+        private static LiteCollection<ActiveUser> activeUsersColl;
 
 		public static void initDB(){
 			theDB = new LiteDatabase (@Application.dataPath + "\\" + AlbotDBDatatypes.DBPATH);
@@ -100,38 +107,40 @@ namespace AlbotDB{
 		private static void addActiveUser(UserLoginInformation user, int newPeerID){
 			ActiveUser newUser = activeUsersColl.FindOne (x => x.username == user.username);
 			if (newUser == null) {
-				Debug.LogError ("Adding user with ID: " + newPeerID);
-				activeUsersColl.Insert (new ActiveUser{ username = user.username, peerId = newPeerID });
+				activeUsersColl.Insert (new ActiveUser{ username = user.username, peerId = newPeerID.ToString() });
+				//Debug.LogError ("Adding user with ID: " + newPeerID);
 			}
 			else { //This should never happen
-				newUser.peerId = newPeerID;
+				newUser.peerId = newPeerID.ToString();
 				activeUsersColl.Update (newUser);
 			}
 		}
 
 		public static void onPlayerDissconnected(int peerID){
-			ActiveUser oldUser = activeUsersColl.FindOne (x => x.peerId == peerID);
+            string keyID = peerID.ToString();
+			ActiveUser oldUser = activeUsersColl.FindOne (x => x.peerId == keyID);
 			if (oldUser != null) {
-				Debug.LogError ("Removing for id: " + peerID);
+				//Debug.LogError ("Removing for id: " + peerID);
 				activeUsersColl.Delete (oldUser.peerId);
 				UserLoginInformation savedUser = userLoginColl.FindOne (x => x.username == oldUser.username);
 				if (savedUser != null) {
 					savedUser.isLoggedIn = false;
 					updateLoginInfo (savedUser);
 				}
+
+                UserDataModule.userLogedOut(oldUser.username);
 			}
-			else
-				Debug.LogError("Player dissconnected but was not loged in");
 		}
 
 
 		public static bool getActiveUsersInfo(int peerID, ref UserInfo info){
-			ActiveUser activeUser = activeUsersColl.FindOne (x => x.peerId == peerID);
+            string keyID = peerID.ToString();
+			ActiveUser activeUser = activeUsersColl.FindOne (x => x.peerId == keyID);
 			if (activeUser != null) 
 				return getUserData (activeUser.username, out info);
 
 			Debug.LogError("Could not find a active user with matching Peer ID: " + peerID);
-			return false;
+            return false;
 		}
 
 		//Use this with caution!

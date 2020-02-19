@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Threading;
+using TCP_API.Connect4;
 
 namespace Connect4Bot{
 
@@ -32,19 +33,19 @@ namespace Connect4Bot{
 
 			
 		public int requestMove(string boardUpdate){
-			int[,] board = parseBoard (boardUpdate);
+            JSONObject jObj = new JSONObject(boardUpdate);
+			int[,] board = parseBoard (jObj.GetField(Consts.Fields.board));
 			return Connect4BotMinMax.MinMaxSearch.findBestMove (board, depthLevel);
 		}
 			
-		private static int[,] parseBoard(string board){
+		private static int[,] parseBoard(JSONObject grid){
 			int tempRoundCounter = 0;
-			board = board.Trim ();
-			string[] words = board.Split (' ');
 			int[,] tempBoard = new int[6, 7];
 
+            Debug.Log(grid);
 			for (int y = 0; y < 6; y++)
 				for (int x = 0; x < 7; x++) {
-					tempBoard [y, x] = int.Parse( words [y*7 + x]);
+					tempBoard [y, x] = (int)grid.list[y].list[x].i;
 					if (tempBoard [y, x] != 0)
 						tempRoundCounter++;
 				}

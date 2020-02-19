@@ -5,6 +5,7 @@ using Barebones.Networking;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 namespace Barebones.MasterServer
 {
@@ -20,17 +21,14 @@ namespace Barebones.MasterServer
         public string PleaseWaitText = "Please wait...";
 
         protected SpawnRequestController Request;
-        public Image RotatingImage;
 
-        public Text StatusText;
+        public TextMeshProUGUI StatusText;
 
         public bool SetAsLastSiblingOnEnable = true;
 
 
 
         private void Update(){
-			if(RotatingImage != null)
-          	  RotatingImage.transform.Rotate(Vector3.forward, Time.deltaTime*360*2);
 
             if (Request == null)
                 return;
@@ -67,14 +65,14 @@ namespace Barebones.MasterServer
             });
         }
 
-        public IEnumerator EnableAbortDelayed(float seconds, int spawnId){
+        public IEnumerator EnableAbortDelayed(float seconds, string spawnId){
             yield return new WaitForSeconds(seconds);
 
             if ((Request != null) && (Request.SpawnId == spawnId))
                 AbortButton.interactable = true;
         }
 
-        public IEnumerator CloseAfterRequest(float seconds, int spawnId){
+        public IEnumerator CloseAfterRequest(float seconds, string spawnId){
             yield return new WaitForSeconds(seconds);
 
             if ((Request != null) && (Request.SpawnId == spawnId)){
@@ -122,7 +120,7 @@ namespace Barebones.MasterServer
                 throw new Exception("Game server finalized, but didn't include room id");
             }
 
-            var roomId = int.Parse(data[MsfDictKeys.RoomId]);
+            string roomId = data[MsfDictKeys.RoomId];
 
             Msf.Client.Rooms.GetAccess(roomId, (access, error) =>{
                 if (access == null){
@@ -139,13 +137,13 @@ namespace Barebones.MasterServer
 
 			if (Request != null){
 				Request.StatusChanged -= OnStatusChange;
-				print("Removing status Changed");
 			}
         }
 
         public void OnRoomAccessReceived(RoomAccessPacket access){
 			gameObject.SetActive (false);
-			SceneManager.LoadScene(access.SceneName);
+            ClientUI.ClientUIStateManager.requestGotoState(ClientUI.ClientUIStates.PlayingGame, access.SceneName);
+            //SceneManager.LoadScene(access.SceneName);
             // We're hoping that something will handle the Msf.Client.Rooms.AccessReceived event
             // (for example, SimpleAccessHandler)
         }

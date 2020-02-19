@@ -159,6 +159,7 @@ public class UnetServerStarter : MonoBehaviour
     /// </summary>
     protected virtual void OnRoomRegistered(RoomController controller)
     {
+        /*
         if (IsStartingEditorServer && AutoJoinRoom)
         {
             //-------------------------
@@ -198,6 +199,7 @@ public class UnetServerStarter : MonoBehaviour
                 });
             });
         }
+        */
     }
 
     protected virtual IClientSocket GetConnection()

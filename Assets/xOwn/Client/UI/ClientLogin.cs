@@ -4,29 +4,38 @@ using Barebones.Networking;
 using System;
 using System.Collections;
 using Barebones.MasterServer;
+using TMPro;
 
 namespace ClientUI{
 
     public class ClientLogin : MonoBehaviour{
         public Button LoginButton;
         public Toggle Remember;
-        public InputField Username;
+        public TMP_InputField Username;
 		public InputField Password;
 		public LoadingScreenUI loadingScreen;
 		private bool waitingForLoginResponse = false;
 		private Color startInputFieldSelectionColor, invisInputFieldSelectionColor;
 		public static event Action LoggedIn;
 
-		protected readonly string USERNAMEPREFKEY = "AlboRememberUsername";
-		protected readonly string PASSWORDEPREFKEY = "AlboRememberPasswor";
-		protected readonly string REMEMBERTOGGLEEPREFKEY = "AlboRememberToggle";
+		protected readonly string USERNAME_PREF_KEY = "AlboRememberUsername";
+		protected readonly string PASSWORDE_PREF_KEY = "AlboRememberPasswor";
+		protected readonly string REMEMBER_TOGGLEE_PREF_KEY = "AlboRememberToggle";
 
 
         private void Start(){
-			if (ClientUI.ClientUIOverlord.hasLoaded)return;
+			if (ClientUIOverlord.hasLoaded)return;
 			Msf.Connection.StatusChanged += connectionStatusChanged;
 			restoreRememberedValues();
 			initInputFields ();
+        }
+
+        private void Update() {
+            if (ClientUIOverlord.currentState != ClientUIStates.LoginMenu)
+                return;
+
+            if (LoginButton.interactable && Input.GetKeyDown(KeyCode.Return))
+                OnLoginClick();
         }
 
 
@@ -47,7 +56,7 @@ namespace ClientUI{
 					Msf.Events.Fire (Msf.EventNames.ShowDialogBox, DialogBoxData.CreateError (error));
 				handleLoginCallback (accInfo != null, error);
 			}, 
-			Username.text.Trim(), Password.text);
+			Username.text.Trim(), Password.text, ConnectionToMaster.getAlbotVersion());
         }
 
 		//Retreive information the server if we could login or not
@@ -57,7 +66,8 @@ namespace ClientUI{
 				return;
 
 			if (couldLogin == false) {
-				resetToNormalState ();
+                AlbotDialogBox.activateButton(() => { }, DialogBoxType.BotConnectionError, msg, "Ok!", 30, 30);
+                resetToNormalState ();
 				return;
 			}
 
@@ -113,9 +123,9 @@ namespace ClientUI{
 
 		#region OldMemories
 		private void restoreRememberedValues(){
-			Username.text = extractOldPlayerPrefsValue (USERNAMEPREFKEY);
-			Password.text = extractOldPlayerPrefsValue (PASSWORDEPREFKEY);
-			Remember.isOn = extractOldPlayerPrefsValue (REMEMBERTOGGLEEPREFKEY) != "";
+			Username.text = extractOldPlayerPrefsValue (USERNAME_PREF_KEY);
+			Password.text = extractOldPlayerPrefsValue (PASSWORDE_PREF_KEY);
+			Remember.isOn = extractOldPlayerPrefsValue (REMEMBER_TOGGLEE_PREF_KEY) != "";
 		}
 
 		private string extractOldPlayerPrefsValue(string key, string defaultValue = ""){
@@ -126,15 +136,15 @@ namespace ClientUI{
 			
 		private void HandleRemembering(){
 			if (!Remember.isOn){ // Remember functionality is off. Delete all stored values
-				PlayerPrefs.DeleteKey(USERNAMEPREFKEY);
-				PlayerPrefs.DeleteKey(PASSWORDEPREFKEY);
-				PlayerPrefs.DeleteKey(REMEMBERTOGGLEEPREFKEY);
+				PlayerPrefs.DeleteKey(USERNAME_PREF_KEY);
+				PlayerPrefs.DeleteKey(PASSWORDE_PREF_KEY);
+				PlayerPrefs.DeleteKey(REMEMBER_TOGGLEE_PREF_KEY);
 				return;
 			}
 			// Remember is on
-			PlayerPrefs.SetString(USERNAMEPREFKEY, Username.text);
-			PlayerPrefs.SetString(PASSWORDEPREFKEY, Password.text);
-			PlayerPrefs.SetString(REMEMBERTOGGLEEPREFKEY, "True");
+			PlayerPrefs.SetString(USERNAME_PREF_KEY, Username.text);
+			PlayerPrefs.SetString(PASSWORDE_PREF_KEY, Password.text);
+			PlayerPrefs.SetString(REMEMBER_TOGGLEE_PREF_KEY, "True");
 		}
 		#endregion
     }

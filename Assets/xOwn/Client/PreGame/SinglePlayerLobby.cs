@@ -18,16 +18,17 @@ namespace ClientUI{
 		public Dropdown settings;
 		public LoginTCPUI loginTCPUI;
 
+        public string roomID;
 		private GameType type;
 		private SceneField scene;
-		private PreGamePlayer[] currentPlayers;
+		private PreGameSlotInfo[] currentPlayers;
 
 
 		void Start(){
 			if (hasInit)
 				return;
 			hasInit = true;
-			TCPLocalConnection.subscribeToTCPStatus (localBotStatusChanged);
+			TCPLocalConnection.subscribeToTCPStatus (locAlbotStatusChanged);
 			ClientUIOverlord.onUIStateChanged += (ClientUIStates newState) => {if(newState != ClientUIStates.PreGame)gameObject.SetActive(false);};
 		}
 
@@ -42,15 +43,16 @@ namespace ClientUI{
 		}
 
 		public void startButtonClicked(){
-			Msf.Connection.SendMessage((short)ServerCommProtocl.StartPreGame, new PreGameStartMsg(){isSinglePlayer = true});
+			Msf.Connection.SendMessage((short)ServerCommProtocl.StartSinglePlayerGame);
 			ClientPlayersHandler.resetLocalPLayers ();
 			gameObject.SetActive (false);
-			SceneManager.LoadScene (scene.SceneName);
+            ClientUIStateManager.requestGotoState(ClientUIStates.PlayingGame, scene.SceneName);
+			//SceneManager.LoadScene (scene.SceneName);
 		}
 
 		private void initUserPanel(){
 			AccountInfoPacket p = ClientUIOverlord.getCurrentAcountInfo ();
-			int iconNumber = int.Parse (p.Properties ["icon"]);
+			int iconNumber = int.Parse (p.Properties [AlbotDictKeys.icon]);
 			playerSlot.setUserPanel (iconNumber, p.Username, false);
 		}
 
@@ -61,15 +63,18 @@ namespace ClientUI{
 		}
 
 
-		protected void localBotStatusChanged(ConnectionStatus status){
+		protected void locAlbotStatusChanged(ConnectionStatus status){
 			if (ClientUIOverlord.currentState != ClientUIStates.PreGame)
 				return;
 			setReadyButtons ();
 		}	
 
 		public void onExitClick(){
-			ClientUIStateManager.requestGotoGameLobby ();
+            ClientUIStateManager.requestGotoState(ClientUIStates.GameLobby);
 			gameObject.SetActive (false);
 		}
+
+        //Used for Anne Hacks
+        public void setScene(SceneField scene) {this.scene = scene;}
 	}
 }

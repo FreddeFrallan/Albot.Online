@@ -65,10 +65,8 @@ namespace AlbotServer{
 
 
 						//Invoke event on newly added player
-						if(onPlayerJoined != null)
+						if(onPlayerJoined != null) 
 							onPlayerJoined.Invoke (c.players[c.players.Count-1]);
-
-						Debug.LogError (p.username + " has joined and is ready!");
 					}
 					workingConnections.Add (r);
 				}
@@ -82,7 +80,6 @@ namespace AlbotServer{
 		public void handleGameRoomInit(NetworkMessage msg){
 			GameRoomInitMsg response = new GameRoomInitMsg (){type = currentGameType};
 			msg.conn.Send ((short)ServerCommProtocl.GameRoomInitMsgChannel, response);
-			Debug.LogError ("Sending response msg");
 		}
 	}
 

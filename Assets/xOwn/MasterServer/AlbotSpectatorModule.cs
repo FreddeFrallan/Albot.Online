@@ -13,233 +13,167 @@ namespace Barebones.MasterServer{
 	public class AlbotSpectatorModule : ServerModuleBehaviour {
 
 		public MatchmakerModule matchMakerModule;
-		public AlbotPreGameModule preGameModule;
-		public RoomsModule roomsModule; 
-
-		private Dictionary<int, RegisteredRoom> currentRooms;
-		private Dictionary<int, List<IPeer>> currentSpectators = new Dictionary<int, List<IPeer>> ();
-		private Dictionary<int, int> adminToRooms = new Dictionary<int, int> ();
+		private Dictionary<int, PreGame> adminToRooms = new Dictionary<int, PreGame> ();
+        private Dictionary<string, PreGame> activeGames;
+        private Dictionary<string, PreGame> allGames;
+        private List<PreGame> allGamesList;
 
 
-		public override void Initialize (IServer server){
+        public override void Initialize (IServer server){
 			server.SetHandler ((short)CustomMasterServerMSG.startSpectate, handleStartSpectateGame);
 			server.SetHandler ((short)CustomMasterServerMSG.stopSpectate, handleStopSpectateGame);
-			server.SetHandler ((short)CustomMasterServerMSG.requestSpectatorGames, handleRequestSpectatorGames);
 			server.SetHandler ((short)CustomMasterServerMSG.spectateLogUpdate, handleGamelogUpdate);
-			currentRooms = roomsModule.getCurrentRooms ();
-			Debug.LogError ("Spectator init");
+			server.SetHandler ((short)CustomMasterServerMSG.requestSpectatorGames, handleRequestSpectatorGames);
+            server.SetHandler((short)CustomMasterServerMSG.requestSpecificGameLog, handleRequestSpecificUpdates);
+            Debug.LogError ("Spectator init");
 		}
 
+        public void initPreGames(Dictionary<string, PreGame> activeGames, Dictionary<string, PreGame> allGames, List<PreGame> allGamesList) {
+            this.activeGames = activeGames; this.allGames = allGames; this.allGamesList = allGamesList;
+        }
 
-		//Update sent from the game, here the master server broadcasts to all spectators.
-		private void handleGamelogUpdate(IIncommingMessage msg){
+        #region Broadcasting
+        //Update sent from the gameserver, here the master server broadcasts it to all spectators.
+        private void handleGamelogUpdate(IIncommingMessage msg){
 			SpectatorGameLog logMsg = msg.Deserialize<SpectatorGameLog> ();
-			if (currentSpectators.ContainsKey (logMsg.id) == false) {
+			if (activeGames.ContainsKey (logMsg.broadcastID) == false)
 				msg.Respond (ResponseStatus.Failed);
-				return;
-			}
+			else
+                broadcastGameUpdate(logMsg);
+        }
+        private void broadcastGameUpdate(SpectatorGameLog logMsg) {
+            foreach (IPeer p in activeGames[logMsg.broadcastID].getSpectatorsClone()) {
+                try { p.SendMessage((short)(CustomMasterServerMSG.spectateLogUpdate), logMsg); } 
+                catch { removeSpectator(logMsg.broadcastID, p); }
+            }
+        }
 
-			foreach (IPeer p in currentSpectators[logMsg.id]) {
-				try{ p.SendMessage((short)(CustomMasterServerMSG.spectateLogUpdate), logMsg);}
-				catch{
-					removeSpectator (logMsg.id, p);
-				}
-			}
-		}
+        //Later we should probebly store the log in the Master Server, so not to interupt the GameServer to much
+        private void handleRequestSpecificUpdates(IIncommingMessage rawMsg) {
+            SpectatorSpecificLogRequestMsg msg = rawMsg.Deserialize<SpectatorSpecificLogRequestMsg>();
+            PreGame game;
+            if (isValidAdmin(rawMsg) == false || findGame(msg.broadcastID, out game, rawMsg) == false)
+                return;
 
+            game.runningGameConnection.SendMessage((short)CustomMasterServerMSG.requestSpecificGameLog, msg, (s, m) => {
+                rawMsg.Respond(m.Deserialize<SpectatorGameLog>(), s);});
+        }
+        #endregion
 
-		public void preGameStarted(PreGame game, int roomID){
+        #region PreGame handeling
+        public void preGameStarted(PreGame game, RunningGameInfoMsg initMsg) {
 			if (game.hasSpectators () == false)
 				return;
 
-			SpectatorInfoMsg msg = new SpectatorInfoMsg (){
-				gameType = game.type,
-				status = SpectatorGameStatus.Running
-				};
-			foreach (IPeer p in game.getSpectators()) {
-				subscribeUserRunningGame (p, roomID);
-				p.SendMessage ((short)CustomMasterServerMSG.spectateStatus, msg);
-			}
+            foreach(IPeer p in game.getSpectatorsClone())
+                p.SendMessage((short)CustomMasterServerMSG.spectateGameStarted, initMsg);
+		}
+        public void preGameRemoved(PreGame game) {
+            game.getSpectatorsClone().ForEach(p => removeSpectator(game, p));
+        }
+        #endregion
+
+        #region Start spectate game
+        private void handleStartSpectateGame(IIncommingMessage rawMsg){
+            SpectatorSubscriptionsMsg subscribeMsg = rawMsg.Deserialize<SpectatorSubscriptionsMsg> ();
+            PreGame game;
+            if(isValidAdmin(rawMsg) == false || findGame(subscribeMsg.broadcastID, out game, rawMsg) == false) 
+                return;
+
+            if (adminToRooms.ContainsKey(rawMsg.Peer.Id) && adminToRooms[rawMsg.Peer.Id] != game) //If the admin is watching another game, we stop that subscription
+                removeSpectator(adminToRooms[rawMsg.Peer.Id], rawMsg.Peer);
+
+            if (game.containsSpectator(rawMsg.Peer)){
+                rawMsg.Respond("Already subscribed to game", ResponseStatus.Error);
+                return;
+            }
+
+            game.addSpectator(rawMsg.Peer);
+            adminToRooms.Add(rawMsg.Peer.Id, game);
+
+            rawMsg.Respond(game.storedInfoMsg, ResponseStatus.Success);
+        }
+        #endregion
+
+
+        #region Stop spectating
+        private void handleStopSpectateGame(IIncommingMessage rawMsg){
+            if (isValidAdmin(rawMsg) == false)
+                return;
+            removeSpectator (adminToRooms[rawMsg.Peer.Id], rawMsg.Peer);
+            rawMsg.Respond(ResponseStatus.Success);
 		}
 
+        private void removeSpectator(String broadcastID, IPeer peer) {
+            if (allGames.ContainsKey(broadcastID))
+                removeSpectator(allGames[broadcastID], peer);
+        }
+		private void removeSpectator(PreGame game, IPeer peer){
+            if (adminToRooms.ContainsKey(peer.Id) != false)
+                adminToRooms.Remove(peer.Id);
+            if(game == null) 
+                return;
+
+            game.removeSpectator(peer.Id);
+		}
+        #endregion
 
 
-		#region Start spectate game
-		private void handleStartSpectateGame(IIncommingMessage msg){
+        #region Lobby View
+        private void handleRequestSpectatorGames(IIncommingMessage msg){
 			if (SpectatorAuthModule.existsAdmin (msg.Peer) == false)
 				return;
-
-			//If the admin is watching another game, we stop that subscription
-			if (adminToRooms.ContainsKey (msg.Peer.Id)) {
-				Debug.LogError ("User is already registred");
-				removeSpectator (adminToRooms [msg.Peer.Id], msg.Peer.Id);
-			}
-
-
-			SpectatorSubscriptionsMsg subscribeMsg = msg.Deserialize<SpectatorSubscriptionsMsg> ();
-			if (subscribeMsg.preGame)
-				subscribePreGame (subscribeMsg, msg);
-			else
-				subscribeRunningGame (subscribeMsg, msg);
-
+			byte[] bytes = allGamesList.Select(g => g.convertToGameInfoPacket()).Select(l => (ISerializablePacket)l).ToBytes();
+			msg.Respond(bytes, ResponseStatus.Success);
 		}
-
-		private void subscribePreGame(SpectatorSubscriptionsMsg msg, IIncommingMessage originalMsg){
-			List<PreGame> preGames = preGameModule.getAllPreGames ();
-			PreGame game = preGames.Find (x => x.roomID == msg.broadcastID);
-	
-			if (game == null) {
-				originalMsg.Respond ("RoomID can't be found", ResponseStatus.Error);
-				return;
-			}
-
-			if (game.containsSpectator (originalMsg.Peer))
-				originalMsg.Respond ("Already subscribed to game", ResponseStatus.Error);
-			else {
-				game.addSpectator (originalMsg.Peer);
-				adminToRooms.Add (originalMsg.Peer.Id, msg.broadcastID);
-				originalMsg.Respond ("Subscribed to preGame!", ResponseStatus.Success);
-			}
-		}
+        #endregion
 
 
-		private void subscribeRunningGame(SpectatorSubscriptionsMsg msg, IIncommingMessage originalMsg){
-			if (currentRooms.ContainsKey (msg.broadcastID) == false) {
-				originalMsg.Respond ("RoomID can't be found", ResponseStatus.Error);
-				return;
-			}
-				
-			subscribeUserRunningGame (originalMsg.Peer, msg.broadcastID);
-			adminToRooms.Add (originalMsg.Peer.Id, msg.broadcastID);
-			msg.active = true;
+        #region Utils
+        private bool findGame(string key, out PreGame game, IIncommingMessage rawMsg = null) {
+            if (allGames.TryGetValue(key, out game))
+                return true;
 
-			currentRooms[msg.broadcastID].Peer.SendMessage((short)CustomMasterServerMSG.requestFullGameLog, msg, ((status, response) => {
-				if(status != ResponseStatus.Success || response == null){
-					originalMsg.Respond(status);
-					return;
-				}
-				Debug.LogError("Success subscribing to running game");
-				SpectatorGameLog logMsg = response.Deserialize<SpectatorGameLog> ();
-				originalMsg.Respond(logMsg, status);
-			}));
-		}
-			
-		private void subscribeUserRunningGame(IPeer p, int broadcastID){
-			if (currentSpectators.ContainsKey (broadcastID) == false)
-				currentSpectators.Add (broadcastID, new List<IPeer> ());
+            if (rawMsg != null)
+                rawMsg.Respond("Could not find matching game", ResponseStatus.Error);
 
-			List<IPeer> spectators = currentSpectators [broadcastID];
-			if (spectators.Any (x => x.Id == p.Id) == false)
-				spectators.Add (p);
-		}
-		#endregion
+            game = null;
+            return false;
+        }
 
-	
-		private void handleStopSpectateGame(IIncommingMessage msg){
-			Debug.LogError ("Player wishes to stop spectating");
-			if (SpectatorAuthModule.existsAdmin (msg.Peer) == false)
-				return;
-			if (adminToRooms.ContainsKey (msg.Peer.Id) == false)
-				return;
-
-			removeSpectator (adminToRooms[msg.Peer.Id], msg.Peer);
-		}
+        private bool isValidAdmin(IIncommingMessage rawMsg) {
+            if (SpectatorAuthModule.existsAdmin(rawMsg.Peer) == false) {
+                rawMsg.Respond("Peer ID is not a registred Admin", ResponseStatus.Error);
+                return false;
+            }
+            return true;
+        }
+        #endregion
+    }
 
 
-		private void removeSpectator(int broadcastID, int peerID){
-			if(adminToRooms.ContainsKey(peerID))
-				adminToRooms.Remove (peerID);
-
-			if (currentSpectators.ContainsKey(broadcastID)){ //running game
-				List<IPeer> specRoom = currentSpectators [broadcastID];
-				IPeer p;
-
-				try{p = specRoom.Find(x => x.Peer.Id == peerID);} //Room is acting weird, remove it   HOTFIX
-				catch{
-					currentSpectators.Remove(broadcastID);
-					return;
-				}
-
-				if(p != null)
-					removeSpectator (broadcastID, p);
-			}
-			else { //Pregame
-				List<PreGame> preGames = preGameModule.getAllPreGames ();
-				PreGame game = preGames.Find (x => x.roomID == broadcastID);
-				if (game != null)
-					game.removeSpectator (peerID);
-			}
-
-		}
-		private void removeSpectator(int broadcastID, IPeer peer){
-			if(adminToRooms.ContainsKey(peer.Id))
-				adminToRooms.Remove (peer.Id);
-
-			if (currentSpectators.ContainsKey (broadcastID) == false)
-				return;
-			if (currentRooms.ContainsKey (broadcastID) == false)
-				return;
-
-			List<IPeer> spectators = currentSpectators[broadcastID];
-			IPeer p = spectators.Find (x => x.Id == peer.Id);
-			if (p != null)
-				spectators.Remove (p);
-
-			
-			if (spectators.Count == 0) {
-				SpectatorSubscriptionsMsg subMsg = new SpectatorSubscriptionsMsg (){ active = false, broadcastID = broadcastID };
-				currentRooms [broadcastID].Peer.SendMessage ((short)CustomMasterServerMSG.spectateStatus, subMsg);
-
-				currentSpectators.Remove (broadcastID);
-			}
-		}
-
-
-		private void handleRequestSpectatorGames(IIncommingMessage msg){
-			if (SpectatorAuthModule.existsAdmin (msg.Peer) == false)
-				return;
-
-			try{
-				List<GameInfoPacket> games = matchMakerModule.getCurrentSpectatorGames(msg.Peer);
-				byte[] bytes = games.Select(l => (ISerializablePacket)l).ToBytes();
-				msg.Respond(bytes, ResponseStatus.Success);
-			}catch{msg.Respond (ResponseStatus.Error);}
-		}
-			
-
+    #region Messages
+    public class SpectatorSubscriptionsMsg : MessageBase{
+		public bool active;
+		public string broadcastID;
 	}
 
-
-	public enum SpectatorGameStatus{
-		Running,
-		PreGameLobby,
-		GameOver,
-		Crashed,
-	}
-
-
-	public class SpectatorSubscriptionsMsg : MessageBase{
-		public bool active, preGame;
-		public int broadcastID = -1;
-	}
-
+    public struct GameLogState {
+        public string[] log;
+        public int updateNumber;
+    }
 	public class SpectatorGameLog : MessageBase{
-		public string[] gameLog;
-		public int id, updateNumber;
-		public bool initLog;
+        public GameLogState[] gameLog;
+        public string broadcastID;
 	}
 	public class SpectatorInfoMsg : MessageBase{
 		public Game.GameType gameType;
-		public SpectatorGameStatus status;
+		public PreGameState status;
 	}
 
-
-	public class SpectatorGameList : MessageBase{
-		public SpectatorGameInfo[] currentGames;
-	}
-	public struct SpectatorGameInfo{
-		public int gameId;
-		public string[] players;
-		public string gameType, mapName;
-	}
+    public class SpectatorSpecificLogRequestMsg : MessageBase {
+        public int[] IDs;
+        public string broadcastID;
+    } 
+    #endregion
 }

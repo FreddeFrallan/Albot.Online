@@ -10,6 +10,9 @@ public class AlbotGameTerminator : MonoBehaviour{
 	public AlbotGameRoom Room;
 	private static AlbotGameTerminator singleton;
 
+    [Tooltip("Terminates server if running game time is greater than")]
+    private float maxGameTimeSeconds = 60 * 10;
+
     [Tooltip("Terminates server if first player doesn't join in a given number of seconds")]
     public float FirstPlayerTimeoutSecs = 25;
 
@@ -58,7 +61,6 @@ public class AlbotGameTerminator : MonoBehaviour{
     }
 
 	private void OnPlayerJoined(ConnectedPlayer p){
-		Debug.Log ("Invoked on player joined");
         _hasFirstPlayerShowedUp = true;
     }
 
@@ -94,6 +96,16 @@ public class AlbotGameTerminator : MonoBehaviour{
         }
     }
 
+
+    private IEnumerator checkRunningGameServerTime() {
+        while (true) {
+            yield return new WaitForSeconds(10);
+            if(Time.time > maxGameTimeSeconds) {
+                Logs.Error("Terminating game server, maximum up time reached");
+                Application.Quit();
+            }
+        }
+    }
 
 	private IEnumerator StartRandomPlayerChecks(){
 		// Wait at least 5 seconds until first check

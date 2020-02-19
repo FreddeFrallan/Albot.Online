@@ -42,7 +42,7 @@ namespace Barebones.MasterServer{
             MachineIp = ExtractValue(Names.MachineIp);
             DestroyUi = IsProvided(Names.DestroyUi);
 
-            SpawnId = ExtractValueInt(Names.SpawnId, -1);
+            SpawnId = ExtractValue(Names.SpawnId, "");
             AssignedPort = ExtractValueInt(Names.AssignedPort, -1);
             SpawnCode = ExtractValue(Names.SpawnCode);
             ExecutablePath = ExtractValue(Names.ExecutablePath);
@@ -59,9 +59,9 @@ namespace Barebones.MasterServer{
 
 			//Albot Custom args
 			RealTime = ExtractValue (Names.Realtime, false.ToString());
-			GaameType = ExtractValue (Names.GaameType, "error game type");
+            GameTypeString = ExtractValue (Names.GameType, "error game type");
+            GameType = Game.GameUtils.stringToGameType(GameTypeString);
 			Spectators = ExtractValue (Names.Spectators, false.ToString());
-
 			broadcastInitArgs ();
         }
 
@@ -70,7 +70,8 @@ namespace Barebones.MasterServer{
 		#region Albot Modifications
 		//Using this to determine if we need to load a DLL or a async scene
 		public string RealTime { get; private set; }
-		public string GaameType { get; private set; }
+		public string GameTypeString { get; private set; }
+        public Game.GameType GameType { get; private set; }
 		//Using this to determine if we have spectators at startup
 		public string Spectators{ get; private set; }
 		#endregion
@@ -105,7 +106,7 @@ namespace Barebones.MasterServer{
         /// <summary>
         /// SpawnId of the spawned process
         /// </summary>
-        public int SpawnId { get; private set; }
+        public string SpawnId { get; private set; }
 
         /// <summary>
         /// Port, assigned to the spawned process (most likely a game server)
@@ -208,7 +209,7 @@ namespace Barebones.MasterServer{
 
 			//Costum made sheit
 			public string Realtime { get { return "-AlbotRealTime"; } }
-			public string GaameType { get { return "-AlbotGameType"; } }
+			public string GameType { get { return "-AlbotGameType"; } }
 			public string Spectators { get { return "-AlbotSpectators"; } }
         }
     }

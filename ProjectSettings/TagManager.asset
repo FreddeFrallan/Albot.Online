@@ -11,6 +11,7 @@ TagManager:
   - Water
   - ServerController
   - VersionController
+  - Ground
   layers:
   - Default
   - TransparentFX
@@ -24,8 +25,8 @@ TagManager:
   - Red
   - Camera
   - CameraConstraints
-  - 
-  - 
+  - Ignore Light
+  - GameObjectLight
   - 
   - 
   - 

@@ -80,8 +80,6 @@ public class AlbotGameRoom : NetworkBehaviour{
     /// </summary>
     protected virtual void BeforeRegisteringRoom(){
         if (SpawnTaskController != null){
-            Logger.Debug("Reading spawn task properties to override some of the room options");
-
             // If this server was spawned, try to read some of the properties
             var prop = SpawnTaskController.Properties;
 
@@ -98,13 +96,13 @@ public class AlbotGameRoom : NetworkBehaviour{
             if (prop.ContainsKey(MsfDictKeys.MapName))
                 MapName = prop[MsfDictKeys.MapName];
 
-			gameType = GameUtil.stringToGameType (Msf.Args.GaameType);
+			gameType = Msf.Args.GameType;
         }
 
         // Override the public address
         if (Msf.Args.IsProvided(Msf.Args.Names.MachineIp) && NetworkManager != null){
             PublicIp = Msf.Args.MachineIp;
-            Logger.Debug("Overriding rooms public IP address to: " + PublicIp);
+            
         }
     }
 
@@ -149,9 +147,6 @@ public class AlbotGameRoom : NetworkBehaviour{
 
             // Save the controller
             Controller = controller;
-
-            Logger.Debug("Room Created successfully. Room ID: " + controller.RoomId);
-
             OnRoomRegistered(controller);
         });
     }
@@ -172,8 +167,6 @@ public class AlbotGameRoom : NetworkBehaviour{
 
         // Set access provider (Optional)
         roomController.SetAccessProvider(CreateAccess);
-		Debug.LogError ("Created room with id: " + roomController.RoomId);
-
         // If this room was spawned
         if (SpawnTaskController != null)
             SpawnTaskController.FinalizeTask(CreateSpawnFinalizationData());
@@ -213,13 +206,13 @@ public class AlbotGameRoom : NetworkBehaviour{
 
         Controller.ValidateAccess(token, (validatedAccess, error) =>{
             if (validatedAccess == null){
-                Logger.Error("Failed to confirm access token:" + error);
+                //Logger.Error("Failed to confirm access token:" + error);
                 // Confirmation failed, disconnect the user
                 netmsg.conn.Disconnect();
                 return;
             }
 
-				Debug.LogError("Confirmed token access for peer: " + validatedAccess);
+			//Debug.LogError("Confirmed token access for peer: " + validatedAccess);
 
             // Get account info
 	            Msf.Server.Auth.GetPeerAccountInfo(validatedAccess.PeerId, (info, errorMsg) =>{
@@ -230,14 +223,10 @@ public class AlbotGameRoom : NetworkBehaviour{
 	                    return;
 	                }
 
-					Debug.LogError("Got peer account info: " + info);
+					//Debug.LogError("Got peer account info: " + info);
 
 					
 					ConnectedClient newC = new ConnectedClient(netmsg.conn, info.PeerId);
-					/*
-					ConnectedPlayer newP = new ConnectedPlayer(newC ,GameRoomClients.getRoomPlayerID(netmsg.conn), info.Username);
-					newC.players.Add(newP);
-					*/
 					GameRoomClients.clientConnected(newC);
 	            });
         });

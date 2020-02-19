@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Game;
+using System;
 
 namespace Snake{
 
@@ -22,17 +24,15 @@ namespace Snake{
 			gameLogic.startGame (gameMaster);
 		}
 			
-		public void sendBoardUpdate(int[,] grid, Vector2[] playerPos, int[] dir){
-			List<int> rCoord = new List<int> (), bCoord = new List<int> ();
+		public void sendBoardUpdate(int[,] grid, Position2D[] playerPos, int[] dir){
+			List<Position2D> rCoord = new List<Position2D> (), bCoord = new List<Position2D> ();
 			int boardSize = grid.GetLength (0);
-
 
 			bCoord.AddRange (bodies [0].getRecentPlayerBody ());
 			rCoord.AddRange (bodies [1].getRecentPlayerBody ());
-
-			Vector2 p1 = playerPos [0], p2 = playerPos [1];
-			bCoord.Add ((int)(p1.y * boardSize + p1.x));
-			rCoord.Add ((int)(p2.y * boardSize + p2.x));
+            
+			bCoord.Add (playerPos[0]);
+			rCoord.Add (playerPos[1]);
 
 			BoardUpdate update = new BoardUpdate (updateCounter++, rCoord.ToArray(), bCoord.ToArray(), dir[0], dir[1]);
 			broadcastBoard (update);
@@ -44,12 +44,16 @@ namespace Snake{
 				b.myColor = p.color;
 				try{
 					protocol.sendBoard (gameMaster.getMatchingPlayer(p.color).client.peerID, b);
-				}catch{Debug.LogError ("Error Send");}
+				}catch(Exception e){
+                    Debug.LogError(e.StackTrace);
+                    Debug.LogError(e.Message);
+                    Debug.LogError ("Error Send");
+                }
 			}
 		}
 			
 
-		public void setGameOver(Game.PlayerColor winColor, int[][] crashPos){
+		public void setGameOver(PlayerColor winColor, int[][] crashPos){
 			foreach (ConnectedPlayer p in players) {
 				GameInfo infoMsg = new GameInfo (p.username, p.color, crashPos, true, winColor);
 				try{protocol.sendGameInfo (gameMaster.getMatchingPlayer(p.color).client.peerID, infoMsg);}
@@ -61,22 +65,22 @@ namespace Snake{
 		}
 
 
-		public void addNewPlayerBody(int coord, int playerIndex){
+		public void addNewPlayerBody(Position2D coord, int playerIndex){
 			bodies [playerIndex].enqueue (coord);
 		}
 
 
 		private class PlayerBody{
 			private const int maxSize = 4;
-			private List<int> blocked = new List<int> ();
+			private List<Position2D> blocked = new List<Position2D> ();
 
-			public void enqueue(int coord){
+			public void enqueue(Position2D coord){
 				blocked.Insert (0, coord);
 				if (blocked.Count > maxSize)
 					blocked.RemoveRange (maxSize, blocked.Count - maxSize);
 			}
 
-			public List<int> getRecentPlayerBody(){return blocked;}
+			public List<Position2D> getRecentPlayerBody(){return blocked;}
 		}
 	}
 }

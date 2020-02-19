@@ -6,6 +6,7 @@ using System.Runtime.Remoting.Messaging;
 using Barebones.MasterServer;
 using Barebones.Networking;
 using UnityEngine;
+using AlbotServer;
 
 namespace Barebones.MasterServer{
     public class RoomsModule : ServerModuleBehaviour, IGamesProvider{
@@ -17,7 +18,7 @@ namespace Barebones.MasterServer{
 
         #endregion
 
-        protected Dictionary<int, RegisteredRoom> Rooms;
+        protected Dictionary<string, RegisteredRoom> Rooms;
 
         private int _roomIdGenerator = 0;
 
@@ -25,7 +26,7 @@ namespace Barebones.MasterServer{
         public event Action<RegisteredRoom> RoomDestroyed;
 
         protected virtual void Awake(){
-            Rooms = new Dictionary<int, RegisteredRoom>();
+            Rooms = new Dictionary<string, RegisteredRoom>();
         }
 
         public override void Initialize(IServer server){
@@ -53,8 +54,8 @@ namespace Barebones.MasterServer{
             return extension.PermissionLevel >= RegisterRoomPermissionLevel;
         }
 
-        public int GenerateRoomId(){
-            return _roomIdGenerator++;
+        public string GenerateRoomId(){
+            return Msf.Helper.CreateRandomStringMatch(MasterServerConstants.KEY_LENGTH, (key) => { return Rooms.ContainsKey(key); });
         }
 
         /// <summary>
@@ -66,12 +67,12 @@ namespace Barebones.MasterServer{
         public virtual RegisteredRoom RegisterRoom(IPeer peer, RoomOptions options){
             // Create the object
             var room = new RegisteredRoom(GenerateRoomId(), peer, options);
-            var peerRooms = peer.GetProperty((int) MsfPropCodes.RegisteredRooms) as Dictionary<int, RegisteredRoom>;
+            var peerRooms = peer.GetProperty((int) MsfPropCodes.RegisteredRooms) as Dictionary<string, RegisteredRoom>;
             if (peerRooms == null){
                 // If this is the first time creating a room
 
                 // Save the dictionary
-                peerRooms = new Dictionary<int, RegisteredRoom>();
+                peerRooms = new Dictionary<string, RegisteredRoom>();
                 peer.SetProperty((int)MsfPropCodes.RegisteredRooms, peerRooms);
 
                 // Listen to disconnect event
@@ -100,7 +101,7 @@ namespace Barebones.MasterServer{
             var peer = room.Peer;
 
             if (peer != null){
-                var peerRooms = peer.GetProperty((int)MsfPropCodes.RegisteredRooms) as Dictionary<int, RegisteredRoom>;
+                var peerRooms = peer.GetProperty((int)MsfPropCodes.RegisteredRooms) as Dictionary<string, RegisteredRoom>;
 
                 // Remove the room from peer
                 if (peerRooms != null)
@@ -117,7 +118,7 @@ namespace Barebones.MasterServer{
         }
 
         private void OnRegisteredPeerDisconnect(IPeer peer){
-            var peerRooms = peer.GetProperty((int)MsfPropCodes.RegisteredRooms) as Dictionary<int, RegisteredRoom>;
+            var peerRooms = peer.GetProperty((int)MsfPropCodes.RegisteredRooms) as Dictionary<string, RegisteredRoom>;
             if (peerRooms == null)
                 return;
 
@@ -150,7 +151,7 @@ namespace Barebones.MasterServer{
                 OnlinePlayers = r.OnlineCount,
 				Properties = GetPublicRoomProperties(peer, r, filters),
                 IsPasswordProtected = !string.IsNullOrEmpty(r.Options.Password),
-                Type = GameInfoType.Room
+                infoType = GameInfoType.Room
             });
         }
 			
@@ -158,7 +159,7 @@ namespace Barebones.MasterServer{
 			return room.Options.Properties;
         }
 
-        public RegisteredRoom GetRoom(int roomId){
+        public RegisteredRoom GetRoom(string roomId){
             RegisteredRoom room;
             Rooms.TryGetValue(roomId, out room);
             return room;
@@ -177,14 +178,12 @@ namespace Barebones.MasterServer{
             }
             var options = message.Deserialize(new RoomOptions());
             var room = RegisterRoom(message.Peer, options);
-
-			Debug.LogError("Registred room with: " + options.Properties[MsfDictKeys.GameType]);
             // Respond with a room id
             message.Respond(room.RoomId, ResponseStatus.Success);
         }
 
         protected virtual void HandleDestroyRoom(IIncommingMessage message){
-            var roomId = message.AsInt();
+            var roomId = message.AsString();
 
             RegisteredRoom room;
             Rooms.TryGetValue(roomId, out room);
@@ -255,7 +254,7 @@ namespace Barebones.MasterServer{
         }
 
         protected virtual void HandleGetRoomAccess(IIncommingMessage message){
-            var data = message.Deserialize(new RoomAccessRequestPacket());
+            RoomAccessRequestPacket data = message.Deserialize(new RoomAccessRequestPacket());
 		//	AlbotAlphaKeysModule.handleRoomAccessRequst (message.Peer);
 
             RegisteredRoom room;
@@ -309,9 +308,7 @@ namespace Barebones.MasterServer{
 
 
 		#region Spectator mode
-		public Dictionary<int, RegisteredRoom> getCurrentRooms(){return Rooms;}
-
-
+		public Dictionary<string, RegisteredRoom> getCurrentRooms(){return Rooms;}
 		#endregion
     }
 }

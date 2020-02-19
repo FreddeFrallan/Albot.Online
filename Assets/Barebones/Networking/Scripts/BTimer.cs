@@ -49,8 +49,7 @@ namespace Barebones.Networking
             StartCoroutine(StartTicker());
         }
 
-        void Update()
-        {
+        void Update(){
             if (_mainThreadActions.Count > 0)
             {
                 lock (_mainThreadLock)

@@ -102,18 +102,18 @@ namespace Barebones.Utils
     /// <summary>
     /// </summary>
     /// <typeparam name="T">Data type</typeparam>
-    public class GenericUIList<T>
-    {
+    public class GenericUIList<T>{
         private readonly LayoutGroup _list;
         private readonly GameObject _prefab;
 
         private readonly List<GameObject> _items;
+        private Transform customParent;
 
-        public GenericUIList(GameObject prefab, LayoutGroup list)
-        {
+        public GenericUIList(GameObject prefab, LayoutGroup list, Transform customParent = null){
             _prefab = prefab;
             _list = list;
             _items = new List<GameObject> {prefab};
+            this.customParent = customParent;
 
             // Disable a prefab
             prefab.SetActive(false);
@@ -123,16 +123,13 @@ namespace Barebones.Utils
         /// </summary>
         /// <typeparam name="T2">Component to retrieve</typeparam>
         /// <param name="expression"></param>
-        public void Iterate<T2>(Action<T2> expression) where T2 : class
-        {
+        public void Iterate<T2>(Action<T2> expression) where T2 : class{
             foreach (var item in _items)
                 expression.Invoke(item.GetComponent<T2>());
         }
 
-        public T2 FindObject<T2>(Func<T2, bool> condition)
-        {
-            foreach (var item in _items)
-            {
+        public T2 FindObject<T2>(Func<T2, bool> condition){
+            foreach (var item in _items){
                 var component = item.GetComponent<T2>();
                 if (condition(component))
                     return component;
@@ -140,24 +137,25 @@ namespace Barebones.Utils
             return default(T2);
         }
 
-        public void Generate<T2>(IEnumerable<T> items, Action<T, T2> transformer) where T2 : class
-        {
+        public void Generate<T2>(IEnumerable<T> items, Action<T, T2> transformer) where T2 : class{
             var index = 0;
 
-            foreach (var item in items)
-            {
+            foreach (var item in items){
                 GameObject listItem;
 
-                if (_items.Count > index)
-                {
+                if (_items.Count > index){
                     // We can use an item from pool
                     listItem = _items[index];
                 }
-                else
-                {
+                else{
                     // We need to create a new item and add it to the pool
                     listItem = Object.Instantiate(_prefab);
-                    listItem.transform.SetParent(_list.transform, false);
+                    if (customParent != null) {
+                        listItem.transform.SetParent(customParent);
+                        listItem.transform.localScale = _prefab.transform.localScale;
+                    }
+                    else
+                        listItem.transform.SetParent(_list.transform, false);
                     _items.Add(listItem);
                 }
 
@@ -170,21 +168,18 @@ namespace Barebones.Utils
                 index++;
             }
 
-            while (_items.Count > index)
-            {
+            while (_items.Count > index){
                 // Disable any unnecessary objects from pool
                 _items[index].gameObject.SetActive(false);
                 index++;
             }
         }
 
-        public void Generate(IEnumerable<T> items, Action<T, GameObject> transformer)
-        {
+        public void Generate(IEnumerable<T> items, Action<T, GameObject> transformer){
             Generate<GameObject>(items, transformer);
         }
 
-        public GameObject GetObjectAt(int index)
-        {
+        public GameObject GetObjectAt(int index){
             return _items.ElementAt(index);
         }
 

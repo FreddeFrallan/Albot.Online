@@ -40,7 +40,7 @@ namespace AlbotServer{
 			gameController = (Game.GameMaster)useFunc.Invoke (testInstance, null);
 			wrapper.init (gameController.getProtocol (), gameController);
 			gameType = gameController.getGameType ();
-			Debug.LogError ("CurrentGame: " + gameType);
+			//Debug.LogError ("CurrentGame: " + gameType);
 
 			//We give the Dll some functions so that it can interact with server
 			Action<string> printFunc = printMsg;
@@ -51,7 +51,9 @@ namespace AlbotServer{
 		}
 
 		//Function for letting the GameController print stuff
-		public static void printMsg(string gameControlleMsg){Debug.LogError ("Dll msg:: " + gameControlleMsg);}
+		public static void printMsg(string gameControlleMsg){
+            //Debug.LogError ("Dll msg:: " + gameControlleMsg);
+        }
 	}
 
 }

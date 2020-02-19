@@ -16,11 +16,18 @@ namespace ClientUI{
 			if (ClientUIOverlord.hasLoaded)
 				return;
 
-			Msf.Connection.SetHandler((short)ServerCommProtocl.RequestJoinPreGame, gameCreator.handleJoinPreGameMsg);
-			Msf.Connection.SetHandler((short)ServerCommProtocl.StartPreGame, gameConnector.onJoinStartedGame);
-			Game.ClientPlayersHandler.addUIStateListner ();
+
+            CurrentGame.init(gameConnector);
+            CurrentTournament.init();
+            Game.ClientPlayersHandler.addUIStateListner ();
 		}
 
-	}
+        private void Update() {
+            /*
+            if (Input.GetKeyDown(KeyCode.P))
+                CurrentTournament.leaveCurrentTournament();
+            */
+        }
+    }
 
 }

@@ -18,6 +18,7 @@ namespace Barebones.MasterServer{
 
         public MsfAuthClient(IClientSocket connection) : base(connection){}
 
+        #region Register User (Not currently used)
         /// <summary>
         /// Sends a registration request to server
         /// </summary>
@@ -70,7 +71,9 @@ namespace Barebones.MasterServer{
                 });
             }, connection);
         }
+        #endregion
 
+        #region LogOut
         /// <summary>
         ///     Initiates a log out. In the process, disconnects and connects
         ///     back to the server to ensure no state data is left on the server.
@@ -97,65 +100,16 @@ namespace Barebones.MasterServer{
             if (LoggedOut != null)
                 LoggedOut.Invoke();
         }
+        #endregion
 
-        /// <summary>
-        /// Sends a request to server, to log in as a guest
-        /// </summary>
-        /// <param name="callback"></param>
-        public void LogInAsGuest(LoginCallback callback){
-            LogIn(new Dictionary<string, string>(){
-                {"guest", "" }
-            }, callback, Connection);
-        }
 
-		public void LoginAsAlphaUser(LoginCallback callback, string alphaKey){
+		public void LoginAsAlbotUser(LoginCallback callback, string username, string password, string clientVersion){
 			LogIn(new Dictionary<string, string>(){
-					{"AlphaKey", alphaKey }
+					{AlbotDictKeys.username, username },
+					{AlbotDictKeys.password, password},
+                    {AlbotDictKeys.clientVersion, clientVersion }
 				}, callback, Connection);
 		}
-
-		public void LoginAsAlbotUser(LoginCallback callback, string username, string password){
-			LogIn(new Dictionary<string, string>(){
-					{"Username", username },
-					{"Password", password}
-				}, callback, Connection);
-		}
-
-
-        /// <summary>
-        /// Sends a request to server, to log in as a guest
-        /// </summary>
-        public void LogInAsGuest(LoginCallback callback, IClientSocket connection){
-            LogIn(new Dictionary<string, string>(){
-                {"guest", "" }
-            }, callback, connection);
-        }
-
-        /// <summary>
-        /// Sends a login request, using given credentials
-        /// </summary>
-        public void LogIn(string username, string password, LoginCallback callback, IClientSocket connection){
-            LogIn(new Dictionary<string, string>{
-                {"username", username},
-                {"password", password}
-            }, callback, connection);
-        }
-
-        /// <summary>
-        /// Sends a login request, using given credentials
-        /// </summary>
-        public void LogIn(string username, string password, LoginCallback callback){
-            LogIn(username, password, callback, Connection);
-        }
-
-        /// <summary>
-        /// Sends a generic login request
-        /// </summary>
-        /// <param name="data"></param>
-        /// <param name="callback"></param>
-        public void LogIn(Dictionary<string, string> data, LoginCallback callback){
-            LogIn(data, callback, Connection);
-        }
 
         /// <summary>
         /// Sends a generic login request
@@ -176,7 +130,7 @@ namespace Barebones.MasterServer{
                     callback.Invoke(null, "Failed to log in due to security issues");
                     return;
                 }
-
+                
                 var encryptedData = Msf.Security.EncryptAES(data.ToBytes(), aesKey);
 
 				connection.SendMessage((short) CustomMasterServerMSG.login, encryptedData, (status, response) =>{

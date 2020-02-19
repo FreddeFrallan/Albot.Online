@@ -129,7 +129,7 @@ namespace ConnectFour
 			GameObject g = Instantiate(
 					isPlayersTurn ? pieceBlue : pieceRed, // is players turn = spawn blue, else spawn red
 					new Vector3(
-					Mathf.Clamp(spawnPos.x, 0, numColumns-1), 
+                    spawnPos.x = Mathf.Clamp(spawnPos.x, 0, numColumns-1), 
 					gameObjectField.transform.position.y + 1, 0), // spawn it above the first row
 					Quaternion.identity) as GameObject;
 

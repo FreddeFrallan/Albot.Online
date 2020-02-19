@@ -6,7 +6,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System;
 using AlbotServer;
 using UnityEngine.Networking;
-
+using ClientUI;
 
 namespace Battleship{
 
@@ -16,7 +16,7 @@ namespace Battleship{
 
 
 		public override void initProtocol (Game.CommProtocol protocol){this.protocol = (Battleship.BattleshipProtocol)protocol;}
-		protected override void initHandlers (){
+        protected override void initHandlers (){
 			connectionToServer.RegisterHandler ((short)BattleshipProtocol.MsgType.playerInit, handleInitSettings);
 			connectionToServer.RegisterHandler ((short)BattleshipProtocol.MsgType.gameInfo, handleGameStatus);
 			connectionToServer.RegisterHandler ((short)BattleshipProtocol.MsgType.targetBoardUpdate, requestMove);
@@ -84,7 +84,8 @@ namespace Battleship{
 			GameInfo msg = Game.ClientController.Deserialize<GameInfo> (bytes);
 
 			if (msg.gameOver) {
-				TCPLocalConnection.sendMessage ("GameOver");
+                string gameOverString = TCP_API.APIStandardConstants.Fields.gameOver;
+                TCPLocalConnection.sendMessage (gameOverString);
 				gameOver ();
 
 				string gameOverMsg;
@@ -93,13 +94,10 @@ namespace Battleship{
 				else
 					gameOverMsg = msg.winnerColor + " won";
 
-				ClientUI.AlbotDialogBox.setGameOver ();
-				ClientUI.AlbotDialogBox.activateButton (ClientUI.ClientUIStateManager.requestGotoGameLobby,  ClientUI.DialogBoxType.GameState, gameOverMsg, "Return to lobby", 70, 25);
-			}
+                CurrentGame.gameOver(gameOverMsg);
+            }
 		}
 		#endregion
-
-
 
 		public string formatBoard(char[,] charBoard){
 			string temp = "";
@@ -108,5 +106,6 @@ namespace Battleship{
 					temp += charBoard [x, y];
 			return temp;
 		}
+
 	}
 }

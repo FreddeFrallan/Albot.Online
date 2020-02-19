@@ -4,13 +4,14 @@ using UnityEngine;
 using UnityEngine.UI;
 using Barebones.Networking;
 using Barebones.MasterServer;
+using TMPro;
 
 
 namespace AdminUI{
 	
 	public class AdminLoginUI : MonoBehaviour {
 
-		public InputField pwField;
+		public TMP_InputField pwField;
 		public Button loginButton;
 		public Toggle Remember;
 		private Color startInputFieldSelectionColor, invisInputFieldSelectionColor;
@@ -58,6 +59,8 @@ namespace AdminUI{
 				else
 					handleValidLogin();
 			}));
+
+            pwField.text = "";
 		}
 
 		private void handleValidLogin(){

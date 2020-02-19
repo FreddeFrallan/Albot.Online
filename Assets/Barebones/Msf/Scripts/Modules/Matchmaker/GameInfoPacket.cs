@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using Barebones.Networking;
+using UnityEngine;
 
 namespace Barebones.MasterServer{
     public class GameInfoPacket : SerializablePacket{
         public string Address = "";
-        public int Id;
-        public GameInfoType Type;
+        public string Id;
+        public GameInfoType infoType;
         public string Name = "";
 
         public bool IsPasswordProtected;
@@ -16,7 +17,7 @@ namespace Barebones.MasterServer{
         public override void ToBinaryWriter(EndianBinaryWriter writer){
             writer.Write(Address);
             writer.Write(Id);
-            writer.Write((int)Type);
+            writer.Write((int)infoType);
             writer.Write(Name);
 
             writer.Write(IsPasswordProtected);
@@ -27,8 +28,9 @@ namespace Barebones.MasterServer{
 
         public override void FromBinaryReader(EndianBinaryReader reader){
             Address = reader.ReadString();
-            Id = reader.ReadInt32();
-            Type = (GameInfoType) reader.ReadInt32();
+            Id = reader.ReadString();
+
+            infoType = (GameInfoType)reader.ReadInt32();
             Name = reader.ReadString();
 
             IsPasswordProtected = reader.ReadBoolean();
@@ -39,7 +41,7 @@ namespace Barebones.MasterServer{
 
         public override string ToString(){
             return string.Format("[GameInfo: id: {0}, address: {1}, players: {2}/{3}, type: {4}]",
-                Id, Address, OnlinePlayers, MaxPlayers, Type);
+                Id, Address, OnlinePlayers, MaxPlayers, infoType);
         }
     }
 }

@@ -25,7 +25,7 @@ namespace BlockBattle{
 			print ("Got TCP msg: " + msg.message);
 		}
 
-		protected override void initHandlers (){
+        protected override void initHandlers (){
 			base.initHandlers ();
 			connectionToServer.RegisterHandler ((short)BlockBattleProtocol.MsgType.gameInit, handleInitSettings);
 			connectionToServer.RegisterHandler ((short)BlockBattleProtocol.MsgType.gameUpdate, handleGameUpdate);

@@ -24,6 +24,7 @@ namespace ClientUI{
 
 		private static AlbotDialogBox singleton;
 		private List<dialogEvent> eventQueue = new List<dialogEvent> ();
+        private dialogEvent currentEvent;
 		private bool showingDialogBox = false;
 		private Action currentCallback;
 
@@ -40,22 +41,23 @@ namespace ClientUI{
 				gameOver = false;
 		}
 
+        /*
 		void Update(){
 			if (showingDialogBox || eventQueue.Count == 0)
 				return;
-
 			showEvent ();
 		}
+        */
 			
 		private void showEvent(){
 			showingDialogBox = true;
-			dialogEvent theEvent = eventQueue [0];
+            dialogEvent theEvent = currentEvent;// eventQueue [0];
 
 			currentCallback = theEvent.callback;
 		
 			currentPanel = theEvent.eventType == DialogBoxType.GameState ? gameOverPanel : regularPanel;
 			currentPanel.showPanel (theEvent.buttonText, theEvent.infoText, theEvent.infoSize, theEvent.buttonTextSize);
-			eventQueue.RemoveAt (0);
+			//eventQueue.RemoveAt (0);
 		}
 			
 		public void onButtonClicked(){
@@ -80,8 +82,10 @@ namespace ClientUI{
 			if (gameOver && type == DialogBoxType.GameServerConnLost)
 				return;
 
-			addToEventQ(new dialogEvent (buttonCallback, infoText, buttonText, infoSize, buttonTextSize, type));
-		}
+            singleton.currentEvent = new dialogEvent(buttonCallback, infoText, buttonText, infoSize, buttonTextSize, type);
+            singleton.showEvent();
+            //addToEventQ(new dialogEvent (buttonCallback, infoText, buttonText, infoSize, buttonTextSize, type));
+        }
 
 		//Currently we only allow one of each typ to be queued.
 		private static void addToEventQ(dialogEvent newEvent){

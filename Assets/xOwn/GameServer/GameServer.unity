@@ -347,7 +347,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 697edb725ffa8dd4f997e225cfe2d733, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  serverFPS: 10
+  serverFPS: 60
 --- !u!4 &1146743724 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4390660235005640, guid: 037e29273f942a9479698f51b3c60b50,

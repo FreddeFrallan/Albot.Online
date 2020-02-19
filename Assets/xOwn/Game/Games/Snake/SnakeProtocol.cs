@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using UnityEngine.Networking;
+using Game;
 
 namespace Snake{
 
@@ -28,27 +29,22 @@ namespace Snake{
 		public void sendPlayerInit(int targetID, GameInfo gi) {sendMsg(gi, targetID, (short)MsgType.playerInit);}
 		public void sendBoard(int targetID, BoardUpdate board){sendMsg(board, targetID, (short)MsgType.boardUpdate);}
 
-
-		private void sendString(int targetID, MsgType type, string str, Game.PlayerColor color) {
-			sendMsg(new StringMessage(str, color), targetID, (short)type);
-		}
-
 	}
 
 	[Serializable]
 	public class RPCMove{ 
 		public int[] move;
-		public Game.PlayerColor color;
-		public RPCMove(int[] move, Game.PlayerColor color){this.move = move; this.color = color;}
+		public PlayerColor color;
+		public RPCMove(int[] move, PlayerColor color){this.move = move; this.color = color;}
 	}
 	[Serializable]
 	public class GameInfo{
 		public string username;
-		public Game.PlayerColor myColor;
+		public PlayerColor myColor;
 		public bool gameOver;
 		public int[][] crashPos;
-		public Game.PlayerColor winnerColor;
-		public GameInfo(string username, Game.PlayerColor myColor, int[][] crashPos, bool gameOver = false, Game.PlayerColor winnerColor = Game.PlayerColor.None){
+		public PlayerColor winnerColor;
+		public GameInfo(string username, PlayerColor myColor, int[][] crashPos, bool gameOver = false, PlayerColor winnerColor = PlayerColor.None){
 			this.crashPos = crashPos;
 			this.username = username;
 			this.myColor = myColor;
@@ -60,13 +56,13 @@ namespace Snake{
 		
 	[Serializable]
 	public class BoardUpdate{
-		public int[] redCoords, blueCoords;
+		public Position2D[] redCoords, blueCoords;
 		public int redDir, blueDir;
 		public uint updateNumber;
 		public bool gameOver;
-		public Game.PlayerColor winnerColor, myColor;
+		public PlayerColor winnerColor, myColor;
 		public BoardUpdate (){}
-		public BoardUpdate(uint updateNumber, int[] redC, int[] blueC, int blueDir, int redDir, Game.PlayerColor myColor = Game.PlayerColor.None, bool gameOver = false, Game.PlayerColor winnerColor = Game.PlayerColor.None){
+		public BoardUpdate(uint updateNumber, Position2D[] redC, Position2D[] blueC, int blueDir, int redDir, PlayerColor myColor = PlayerColor.None, bool gameOver = false, PlayerColor winnerColor = PlayerColor.None){
 			this.updateNumber = updateNumber;
 			this.redCoords = redC;
 			this.blueCoords = blueC;
@@ -82,8 +78,8 @@ namespace Snake{
 	[Serializable]
 	public class GameCommand{
 		public int dir;
-		public Game.PlayerColor myColor;
-		public GameCommand(Game.PlayerColor myColor, int dir){
+		public PlayerColor myColor;
+		public GameCommand(PlayerColor myColor, int dir){
 			this.dir = dir;
 			this.myColor = myColor;
 		}

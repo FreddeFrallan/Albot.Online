@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Barebones.Networking;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,30 +16,26 @@ public class GameMaster2048 : MonoBehaviour {
 	private bool playing = false;
 
 	void Start(){
-		SinglePlayerGameMaster.init (takeInput, restartGame);
-		logic.init (gameOver, roundFinished, updateScoreText);
+        TCPLocalConnection.subscribeToTCPStatus(TCPStatusChanged);
+        TCPMessageQueue.readMsgInstant = takeInput;
+        TCPLocalConnection.startServer(4000);
+        //SinglePlayerGameMaster.init (takeInput, restartGame);
+        logic.init (gameOver, roundFinished, updateScoreText);
 		slideSpeed = moveSpeedSlider.value;
-		restartGame ();
+		//restartGame ();
 	}
 
 
-	public void takeInput(string msg){
-		if (msg.ToLower () == "restart") {
-			restartGame ();
-			return;
-		}
-		if (playing == false)
-			return;
-
-
-		foreach (char c in msg) {
-			int move = 0;
-			if (charToMove (c, ref move) == false)
-				break;
-
-			moveQ.Add (move);
-		}
-		playMove ();
+	public void takeInput(ReceivedLocalMessage msg) {
+        try {
+            MainThread.fireEventAtMainThread(() => {
+                logic.playMove(int.Parse(msg.message.Trim()));
+                }
+            );
+        } catch {
+            Debug.LogError("Could not handle move: " + msg.message);
+        }
+		//playMove ();
 	}
 
 	private void playMove(){
@@ -74,15 +71,31 @@ public class GameMaster2048 : MonoBehaviour {
 	public void gameOver(){
 		moveQ.Clear ();
 		playing = false;
-		TCPLocalConnection.sendMessage ("GameOver " + logic.getCurrentScore ());
+        string gameOverString = TCP_API.APIStandardConstants.Fields.gameOver;
+        TCPLocalConnection.sendMessage (gameOverString + ": " + logic.getCurrentScore ());
 		//restartGame ();
 	}
 
 	public void restartButtonPressed(){
+        TCPLocalConnection.restartServer();
 		moveQ.Clear ();
 		restartGame ();
 	}
 
 	public void updateScoreText(int newScore){scoreText.text = newScore.ToString ();}
 	public void speedValueChanged(int t){slideSpeed = moveSpeedSlider.value;}
+
+
+    private void TCPStatusChanged(ConnectionStatus status) {
+        print(status);
+        if (status == ConnectionStatus.Connected) {
+            print("Connecrted");
+            restartGame();
+        }
+        else if (status == ConnectionStatus.Connecting)
+            print("Connecting");
+        else
+            print("Not Connecteed");
+    }
+    void OnDestroy() { TCPLocalConnection.unSubscribeToTCPStatus(TCPStatusChanged); }
 }

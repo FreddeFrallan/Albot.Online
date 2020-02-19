@@ -29,7 +29,7 @@ namespace AdminUI{
 
 			List<string> extracted = logHistory.ToList ();
 			extracted.RemoveAt (0);
-			addLogMove ( extracted.ToArray ());
+			addLogMove (extracted.ToArray ());
 		}
 
 
@@ -59,8 +59,6 @@ namespace AdminUI{
 		private void parseNormalMove(string msg){
 			foreach (string s2 in msg.Split('#')) {
 				string[] words = s2.Split (' ');
-
-
 				playerHistory [extractPlayerIndex (words [0])].addPosition (int.Parse (words [1]), int.Parse (words [2]), int.Parse (words [3]));
 			}
 		}
@@ -70,12 +68,14 @@ namespace AdminUI{
 
 
 		private void displayLastUpdate(){
+			/*
 			for (int i = 0; i < playerHistory.Length; i++) {
 				foreach (Vector2 p in  playerHistory [i].getBody ())
 					boardRenderer.visualizeBody (i, p);
 				if(playerHistory [i].hasHead())
 					boardRenderer.visualizeHead (i, playerHistory [i].getHead ());
 			}
+			*/
 		}
 
 	

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Barebones.Networking;
+using UnityEngine;
 
 namespace Barebones.MasterServer
 {
@@ -10,7 +11,7 @@ namespace Barebones.MasterServer
 
     public class MsfSpawnersServer : MsfBaseClient
     {
-        private Dictionary<int, SpawnerController> _locallyCreatedSpawners;
+        private Dictionary<string, SpawnerController> _locallyCreatedSpawners;
 
         public int PortsStartFrom = 1500;
 
@@ -29,7 +30,7 @@ namespace Barebones.MasterServer
         
         public MsfSpawnersServer(IClientSocket connection) : base(connection)
         {
-            _locallyCreatedSpawners = new Dictionary<int, SpawnerController>();
+            _locallyCreatedSpawners = new Dictionary<string, SpawnerController>();
             _freePorts = new Queue<int>();
 
             IsSpawnedProccess = Msf.Args.IsProvided(Msf.Args.Names.SpawnCode);
@@ -64,7 +65,7 @@ namespace Barebones.MasterServer
                     return;
                 }
 
-                var spawnerId = response.AsInt();
+                var spawnerId = response.AsString();
 
                 var controller = new SpawnerController(spawnerId, connection, options);
 
@@ -79,13 +80,14 @@ namespace Barebones.MasterServer
             });
         }
 
+        /*
         /// <summary>
         /// This method should be called, when spawn process is finalized (finished spawning).
         /// For example, when spawned game server fully starts
         /// </summary>
         /// <param name="spawnId"></param>
         /// <param name="callback"></param>
-        public void FinalizeSpawnedProcess(int spawnId, CompleteSpawnedProcessCallback callback)
+        public void FinalizeSpawnedProcess(string spawnId, CompleteSpawnedProcessCallback callback)
         {
             FinalizeSpawnedProcess(spawnId, new Dictionary<string, string>(), callback, Connection);
         }
@@ -94,16 +96,16 @@ namespace Barebones.MasterServer
         /// This method should be called, when spawn process is finalized (finished spawning).
         /// For example, when spawned game server fully starts
         /// </summary>
-        public void FinalizeSpawnedProcess(int spawnId, Dictionary<string, string> finalizationData, CompleteSpawnedProcessCallback callback)
+        public void FinalizeSpawnedProcess(string spawnId, Dictionary<string, string> finalizationData, CompleteSpawnedProcessCallback callback)
         {
             FinalizeSpawnedProcess(spawnId, finalizationData, callback, Connection);
         }
-
+        */
         /// <summary>
         /// This method should be called, when spawn process is finalized (finished spawning).
         /// For example, when spawned game server fully starts
         /// </summary>
-        public void FinalizeSpawnedProcess(int spawnId, Dictionary<string, string> finalizationData, CompleteSpawnedProcessCallback callback, IClientSocket connection)
+        public void FinalizeSpawnedProcess(string spawnId, Dictionary<string, string> finalizationData, CompleteSpawnedProcessCallback callback, IClientSocket connection)
         {
             if (!connection.IsConnected)
             {
@@ -138,7 +140,7 @@ namespace Barebones.MasterServer
         /// <param name="spawnId"></param>
         /// <param name="spawnCode"></param>
         /// <param name="callback"></param>
-        public void RegisterSpawnedProcess(int spawnId, string spawnCode, RegisterSpawnedProcessCallback callback)
+        public void RegisterSpawnedProcess(string spawnId, string spawnCode, RegisterSpawnedProcessCallback callback)
         {
             RegisterSpawnedProcess(spawnId, spawnCode, callback, Connection);
         }
@@ -149,7 +151,7 @@ namespace Barebones.MasterServer
         /// On successfull registration, callback contains <see cref="SpawnTaskController"/>, which 
         /// has a dictionary of properties, that were given when requesting a process to be spawned
         /// </summary>
-        public void RegisterSpawnedProcess(int spawnId, string spawnCode, RegisterSpawnedProcessCallback callback, 
+        public void RegisterSpawnedProcess(string spawnId, string spawnCode, RegisterSpawnedProcessCallback callback, 
             IClientSocket connection)
         {
             if (!connection.IsConnected)
@@ -158,6 +160,7 @@ namespace Barebones.MasterServer
                 return;
             }
 
+            //Debug.LogError("SPWn code: " + spawnCode); 
             var packet = new RegisterSpawnedProcessPacket()
             {
                 SpawnCode = spawnCode,
@@ -174,7 +177,7 @@ namespace Barebones.MasterServer
 
                 var properties = new Dictionary<string, string>().FromBytes(response.AsBytes());
 
-                var process = new SpawnTaskController(spawnId, properties, connection);
+                var process = new SpawnTaskController(spawnId, properties, connection, spawnCode);
 
                 callback.Invoke(process, null);
             });
@@ -183,7 +186,7 @@ namespace Barebones.MasterServer
         /// <summary>
         /// Notifies master server, how many processes are running on a specified spawner
         /// </summary>
-        public void UpdateProcessesCount(int spawnerId, int count)
+        public void UpdateProcessesCount(string spawnerId, int count)
         {
             UpdateProcessesCount(spawnerId, count, Connection);
         }
@@ -191,7 +194,7 @@ namespace Barebones.MasterServer
         /// <summary>
         /// Notifies master server, how many processes are running on a specified spawner
         /// </summary>
-        public void UpdateProcessesCount(int spawnerId, int count, IClientSocket connection)
+        public void UpdateProcessesCount(string spawnerId, int count, IClientSocket connection)
         {
             var packet = new IntPairPacket()
             {
@@ -208,12 +211,12 @@ namespace Barebones.MasterServer
         /// <param name="spawnId"></param>
         /// <param name="processId"></param>
         /// <param name="cmdArgs"></param>
-        public void NotifyProcessStarted(int spawnId, int processId, string cmdArgs)
+        public void NotifyProcessStarted(string spawnId, int processId, string cmdArgs)
         {
             NotifyProcessStarted(spawnId, processId, cmdArgs, Connection);
         }
 
-        public void NotifyProcessStarted(int spawnId, int processId, string cmdArgs, IClientSocket connection)
+        public void NotifyProcessStarted(string spawnId, int processId, string cmdArgs, IClientSocket connection)
         {
             if (!connection.IsConnected)
                 return;
@@ -226,12 +229,12 @@ namespace Barebones.MasterServer
             });
         }
 
-        public void NotifyProcessKilled(int spawnId)
+        public void NotifyProcessKilled(string spawnId)
         {
             NotifyProcessKilled(spawnId, Connection);
         }
 
-        public void NotifyProcessKilled(int spawnId, IClientSocket connection)
+        public void NotifyProcessKilled(string spawnId, IClientSocket connection)
         {
             if (!connection.IsConnected)
                 return;
@@ -239,7 +242,7 @@ namespace Barebones.MasterServer
             connection.SendMessage((short)MsfOpCodes.ProcessKilled, spawnId);
         }
 
-        public SpawnerController GetController(int spawnerId)
+        public SpawnerController GetController(string spawnerId)
         {
             SpawnerController controller;
             _locallyCreatedSpawners.TryGetValue(spawnerId, out controller);
@@ -274,11 +277,13 @@ namespace Barebones.MasterServer
     public class SpawnTaskController
     {
         private readonly IClientSocket _connection;
-        public int SpawnId { get; private set; }
+        public string SpawnId { get; private set; }
         public Dictionary<string, string> Properties { get; private set; }
+        public string spawnCode { get; private set; }
 
-        public SpawnTaskController(int spawnId, Dictionary<string, string> properties, IClientSocket connection)
+        public SpawnTaskController(string spawnId, Dictionary<string, string> properties, IClientSocket connection, string spawnCode)
         {
+            this.spawnCode = spawnCode;
             _connection = connection;
             SpawnId = spawnId;
             Properties = properties;
@@ -295,7 +300,7 @@ namespace Barebones.MasterServer
 
         public void FinalizeTask(Dictionary<string, string> finalizationData, Action callback)
         {
-            Msf.Server.Spawners.FinalizeSpawnedProcess(SpawnId, finalizationData, (successful, error) =>
+            Msf.Server.Spawners.FinalizeSpawnedProcess(spawnCode, finalizationData, (successful, error) =>
             {
                 if (error != null)
                     Logs.Error("Error while completing the spawn task: " + error);

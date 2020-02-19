@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
+using System;
 
 namespace Barebones.MasterServer{
     /// <summary>
@@ -8,20 +10,24 @@ namespace Barebones.MasterServer{
     public class GamesListUiItem : MonoBehaviour{
         public GameInfoPacket RawData { get; protected set; }
         public Image BgImage;
-        public Color DefaultBgColor;
+        public GameInfoType roomType;
+        public Color[] defaultColor, tournamentColor;
+        private Color[] currentColor;
 		public ClientUI.GameSelectionUI ListView;
-        public GameObject LockImage;
-        public Text MapName;
-        public Text Name;
-        public Text Online;
-
-        public Color SelectedBgColor;
+        public TextMeshProUGUI MapName;
+        public TextMeshProUGUI Name;
+        public TextMeshProUGUI Online;
 
         public string UnknownMapName = "Unknown";
 
-        public int GameId { get; private set; }
-        public bool IsSelected { get; private set; }
+        public string GameId { get; set; }
         public bool IsLobby { get; private set; }
+
+        //Double click
+        public bool IsSelected { get; private set; }
+        private float lastSelectionTime, doubleClickInterval = 0.5f;
+        private Action doubleClickAction;
+
 
         public bool IsPasswordProtected{
             get { return RawData.IsPasswordProtected; }
@@ -30,23 +36,23 @@ namespace Barebones.MasterServer{
         // Use this for initialization
         private void Awake(){
             BgImage = GetComponent<Image>();
-            DefaultBgColor = BgImage.color;
-
+            currentColor = defaultColor;
             SetIsSelected(false);
         }
 
         public void SetIsSelected(bool isSelected){
             IsSelected = isSelected;
-            BgImage.color = isSelected ? SelectedBgColor : DefaultBgColor;
+            BgImage.color = isSelected ? currentColor[1] : currentColor[0];
         }
 
-        public void Setup(GameInfoPacket data){
+        public void Setup(GameInfoPacket data, Action doubleClickAction = null){
             RawData = data;
-            IsLobby = data.Type == GameInfoType.Lobby;
-            SetIsSelected(false);
+            IsLobby = data.infoType == GameInfoType.Lobby;
+            roomType = data.infoType;
             Name.text = data.Name;
             GameId = data.Id;
-            LockImage.SetActive(data.IsPasswordProtected);
+            initBackgroundColor(data.infoType);
+            this.doubleClickAction = doubleClickAction;
 
 
             if (data.MaxPlayers > 0)
@@ -58,8 +64,29 @@ namespace Barebones.MasterServer{
                 ? data.Properties[MsfDictKeys.MapName] : UnknownMapName;
         }
 
+        public void onDoubleClick() {
+            if (doubleClickAction != null)
+                doubleClickAction();
+        }
+
         public void OnClick(){
+            checkForDoubleClick();
+            lastSelectionTime = Time.time;
             ListView.Select(this);
+        }
+
+        private void checkForDoubleClick() {
+            if (IsSelected && Time.time - lastSelectionTime <= doubleClickInterval)
+                onDoubleClick();
+        }
+
+        private void initBackgroundColor(GameInfoType type) {
+            if (type == GameInfoType.PreTournament)
+                currentColor = tournamentColor;
+            else
+                currentColor = defaultColor;
+
+            SetIsSelected(false);
         }
     }
 }

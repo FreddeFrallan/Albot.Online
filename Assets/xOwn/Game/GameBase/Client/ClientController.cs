@@ -8,10 +8,14 @@ using UnityEngine.Networking;
 using System;
 using Barebones.MasterServer;
 using AlbotServer;
+using TCP_API;
 
 namespace Game{
 
 	public abstract class ClientController : NetworkBehaviour{
+
+        protected APIMessageRouterBase apiRouter;
+
 		public abstract void initProtocol (CommProtocol protocol);
 		public abstract void onOutgoingLocalMsg (string msg, PlayerColor color);
 		public void onOutgoingLocalMsgObj (object msg, short type){
@@ -19,45 +23,37 @@ namespace Game{
 		}
 
 		protected virtual void initHandlers(){
-			connectionToServer.RegisterHandler ((short)ServerCommProtocl.PlayerJoinedGameRoom, handlePlayerJoinedRoom);
-			connectionToServer.RegisterHandler ((short)ServerCommProtocl.PlayerLeftGameRoom, handlePlayerLeftRoom);
-		}
+            connectionToServer.RegisterHandler((short)ServerCommProtocl.PlayerJoinedGameRoom, handlePlayerJoinedRoom);
+            connectionToServer.RegisterHandler((short)ServerCommProtocl.PlayerLeftGameRoom, handlePlayerLeftRoom);
+        }
 		public abstract GameType getGameType();
 		protected NetworkConnection serverConnection;
-		protected bool isListeningForTCP = false, canSendServerMsg = true;
+		protected bool isListeningForTCP = false, canSendServerMsg = true, isGameOver = false;
 		protected GameWrapper wrapper  = new GameWrapper ();
 		protected GameUI localGameUI;
+        protected Dictionary<PlayerColor, PlayerInfo> currentPlayers = new Dictionary<PlayerColor, PlayerInfo>();
 
 
-		public void initController(Game.GameType currentType){
-			if (currentType != getGameType()) {
+		public void initController(GameType currentType){
+            if (currentType != getGameType()) {
 				Destroy (this);
 				return;
 			}
 			ClientPlayersHandler.init (this);
-			StaticClientTrainingMode.setCurrentClientController (this);
 
 			base.OnStartAuthority();
 			initHandlers ();
-			ClientReadyMsg msg = new ClientReadyMsg (){players = ClientPlayersHandler.generatePlayersInfoArray()};
-			connectionToServer.Send ((short)ServerCommProtocl.ClientReadyChannel, msg);
-			StartCoroutine (listenForTCP ());
-		}
+            StartCoroutine(sendGameServerReadyMsg());
+        }
 
-		protected IEnumerator listenForTCP(){
-			while (true) {
-				yield return new WaitForEndOfFrame ();
-				//If we have receveid some Local TCP msg. Listen to them all
-				/*
-				while (isListeningForTCP && TCPMessageQueue.hasUnread)
-					readTCPMsg(TCPMessageQueue.popMessage ());
-					*/
-			}
-		}
-			
+        //HotFix
+        private IEnumerator sendGameServerReadyMsg() {
+            yield return new WaitForSeconds(UnityEngine.Random.Range(0.4f, 0.5f));
+            ClientReadyMsg msg = new ClientReadyMsg() { players = ClientPlayersHandler.generatePlayersInfoArray() };
+            connectionToServer.Send((short)ServerCommProtocl.ClientReadyChannel, msg);
+        }
 
-		//This will be replaced when we move the renderer to seperate project!!!
-		//Coroutine that we run until we find a localGameController in the scene we are in
+
 		protected IEnumerator findAndInitRenderer<T>(Action<T> found) where T : Component{
 			GameObject foundObj = GameObject.FindGameObjectWithTag ("GameController");;
 			while (foundObj == null) {
@@ -125,14 +121,16 @@ namespace Game{
 		}
 
 	
-		protected virtual void readTCPMsg (ReceivedLocalMessage msg){
-			string[] words = msg.message.Split (' ');
-			if (words.Length != 1)
-				return;
+		protected virtual void readTCPMsg (ReceivedLocalMessage inMsg){
+            APIMsgConclusion outMsg = apiRouter.handleIncomingMsg(inMsg.message);
 
-			try{Game.ClientPlayersHandler.onReceiveLocalTCPMsg(words[0]);
-			}catch{return;}
-		}
+            if (outMsg.target == MsgTarget.Server){
+                onOutgoingLocalMsg(outMsg.msg, ClientPlayersHandler.sendFromCurrentPlayer());
+                isListeningForTCP = false;
+            }
+            else if (outMsg.target == MsgTarget.Player)
+                ClientPlayersHandler.getCurrentPlayer().takeInput(outMsg.msg);
+        }
 		public static T Deserialize<T>(byte[] param){
 			using (MemoryStream ms = new MemoryStream(param)){
 				IFormatter br = new BinaryFormatter();
@@ -149,10 +147,31 @@ namespace Game{
 		#endregion
 
 		public void gameOver(){
-			UnetRoomConnector.shutdownCurrentConnection ();
+            isGameOver = true;
+            canSendServerMsg = false;
+            UnetRoomConnector.shutdownCurrentConnection ();
 			localGameUI.stopAllTimers ();
 			ClientPlayersHandler.killBots ();
 		}
+        public string getGameOverText(PlayerColor winColor) {
+            if (winColor == PlayerColor.None)
+                return "It's a draw!";
+            else {
+                try {
+                    return currentPlayers[winColor].username + " won!";
+                } catch {
+                    return winColor.ToString() + " won!";
+                }
+            }
+        }
+
+        public BoardState getFinalState(PlayerColor winColor) {
+            if (winColor == PlayerColor.None)
+                return BoardState.draw;
+            if (currentPlayers[winColor].username == "")
+                return BoardState.playerWon;
+            return BoardState.enemyWon;
+        }
 
 		//For in editor
 		void OnApplicationQuit(){ClientPlayersHandler.killBots ();}
@@ -179,12 +198,15 @@ namespace Game{
 		}
 		public virtual void handlePlayerJoinedRoom(NetworkMessage msg){
 			PlayerInfoMsg readyMsg = msg.ReadMessage<PlayerInfoMsg> ();
-			PlayerInfo p = readyMsg.player;
+            PlayerInfo p = readyMsg.player;
+            if (currentPlayers.ContainsKey(p.color)) //Apperently sometimes the server sends duplicate messages
+                return;
 
+            currentPlayers.Add(p.color, p);
 			localGameUI.initPlayerSlot (p.color, p.username, p.iconNumber);
 		}
-		#endregion
-	}
+        #endregion
+    }
 		
 
 }

@@ -5,7 +5,7 @@ namespace Barebones.MasterServer
 {
     public class LobbyPropertiesSetPacket : SerializablePacket
     {
-        public int LobbyId;
+        public string LobbyId;
         public Dictionary<string, string> Properties;
 
         public override void ToBinaryWriter(EndianBinaryWriter writer)
@@ -16,7 +16,7 @@ namespace Barebones.MasterServer
 
         public override void FromBinaryReader(EndianBinaryReader reader)
         {
-            LobbyId = reader.ReadInt32();
+            LobbyId = reader.ReadString();
             Properties = reader.ReadDictionary();
         }
     }

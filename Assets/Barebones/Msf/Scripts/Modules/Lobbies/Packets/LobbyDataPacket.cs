@@ -16,7 +16,7 @@ namespace Barebones.MasterServer
         public string GameMaster = "";
         public string CurrentUserUsername = "";
 
-        public int LobbyId;
+        public string LobbyId;
         public string LobbyName;
         public Dictionary<string, string> LobbyProperties;
 
@@ -101,7 +101,7 @@ namespace Barebones.MasterServer
             GameMaster = reader.ReadString();
             CurrentUserUsername = reader.ReadString();
 
-            LobbyId = reader.ReadInt32();
+            LobbyId = reader.ReadString();
             LobbyName = reader.ReadString();
             LobbyProperties = reader.ReadDictionary();
             MaxPlayers = reader.ReadInt32();

@@ -1,0 +1,14 @@
+{
+    "name": "MsfEditorAssembly",
+    "references": [
+        "AlbotAssembly"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false
+}

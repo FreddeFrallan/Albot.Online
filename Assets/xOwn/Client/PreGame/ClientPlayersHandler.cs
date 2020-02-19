@@ -16,8 +16,6 @@ namespace Game{
 		private static List<PlayerColor> currentPlayerQ = new List<PlayerColor>();
 		private static List<TrainingBot> currentBots = new List<TrainingBot> ();
 
-
-
 		private static ClientController theClientController;
 		public static void init(ClientController c) {
 			theClientController = c;
@@ -42,7 +40,7 @@ namespace Game{
 
 		public static void onReceiveServerMsg(string msg, PlayerColor color){
 			LocalPlayer p = players.Find (x => x.info.color == color);
-			if (p == null) {
+            if (p == null) {
 				Debug.LogError ("Got a msg for: " + color + "   But got no stored players matching that color");
 				return;
 			}
@@ -82,28 +80,30 @@ namespace Game{
 			AccountInfoPacket playerInfo = ClientUI.ClientUIOverlord.getCurrentAcountInfo ();
 			ClientPlayersHandler.addPlayer (false, false, new AlbotServer.PlayerInfo {
 				username = playerInfo.Username,
-				iconNumber = int.Parse(playerInfo.Properties ["icon"])
+				iconNumber = int.Parse(playerInfo.Properties [AlbotDictKeys.icon])
 			});
 		}
 		public static void addClone(){
 			AccountInfoPacket playerInfo = ClientUI.ClientUIOverlord.getCurrentAcountInfo ();
 			ClientPlayersHandler.addPlayer (false, false, new AlbotServer.PlayerInfo {
 				username = "<" + playerInfo.Username + ">",
-				iconNumber = int.Parse(playerInfo.Properties ["icon"])
+				iconNumber = int.Parse(playerInfo.Properties [AlbotDictKeys.icon])
 			});
 		}
 		public static void addHuman(){
 			AccountInfoPacket playerInfo = ClientUI.ClientUIOverlord.getCurrentAcountInfo ();
 			ClientPlayersHandler.addPlayer (false, true, new AlbotServer.PlayerInfo {
 				username = "<Human>",
-				iconNumber = int.Parse(playerInfo.Properties ["icon"])
+				iconNumber = int.Parse(playerInfo.Properties [AlbotDictKeys.icon])
 			});
 		}
 
 
-		public static bool hasLocalPlayerOfColor(PlayerColor color){return players.Find (x => x.info.color == color) != null;}
+        public static bool hasLocalHumanPlayer() { return players.Any(p => p.Human); }
+        public static LocalPlayer getLocalHumanPlayer() { return players.FirstOrDefault(p => p.Human); }
+        public static bool hasLocalPlayerOfColor(PlayerColor color){return players.Find (x => x.info.color == color) != null;}
 		public static LocalPlayer getPlayerFromColor(PlayerColor color){return players.Find (x => x.info.color == color);}
-		public static LocalPlayer getCurrentPlayer(){return getPlayerFromColor (getCurrentPlayerColor ());}
+		public static LocalPlayer getCurrentPlayer(){return getPlayerFromColor(getCurrentPlayerColor());}
 		public static bool hasRequestedPlayerMoves(){return currentPlayerQ.Count > 0;}
 		public static PlayerColor getCurrentPlayerColor(){return currentPlayerQ [0];}
 		public static PlayerColor sendFromCurrentPlayer(){
@@ -126,17 +126,23 @@ namespace Game{
 		public bool isNPC(){return NPC;}
 		public PlayerInfo info;
 		public TrainingBot bot;
+        public Action onHumanTakeInput;
 
 		public LocalPlayer(bool isBot, bool isHuman, PlayerInfo info){
 			this.NPC = isBot; this.Human = isHuman; this.info = info;
 		}
 
 		public void takeInput(string msg){
-			if (NPC == false)
-				TCPLocalConnection.sendMessage (msg);
-			else
-				bot.onReceiveInput (msg);
-		}
+            if (isMainPlayer())
+            {
+                TCPLocalConnection.sendMessage(msg);
+            }
+            else if (NPC)
+                bot.onReceiveInput(msg);
+            else if (Human)
+                onHumanTakeInput();
+            //Do nothing if us human
+        }
 
 		public Action<string> getTakeInputFunc(){
 			if (Human)
